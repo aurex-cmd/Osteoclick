@@ -184,6 +184,8 @@
   .panel-2{ background:#F3EEF8; border-color:#8B5FD6; }
   .panel-3{ background:#EAF6F0; border-color:#3FA772; }
   .panel-4{ background:#FBF0E6; border-color:#E0873A; }
+  .panel-4 p, .panel-4 b{ color:#8a8a8a; }
+  .panel-4 a{ color:#B97D3E; font-weight:600; text-decoration:underline; }
 
   .back-link{
     display:inline-block; margin-top: 10px; margin-bottom: 20px; font-family:-apple-system,sans-serif;
@@ -475,7 +477,10 @@ function pathwayHTML(group, cfsId){
         <div class="panel-box panel-1"><p><b>Pannello 1:</b> creatinina, albumina, calcemia, fosforemia, 25-OH-vitamina D, paratormone (PTH), fosfatasi alcalina (ALP) ossea, protidogramma.</p></div>
         <div class="panel-box panel-2"><p><b>Pannello 2:</b> telopeptide C-terminale (CTx), calciuria e fosfaturia urine delle 24h.</p></div>
         <div class="panel-box panel-3"><p><b>Pannello 3:</b> colesterolo totale, colesterolo LDL, colesterolo HDL, trigliceridi, emoglobina glicata (HbA1c).</p></div>
-        <div class="panel-box panel-4"><p><b>Pannello 4</b> (da richiedere in base al sospetto clinico): TSH, proteina C reattiva, testosterone (libero o totale), anticorpi anti-transglutaminasi, triptasi, cortisoluria 24 ore o cortisolo dopo test al desametasone, assetto marziale, IgA, IgG, IgM, catene leggere libere, beta-2-microglobulina e proteinuria di Bence-Jones.</p></div>
+        <div class="panel-box panel-4">
+          <p><b>Pannello 4</b> (da richiedere in base al sospetto clinico): TSH, proteina C reattiva, testosterone (libero o totale), anticorpi anti-transglutaminasi, triptasi, cortisoluria 24 ore o cortisolo dopo test al desametasone, assetto marziale, IgA, IgG, IgM, catene leggere libere, beta-2-microglobulina e proteinuria di Bence-Jones.</p>
+          <p style="margin-top:8px !important;">Per orientare il sospetto clinico e decidere quali esami di secondo livello richiedere, consulta <a href="https://aurex-cmd.github.io/Osteo-Help/" target="_blank" rel="noopener">Osteo Help →</a></p>
+        </div>
       `, false)}
       ${accordionSection('icon_rx', 'Rx della colonna', `
         <p>Consigliato eseguire, durante la degenza, una radiografia della colonna dorso-lombosacrale "per morfometria vertebrale" per escludere fratture vertebrali misconosciute.</p>
