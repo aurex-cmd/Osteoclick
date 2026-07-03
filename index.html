@@ -239,7 +239,7 @@
 
 <!-- ============ CFS INTRO ============ -->
 <section class="screen" id="cfs-intro">
-  <a class="back-link" onclick="goTo('home')">‹ Home</a>
+  <a class="back-link" onclick="goBack()">‹ Home</a>
   <h1 class="hero" style="font-size:2.6rem; text-align:center;">Clinical Frailty<br>Scale</h1>
   <h3 class="sub" style="font-family:-apple-system,sans-serif; font-weight:700; font-size:1.1rem; color:var(--navy); letter-spacing:.05em; text-align:center;">ISTRUZIONI</h3>
   <ol class="instr-list">
@@ -254,7 +254,7 @@
 
 <!-- ============ QUIZ ============ -->
 <section class="screen" id="quiz">
-  <a class="back-link" onclick="prevQuestion()">‹ Indietro</a>
+  <a class="back-link" onclick="goBack()">‹ Indietro</a>
   <div class="progress" id="qprogress">Domanda 1 di 9</div>
   <div class="qlabel" id="qlabel">Domanda 1</div>
   <div class="qtext" id="qtext"></div>
@@ -266,13 +266,13 @@
 
 <!-- ============ RESULT ============ -->
 <section class="screen" id="result">
-  <a class="back-link" onclick="goTo('home')">‹ Home</a>
+  <a class="back-link" onclick="goBack()">‹ Home</a>
   <div id="result-content"></div>
 </section>
 
 <!-- ============ GROUPS (all categories, single scrollable page) ============ -->
 <section class="screen" id="groups">
-  <a class="back-link" onclick="goTo('home')">‹ Home</a>
+  <a class="back-link" onclick="goBack()">‹ Home</a>
   <h1 class="hero" style="font-size:2.3rem;">Schede visive</h1>
   <h2 class="sub" style="font-size:1.1rem;">Sfoglia le categorie della Clinical Frailty Scale, raggruppate per percorso diagnostico-terapeutico.</h2>
   <div id="groups-content"></div>
@@ -280,7 +280,7 @@
 
 <!-- ============ SINGLE CATEGORY DETAIL ============ -->
 <section class="screen" id="cat-detail">
-  <a class="back-link" onclick="goTo('groups')">‹ Schede visive</a>
+  <a class="back-link" onclick="goBack()">‹ Schede visive</a>
   <div id="cat-detail-content"></div>
 </section>
 
@@ -390,6 +390,51 @@ function goTo(id){
     if(el) el.classList.add('active');
   }
 }
+
+/* ---- Back navigation (used by back-links and the swipe gesture) ---- */
+const BACK_ACTIONS = {
+  'cfs-intro': () => goTo('home'),
+  'quiz': () => prevQuestion(),
+  'result': () => goTo('home'),
+  'groups': () => goTo('home'),
+  'cat-detail': () => goTo('groups')
+};
+function goBack(){
+  const current = document.querySelector('.screen.active');
+  if(!current) return;
+  const action = BACK_ACTIONS[current.id];
+  if(action) action();
+}
+
+/* ---- Swipe-back gesture (edge swipe, works in standalone/home-screen mode too) ---- */
+(function(){
+  let startX = 0, startY = 0, tracking = false;
+  const EDGE_ZONE = 28;       // must start within this many px of the left edge
+  const SWIPE_THRESHOLD = 70; // minimum horizontal distance
+  const MAX_VERTICAL = 60;    // max vertical drift allowed
+
+  document.addEventListener('touchstart', function(e){
+    const t = e.touches[0];
+    if(t.clientX <= EDGE_ZONE){
+      startX = t.clientX;
+      startY = t.clientY;
+      tracking = true;
+    } else {
+      tracking = false;
+    }
+  }, {passive:true});
+
+  document.addEventListener('touchend', function(e){
+    if(!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = Math.abs(t.clientY - startY);
+    if(dx > SWIPE_THRESHOLD && dy < MAX_VERTICAL){
+      goBack();
+    }
+  }, {passive:true});
+})();
 
 /* ============================================================
    QUIZ LOGIC
