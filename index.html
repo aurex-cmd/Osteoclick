@@ -32,43 +32,26 @@
   }
   .sans{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
 
-  /* ---------- Top bar ---------- */
-  .topbar{
-    display:flex; justify-content:flex-end; align-items:center;
-    padding: 10px 20px;
-    border-bottom: 1px solid rgba(43,88,125,0.12);
-    position: sticky; top:0; background:var(--bg); z-index:50;
-  }
-  .burger{
-    background:none;border:none;cursor:pointer;padding:8px;
-    display:flex;flex-direction:column;gap:5px;
-  }
-  .burger span{ width:26px; height:3px; background:var(--navy); border-radius:2px; display:block;}
-
-  /* ---------- Side menu ---------- */
-  .overlay{
-    position:fixed; inset:0; background:rgba(0,0,0,0.25);
-    opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:90;
-  }
-  .overlay.open{opacity:1; pointer-events:auto;}
-  .sidemenu{
-    position:fixed; top:0; right:0; height:100%; width:78%; max-width:320px;
-    background:var(--bg); z-index:100;
-    transform:translateX(100%); transition:transform .28s ease;
-    padding: 28px 26px; border-left:1px solid rgba(43,88,125,0.1);
-  }
-  .sidemenu.open{ transform:translateX(0); }
-  .sidemenu h3{ font-family:'Georgia',serif; color:var(--navy); font-size:1.5rem; margin:10px 0 26px 0;}
-  .sidemenu a{
-    display:block; padding:14px 0; color:var(--navy-dark); text-decoration:none;
-    font-family:-apple-system,sans-serif; font-size:1.05rem; border-bottom:1px solid rgba(43,88,125,0.08);
-    cursor:pointer;
-  }
-
   /* ---------- Screens ---------- */
-  .screen{ display:none; padding: 16px 26px 70px 26px; max-width:640px; margin:0 auto; animation: fadeIn .25s ease;}
+  .screen{ display:none; padding: 34px 26px 110px 26px; max-width:640px; margin:0 auto; animation: fadeIn .25s ease;}
   .screen.active{ display:block; }
   @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- Bottom tab bar ---------- */
+  .tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:60;
+    display:flex; background:var(--bg);
+    border-top:1px solid rgba(43,88,125,0.25);
+    padding-top:8px; padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .tab-item{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+    background:none; border:none; cursor:pointer; padding:4px 0 0 0;
+    font-family:-apple-system,sans-serif; font-size:.72rem; color:#9aa3ab;
+  }
+  .tab-item svg{ width:26px; height:26px; stroke:#9aa3ab; }
+  .tab-item.active{ color:var(--navy); font-weight:700; }
+  .tab-item.active svg{ stroke:var(--navy); }
 
   h1.hero{ font-size:3.2rem; color:var(--navy); font-weight:700; margin:10px 0 18px 0; line-height:1.05;}
   h2.sub{ font-size:1.4rem; color:var(--navy); font-weight:400; line-height:1.35; margin:0 0 20px 0;}
@@ -212,20 +195,36 @@
 </head>
 <body>
 
-<!-- ============ TOP BAR ============ -->
-<div class="topbar">
-  <button class="burger" onclick="openMenu()" aria-label="menu">
-    <span></span><span></span><span></span>
+<!-- ============ BOTTOM TAB BAR ============ -->
+<nav class="tabbar">
+  <button class="tab-item active" id="tab-home" onclick="goTo('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11.5 L12 4 L21 11.5"/>
+      <path d="M5.5 9.5 V20 H18.5 V9.5"/>
+      <rect x="10" y="13.5" width="4" height="6.5"/>
+    </svg>
+    <span>Home</span>
   </button>
-</div>
+  <button class="tab-item" id="tab-quiz" onclick="goTo('cfs-intro')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="3.5" width="14" height="18" rx="2"/>
+      <line x1="8" y1="8.5" x2="14" y2="8.5"/>
+      <line x1="8" y1="12.5" x2="14" y2="12.5"/>
+      <line x1="8" y1="16.5" x2="12" y2="16.5"/>
+      <circle cx="18" cy="7" r="3.2" style="fill:var(--bg)"/>
+      <path d="M16.6 7 L17.6 8 L19.5 6"/>
+    </svg>
+    <span>Questionario</span>
+  </button>
+  <button class="tab-item" id="tab-groups" onclick="goTo('groups')">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="8.5" y="4.5" width="11" height="14" rx="2"/>
+      <path d="M4.5 8.5 V17 a2 2 0 0 0 2 2 H14"/>
+    </svg>
+    <span>Schede</span>
+  </button>
+</nav>
 
-<div class="overlay" id="overlay" onclick="closeMenu()"></div>
-<div class="sidemenu" id="sidemenu">
-  <h3>Osteoclick</h3>
-  <a onclick="goTo('home')">Home</a>
-  <a onclick="goTo('cfs-intro')">C.F.S. Questionario</a>
-  <a onclick="goTo('groups')">Schede visive C.F.S.</a>
-</div>
 
 <!-- ============ HOME ============ -->
 <section class="screen active" id="home">
@@ -375,19 +374,21 @@ document.addEventListener('DOMContentLoaded', function(){
    ============================================================ */
 let quizIndex = 0;
 
+const SCREEN_TO_TAB = {
+  'home':'tab-home',
+  'cfs-intro':'tab-quiz', 'quiz':'tab-quiz', 'result':'tab-quiz',
+  'groups':'tab-groups', 'cat-detail':'tab-groups'
+};
 function goTo(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  closeMenu();
   window.scrollTo(0,0);
-}
-function openMenu(){
-  document.getElementById('sidemenu').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-}
-function closeMenu(){
-  document.getElementById('sidemenu').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
+  const activeTabId = SCREEN_TO_TAB[id];
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  if(activeTabId){
+    const el = document.getElementById(activeTabId);
+    if(el) el.classList.add('active');
+  }
 }
 
 /* ============================================================
