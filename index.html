@@ -406,22 +406,124 @@ function goBack(){
   if(action) action();
 }
 
-/* ---- Swipe-back gesture (edge swipe, works in standalone/home-screen mode too) ---- */
+/* ---- Swipe-back gesture: the current page follows the finger while the page
+   behind stays perfectly still underneath. Works in standalone mode too. ---- */
+function getBackTarget(currentId){
+  if(currentId === 'quiz'){
+    if(quizIndex === 0) return {type:'screen', id:'cfs-intro'};
+    return {type:'quiz-prev', prevIndex: quizIndex - 1};
+  }
+  const map = { 'cfs-intro':'home', 'result':'home', 'groups':'home', 'cat-detail':'groups' };
+  return map[currentId] ? {type:'screen', id:map[currentId]} : null;
+}
+
+function buildQuizPreviewClone(prevIndex){
+  const original = document.getElementById('quiz');
+  const clone = original.cloneNode(true);
+  clone.removeAttribute('id');
+  clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+  clone.classList.add('active');
+  clone.style.pointerEvents = 'none';
+
+  const q = QUESTIONS[prevIndex];
+  const prog = clone.querySelector('.progress');
+  const lbl = clone.querySelector('.qlabel');
+  const txt = clone.querySelector('.qtext');
+  if(prog) prog.textContent = `Domanda ${prevIndex+1} di ${QUESTIONS.length}`;
+  if(lbl) lbl.textContent = `Domanda ${prevIndex+1}`;
+  if(txt) txt.textContent = q.text;
+
+  const isLast = (prevIndex === QUESTIONS.length - 1);
+  const noBtn = clone.querySelector('.answers button:nth-child(2)');
+  const answersEl = clone.querySelector('.answers');
+  if(isLast){
+    if(noBtn) noBtn.style.display = 'none';
+    if(answersEl) answersEl.classList.add('answers-centered');
+  } else {
+    if(noBtn) noBtn.style.display = '';
+    if(answersEl) answersEl.classList.remove('answers-centered');
+  }
+  document.body.appendChild(clone);
+  return clone;
+}
+
 (function(){
   let startX = 0, startY = 0, tracking = false;
-  const EDGE_ZONE = 28;       // must start within this many px of the left edge
-  const SWIPE_THRESHOLD = 70; // minimum horizontal distance
-  const MAX_VERTICAL = 60;    // max vertical drift allowed
+  let drag = null; // {current, behind, width, target}
+  const EDGE_ZONE = 28;
+  const SWIPE_THRESHOLD = 130; // deliberately harder to trigger by accident
+  const MAX_VERTICAL = 45;
+
+  function styleAsOverlay(el, z){
+    el.style.position = 'fixed';
+    el.style.top = '0'; el.style.left = '0';
+    el.style.width = '100%'; el.style.height = '100%';
+    el.style.overflowY = 'auto';
+    el.style.zIndex = z;
+    el.style.transition = 'none';
+  }
+
+  function prepareDrag(current, target){
+    let behind;
+    if(target.type === 'screen'){
+      behind = document.getElementById(target.id);
+      if(!behind) return null;
+      behind.style.display = 'block';
+    } else {
+      behind = buildQuizPreviewClone(target.prevIndex);
+    }
+    const width = window.innerWidth;
+
+    styleAsOverlay(behind, 40);
+    behind.style.transform = 'translateX(0px)'; // stays fixed, never moves
+
+    styleAsOverlay(current, 41);
+    current.style.background = 'var(--bg)';
+    current.style.boxShadow = '-3px 0 16px rgba(0,0,0,0.18)';
+    current.style.transform = 'translateX(0px)';
+
+    return {current, behind, width, target};
+  }
+
+  function resetStyles(el){
+    el.style.position=''; el.style.top=''; el.style.left=''; el.style.width='';
+    el.style.height=''; el.style.overflowY=''; el.style.zIndex=''; el.style.transform='';
+    el.style.transition=''; el.style.boxShadow=''; el.style.background=''; el.style.display='';
+  }
+
+  function cleanupDrag(current, behind, committed, target){
+    resetStyles(current);
+    if(target.type === 'screen'){
+      resetStyles(behind);
+      if(committed) goTo(target.id);
+    } else {
+      behind.remove(); // the quiz-preview clone was only ever temporary
+      if(committed) prevQuestion();
+    }
+  }
 
   document.addEventListener('touchstart', function(e){
     const t = e.touches[0];
     if(t.clientX <= EDGE_ZONE){
-      startX = t.clientX;
-      startY = t.clientY;
-      tracking = true;
+      const current = document.querySelector('.screen.active');
+      if(!current) return;
+      startX = t.clientX; startY = t.clientY; tracking = true;
+      const target = getBackTarget(current.id);
+      drag = target ? prepareDrag(current, target) : null;
     } else {
       tracking = false;
+      drag = null;
     }
+  }, {passive:true});
+
+  document.addEventListener('touchmove', function(e){
+    if(!tracking || !drag) return;
+    const t = e.touches[0];
+    let dx = t.clientX - startX;
+    if(dx < 0) dx = 0;
+    if(dx > drag.width) dx = drag.width;
+    drag.current.style.transform = `translateX(${dx}px)`;
+    // drag.behind intentionally stays put — no parallax movement
   }, {passive:true});
 
   document.addEventListener('touchend', function(e){
@@ -430,7 +532,15 @@ function goBack(){
     const t = e.changedTouches[0];
     const dx = t.clientX - startX;
     const dy = Math.abs(t.clientY - startY);
-    if(dx > SWIPE_THRESHOLD && dy < MAX_VERTICAL){
+    const shouldCommit = dx > SWIPE_THRESHOLD && dy < MAX_VERTICAL;
+
+    if(drag){
+      const {current, behind, width, target} = drag;
+      current.style.transition = 'transform .28s ease';
+      current.style.transform = shouldCommit ? `translateX(${width}px)` : 'translateX(0px)';
+      setTimeout(()=>cleanupDrag(current, behind, shouldCommit, target), 280);
+      drag = null;
+    } else if(shouldCommit){
       goBack();
     }
   }, {passive:true});
