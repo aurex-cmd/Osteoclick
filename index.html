@@ -184,6 +184,7 @@
   .path-section{
     background:#fff; border-radius:18px; padding:0; margin-bottom:14px;
     font-family:-apple-system,sans-serif; border:1px solid rgba(43,88,125,0.08);
+    border-left:4px solid var(--coral);
     overflow:hidden;
   }
   .path-section-toggle{
@@ -207,20 +208,20 @@
   .icon-em{ font-size:1.3rem; }
 
   .checklist-box{
-    background:#EEF3F6; border-left:4px solid var(--navy); border-radius:10px; padding:16px 18px; margin-top:10px;
+    background:#EEF3F6; border-radius:10px; padding:16px 18px; margin-top:10px;
   }
   .checklist-box ol{ margin:0; padding-left:20px; }
   .checklist-box li{ margin-bottom:10px; font-size:.95rem; text-align:justify; hyphens:auto; }
 
   .panel-box{
-    border-radius:10px; padding:14px 18px; margin-bottom:12px; border-left:4px solid;
+    border-radius:10px; padding:14px 18px; margin-bottom:12px;
   }
   .panel-box:last-child{ margin-bottom:0; }
   .panel-box p{ margin:0 !important; }
-  .panel-1{ background:#EEF3F6; border-color:#2B587D; }
-  .panel-2{ background:#EAF6F0; border-color:#3FA772; }
-  .panel-3{ background:#FBF0E6; border-color:#E0873A; }
-  .panel-4{ background:#F3EEF8; border-color:#8B5FD6; }
+  .panel-1{ background:#EEF3F6; }
+  .panel-2{ background:#EAF6F0; }
+  .panel-3{ background:#FBF0E6; }
+  .panel-4{ background:#F3EEF8; }
   .panel-4 p, .panel-4 b{ color:#8a8a8a; }
   .panel-4 a{ color:#8B5FD6; font-weight:600; text-decoration:underline; }
 
@@ -718,11 +719,12 @@ function showResult(cfsId){
 
 /* Diagnostic-therapeutic pathway per group */
 let sectionCounter = 0;
-function accordionSection(iconKey, title, bodyHtml, openFirst){
+function accordionSection(iconKey, title, bodyHtml, openFirst, accentColor){
   sectionCounter++;
   const id = `sec-${sectionCounter}`;
+  const styleAttr = accentColor ? ` style="border-left-color:${accentColor}"` : '';
   return `
-    <div class="path-section${openFirst ? ' open' : ''}" id="${id}">
+    <div class="path-section${openFirst ? ' open' : ''}" id="${id}"${styleAttr}>
       <button class="path-section-toggle" onclick="toggleSection('${id}')">
         <div class="path-icon"><img src="" data-img="${iconKey}" alt=""></div>
         <h4>${title}</h4>
@@ -737,6 +739,8 @@ function toggleSection(id){
 }
 
 function pathwayHTML(group, cfsId){
+  const cat = CFS.find(c=>c.id===cfsId);
+  const accent = cat ? accentFromGradient(cat.color) : null;
   if(group===1){
     return `
       ${accordionSection('icon_lab', 'Esami di laboratorio', `
@@ -747,16 +751,16 @@ function pathwayHTML(group, cfsId){
           <p><b>Pannello 4</b> (da richiedere in base al sospetto clinico): TSH, proteina C reattiva, testosterone (libero o totale), anticorpi anti-transglutaminasi, triptasi, cortisoluria 24 ore o cortisolo dopo test al desametasone, assetto marziale, IgA, IgG, IgM, catene leggere libere, beta-2-microglobulina e proteinuria di Bence-Jones.</p>
           <p style="margin-top:8px !important; padding-left:16px !important; position:relative;"><span style="position:absolute; left:0;">•</span>Per orientare il sospetto clinico e decidere quali esami di secondo livello richiedere, consulta <a href="https://aurex-cmd.github.io/Osteo-Help/" target="_blank" rel="noopener">Osteo Help →</a></p>
         </div>
-      `, false)}
+      `, false, accent)}
       ${accordionSection('icon_rx', 'Rx della colonna', `
         <p>Consigliato eseguire, durante la degenza, una radiografia della colonna dorso-lombosacrale "per morfometria vertebrale" per escludere fratture vertebrali misconosciute.</p>
-      `, false)}
+      `, false, accent)}
       ${accordionSection('icon_dexa', 'Densitometria', `
         <p>Si consiglia completamento diagnostico mediante esecuzione di densitometria ossea (DEXA) del rachide lombare e del femore (lato non fratturato), qualora tale accertamento non sia stato già eseguito negli ultimi 18 mesi.</p>
-      `, false)}
+      `, false, accent)}
       ${accordionSection('icon_ambulatorio', 'Valutazione Bone Specialist', `
         <p>Attivare la presa in carico da parte del Bone Specialist per la definizione della strategia terapeutica più appropriata e per assicurarne il follow-up.</p>
-      `, false)}
+      `, false, accent)}
     `;
   }
   if(group===2){
@@ -764,7 +768,7 @@ function pathwayHTML(group, cfsId){
       ${accordionSection('icon_lab', 'Esami di laboratorio', `
         <div class="panel-box panel-1"><p><b>Pannello 1:</b> creatinina, albumina, calcemia, fosforemia, 25-OH-vitamina D, paratormone (PTH), fosfatasi alcalina (ALP) ossea, protidogramma.</p></div>
         <div class="panel-box panel-2"><p><b>Pannello 2:</b> telopeptide C-terminale (CTx), calciuria e fosfaturia urine delle 24h.</p></div>
-      `, false)}
+      `, false, accent)}
       ${accordionSection('icon_ivbag', 'Trattamento', `
         <p>Supplementazione di calcio/vitamina D ed eventuale somministrazione di <b>acido zoledronico 5 mg EV</b> durante la degenza.</p>
         <div class="checklist-box">
@@ -779,7 +783,7 @@ function pathwayHTML(group, cfsId){
             <li><b>Effetti attesi:</b> informare su possibile sindrome simil-influenzale nelle 24–72 ore.</li>
           </ol>
         </div>
-      `, false)}
+      `, false, accent)}
     `;
   }
   // group 3
@@ -787,10 +791,10 @@ function pathwayHTML(group, cfsId){
     ${cfsId===9 ? '<p style="font-style:italic; color:var(--navy); margin:0 0 14px 0; text-align:justify; font-family:-apple-system,sans-serif; font-size:.95rem;">La classificazione è basata sulla prognosi di malattia e non sul loro livello di dipendenza funzionale.</p>' : ''}
     ${accordionSection('icon_lab', 'Esami di laboratorio', `
       <div class="panel-box panel-1"><p><b>Pannello 1:</b> creatinina, albumina, calcemia, fosforemia, 25-OH-vitamina D, paratormone (PTH), fosfatasi alcalina (ALP) ossea, protidogramma.</p></div>
-    `, false)}
+    `, false, accent)}
     ${accordionSection('icon_medbottle', 'Trattamento', `
       <p>Supplementazione di calcio/vitamina D.</p>
-    `, false)}
+    `, false, accent)}
   `;
 }
 
