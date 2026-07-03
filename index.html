@@ -57,7 +57,7 @@
   .tab-item.active svg{ stroke:var(--navy); }
 
   h1.hero{ font-size:3.2rem; color:var(--navy); font-weight:700; margin:10px 0 18px 0; line-height:1.05;}
-  h2.sub{ font-size:1.4rem; color:var(--navy); font-weight:400; line-height:1.35; margin:0 0 20px 0;}
+  h2.sub{ font-size:1.05rem; font-family:-apple-system,sans-serif; color:var(--navy); font-weight:400; line-height:1.4; margin:0 0 20px 0;}
   .underline{ width:90px; height:8px; background:var(--coral); border-radius:6px; margin:6px 0 26px 0;}
 
   /* ---------- Home: logo badge, rich cards ---------- */
@@ -157,7 +157,11 @@
   .cfs-header h2{ font-family:'Georgia',serif; color:var(--navy); font-size:2.1rem; margin:0 0 4px 0; }
   .cfs-header .en{ font-family:-apple-system,sans-serif; font-size:1rem; color:#8a8a8a; }
 
-  .desc-block{ font-family:-apple-system,sans-serif; font-size:1.05rem; line-height:1.55; margin-bottom:18px; text-align:justify; hyphens:auto;}
+  .desc-block{
+    font-family:-apple-system,sans-serif; font-size:1.05rem; line-height:1.55; text-align:justify; hyphens:auto;
+    background:#fff; border-left:4px solid var(--coral); border-radius:12px;
+    padding:16px 16px 16px 18px; margin-bottom:18px;
+  }
   .desc-block b{ color:var(--navy); }
 
   /* Question card */
@@ -229,8 +233,13 @@
     font-family:-apple-system,sans-serif; font-size:.8rem; color:#8a8a8a; text-align:center; margin-top: 30px;
   }
 
-  .instr-list{ font-family:-apple-system,sans-serif; font-size:1.1rem; line-height:1.6; padding-left:22px; margin-bottom: 34px; text-align:justify; hyphens:auto;}
-  .instr-list li{ margin-bottom:16px; }
+  .instr-box{
+    background:#fff; border-left:4px solid var(--navy); border-radius:12px;
+    padding:18px 18px 18px 20px; margin-bottom:34px;
+  }
+  .instr-list{ font-family:-apple-system,sans-serif; font-size:.92rem; line-height:1.5; padding-left:20px; margin:0; text-align:justify; hyphens:auto;}
+  .instr-list li{ margin-bottom:13px; }
+  .instr-list li:last-child{ margin-bottom:0; }
 
   .center{ text-align:center; }
 </style>
@@ -314,12 +323,14 @@
 <section class="screen" id="cfs-intro">
   <a class="back-link" onclick="goBack()">‹ Home</a>
   <h1 class="hero" style="font-size:2.6rem; text-align:center;">Clinical Frailty<br>Scale</h1>
-  <h3 class="sub" style="font-family:-apple-system,sans-serif; font-weight:700; font-size:1.1rem; color:var(--navy); letter-spacing:.05em; text-align:center;">ISTRUZIONI</h3>
-  <ol class="instr-list">
-    <li>Riferirsi sempre allo stato funzionale del paziente nelle <b>2 settimane PRECEDENTI l'evento acuto</b>.</li>
-    <li>Procedere con le domande in ordine fino a ottenere una risposta affermativa.</li>
-    <li>In caso di dubbio tra due categorie del Clinical Frailty Scale, assegnare al paziente il livello di minor fragilità.</li>
-  </ol>
+  <h3 class="sub" style="font-family:'Georgia',serif; font-style:italic; font-weight:700; font-size:1.25rem; color:var(--navy); letter-spacing:.02em; text-align:center;">Istruzioni</h3>
+  <div class="instr-box">
+    <ol class="instr-list">
+      <li>Riferirsi sempre allo stato funzionale del paziente nelle <b>2 settimane PRECEDENTI l'evento acuto</b>.</li>
+      <li>Procedere con le domande in ordine fino a ottenere una risposta affermativa.</li>
+      <li>In caso di dubbio tra due categorie del Clinical Frailty Scale, assegnare al paziente il livello di minor fragilità.</li>
+    </ol>
+  </div>
   <div class="center">
     <button class="btn-primary" style="text-align:center;" onclick="startQuiz()">AVVIA</button>
   </div>
@@ -363,6 +374,11 @@
    ============================================================ */
 
 // CFS categories: id 1..9, with group assignment per new logic
+function accentFromGradient(gradientCss){
+  const m = gradientCss.match(/#[0-9a-fA-F]{6}/);
+  return m ? m[0] : '#E68A78';
+}
+
 const CFS = [
   {id:1, en:"Very Fit", it:"Molto in forma", group:1, img:"veryfit",
     color:"linear-gradient(135deg,#8b7bd8,#5fc9e8)",
@@ -691,7 +707,7 @@ function showResult(cfsId){
       <div class="en">${cat.it}</div>
     </div>
     <div class="cfs-illustration"><img src="" data-img="${cat.img}" alt="${cat.en}"></div>
-    <div class="desc-block">${cat.desc}</div>
+    <div class="desc-block" style="border-left-color:${accentFromGradient(cat.color)}">${cat.desc}</div>
     ${pathwayHTML(group, cat.id)}
     <div class="footer-note">Osteoclick — algoritmo decisionale F.L.S.</div>
   `;
@@ -822,7 +838,7 @@ function showCategoryDetail(cfsId){
       <div class="en">${cat.it}</div>
     </div>
     <div class="cfs-illustration"><img src="" data-img="${cat.img}" alt="${cat.en}"></div>
-    <div class="desc-block">${cat.desc}</div>
+    <div class="desc-block" style="border-left-color:${accentFromGradient(cat.color)}">${cat.desc}</div>
     ${pathwayHTML(cat.group, cat.id)}
     <div class="footer-note">Osteoclick — algoritmo decisionale F.L.S.</div>
   `;
