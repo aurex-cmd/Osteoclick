@@ -33,7 +33,7 @@
   .sans{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
 
   /* ---------- Screens ---------- */
-  .screen{ display:none; padding: 34px 26px 110px 26px; max-width:640px; margin:0 auto; animation: fadeIn .25s ease;}
+  .screen{ display:none; padding: 34px 26px 130px 26px; max-width:640px; margin:0 auto; animation: fadeIn .25s ease;}
   .screen.active{ display:block; }
   @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 
@@ -42,7 +42,7 @@
     position:fixed; left:0; right:0; bottom:0; z-index:60;
     display:flex; background:var(--bg);
     border-top:1px solid rgba(43,88,125,0.25);
-    padding-top:8px; padding-bottom: max(8px, env(safe-area-inset-bottom));
+    padding-top:8px; padding-bottom: max(22px, calc(env(safe-area-inset-bottom) + 14px));
   }
   .tab-item{
     flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
