@@ -151,10 +151,11 @@
   }
   .path-section.open .chevron{ transform:rotate(180deg); }
   .path-section-body{
-    max-height:0; overflow:hidden; transition:max-height .28s ease;
-    padding:0 18px; visibility:hidden;
+    display:grid; grid-template-rows:0fr; transition:grid-template-rows .28s ease;
   }
-  .path-section.open .path-section-body{ padding:0 18px 18px 18px; visibility:visible; }
+  .path-section.open .path-section-body{ grid-template-rows:1fr; }
+  .path-section-body-inner{ overflow:hidden; padding:0 18px; }
+  .path-section.open .path-section-body-inner{ padding:0 18px 18px 18px; }
   .path-section p, .path-section li{ font-size:.98rem; line-height:1.5; margin:0 0 6px 0; text-align:justify; hyphens:auto; }
   .path-section ul{ margin:0; padding-left:20px; }
   .path-section b{ color:var(--navy-dark); }
@@ -628,20 +629,12 @@ function accordionSection(iconKey, title, bodyHtml, openFirst){
         <h4>${title}</h4>
         <span class="chevron">▾</span>
       </button>
-      <div class="path-section-body">${bodyHtml}</div>
+      <div class="path-section-body"><div class="path-section-body-inner">${bodyHtml}</div></div>
     </div>
   `;
 }
 function toggleSection(id){
-  const el = document.getElementById(id);
-  const body = el.querySelector('.path-section-body');
-  if(el.classList.contains('open')){
-    el.classList.remove('open');
-    body.style.maxHeight = null;
-  } else {
-    el.classList.add('open');
-    body.style.maxHeight = body.scrollHeight + 40 + 'px';
-  }
+  document.getElementById(id).classList.toggle('open');
 }
 
 function pathwayHTML(group, cfsId){
