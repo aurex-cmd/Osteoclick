@@ -233,10 +233,50 @@
   .panel-box p{ margin:0 !important; }
   .panel-1{ background:#EEF3F6; border-color:#2B587D; }
   .panel-2{ background:#EAF6F0; border-color:#3FA772; }
-  .panel-3{ background:#FBF0E6; border-color:#E0873A; }
-  .panel-4{ background:#F3EEF8; border-color:#8B5FD6; }
-  .panel-4 p, .panel-4 b{ color:#8a8a8a; }
-  .panel-4 a{ color:#8B5FD6; font-weight:600; text-decoration:underline; }
+  .panel-3{ background:#F3EEF8; border-color:#8B5FD6; }
+  .panel-3 p, .panel-3 b{ color:#8a8a8a; }
+  .panel-3 a{ color:#8B5FD6; font-weight:600; text-decoration:underline; }
+
+  .path-note{
+    font-style:italic; color:var(--navy); margin:0 0 14px 0; text-align:justify; hyphens:auto;
+    font-family:-apple-system,sans-serif; font-size:.95rem;
+  }
+
+  /* ---------- CCI calculator (Gruppo A) ---------- */
+  .cci-calc{
+    background:#fff; border-radius:18px; padding:18px; margin-bottom:14px;
+    font-family:-apple-system,sans-serif; box-shadow:0 1px 4px rgba(43,88,125,0.08);
+  }
+  .cci-calc h3{ font-family:'Georgia',serif; color:var(--navy); font-size:1.25rem; margin:0 0 6px 0; }
+  .cci-intro, .cci-rules{ font-size:.9rem; line-height:1.45; color:#555; margin:0 0 12px 0; text-align:justify; hyphens:auto; }
+  .cci-rules{ font-size:.82rem; color:#8a8a8a; }
+  .cci-step{ font-weight:700; color:var(--navy); font-size:.95rem; margin:16px 0 8px 0; }
+  .cci-ages{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .cci-age{
+    border:2px solid rgba(43,88,125,0.25); background:#fff; color:var(--navy); border-radius:12px;
+    padding:10px 0 8px 0; font-family:-apple-system,sans-serif; font-weight:700; font-size:.95rem; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+  }
+  .cci-age span{ font-size:.75rem; font-weight:600; opacity:.7; }
+  .cci-age.selected{ background:var(--navy); border-color:var(--navy); color:#fff; }
+  .cci-pts-heading{
+    font-size:.75rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--navy); opacity:.7; margin:14px 0 4px 0;
+  }
+  .cci-cond{
+    display:flex; align-items:flex-start; gap:10px; padding:8px 0; cursor:pointer;
+    border-bottom:1px solid rgba(43,88,125,0.08); font-size:.95rem; line-height:1.35;
+  }
+  .cci-cond input{ width:20px; height:20px; margin:0; flex-shrink:0; accent-color:var(--navy); }
+  .cci-cond small{ display:block; font-size:.78rem; color:#8a8a8a; margin-top:2px; }
+  .cci-score{
+    margin-top:16px; border-radius:12px; padding:14px 16px; font-size:.95rem; line-height:1.45;
+    background:#EEF3F6; color:#555;
+  }
+  .cci-score .cci-value{ font-family:'Georgia',serif; font-size:1.5rem; font-weight:700; margin-bottom:4px; }
+  .cci-score.cci-low{ background:#EAF6F0; color:#24533b; border-left:4px solid #3FA772; }
+  .cci-score.cci-high{ background:#FBF0E6; color:#7a4314; border-left:4px solid #E0873A; }
+  .cci-score b{ color:inherit; }
 
   .back-link{
     display:inline-block; margin-top: 10px; margin-bottom: 20px; font-family:-apple-system,sans-serif;
@@ -757,62 +797,200 @@ function toggleSection(id){
   document.getElementById(id).classList.toggle('open');
 }
 
+/* Laboratory panels (Protocollo FLS ULSS 6, §7.3) */
+const PANEL_1 = `<div class="panel-box panel-1"><p><b>Pannello 1:</b> creatinina, albumina, calcemia, fosforemia, 25-OH-vitamina D, paratormone (PTH), fosfatasi alcalina (ALP) totale, protidogramma.</p></div>`;
+const PANEL_2 = `<div class="panel-box panel-2"><p><b>Pannello 2:</b> fosfatasi alcalina ossea (isoenzima osseo), telopeptide C-terminale (CTx), calciuria e fosfaturia delle 24 ore, colesterolo totale, colesterolo LDL, colesterolo HDL, trigliceridi, emoglobina glicata (HbA1c).</p></div>`;
+const PANEL_3 = `
+  <div class="panel-box panel-3">
+    <p><b>Pannello 3</b> (da richiedere in base al sospetto clinico): TSH, proteina C reattiva, testosterone (libero o totale), anticorpi anti-transglutaminasi, triptasi, cortisoluria 24 ore o test al desametasone, assetto marziale, IgA, IgG, IgM, catene leggere libere, beta-2-microglobulina e proteinuria di Bence-Jones.</p>
+    <p style="margin-top:8px !important; padding-left:16px !important; position:relative;"><span style="position:absolute; left:0;">•</span>Per orientare il sospetto clinico e decidere quali esami di secondo livello richiedere, consulta <a href="https://aurex-cmd.github.io/Osteo-Help/" target="_blank" rel="noopener">Osteo Help →</a></p>
+  </div>`;
+
+/* Vitamin D deficit correction — applies to every group (§7.6) */
+function vitaminDSection(beforeTherapy, accent){
+  return accordionSection('icon_medbottle', 'Correzione vitamina D', `
+    <p>Indicata se <b>25-OH-vitamina D &lt; 50 nmol/L</b> oppure in assenza di dati disponibili, tenendo conto di eventuali supplementazioni già assunte a domicilio.</p>
+    ${beforeTherapy ? '<p>La correzione del deficit <b>deve precedere</b> l\'avvio della terapia anti-fratturativa.</p>' : ''}
+    <ul>
+      <li>Dose di carico di <b>colecalciferolo per os: 150.000–250.000 UI totali</b>, frazionata in 1–7 giorni, salvo controindicazioni (es. ipercalcemia severa).</li>
+      <li>Non superare <b>100.000 UI/die</b>.</li>
+      <li>Prescrizione nel rispetto dei criteri di rimborsabilità della <b>Nota AIFA 96</b>.</li>
+    </ul>
+  `, false, accent);
+}
+
+/* Group B pathway (§7.4) — also used for Group A patients with CCI ≥ 6 */
+function groupBPathHTML(accent){
+  return `
+    ${accordionSection('icon_lab', 'Esami di laboratorio', PANEL_1, false, accent)}
+    ${vitaminDSection(true, accent)}
+    ${accordionSection('icon_ivbag', 'Trattamento', `
+      <p>Supplementazione di calcio/vitamina D.</p>
+      <p>Terapia anti-fratturativa di prima scelta: <b>acido zoledronico 5 mg EV</b> (infusione minima 30 minuti), da somministrare durante il ricovero o, qualora la degenza non lo consenta, nel setting di destinazione.</p>
+      <p>In presenza di controindicazioni (es. insufficienza renale cronica con eGFR &lt; 35 mL/min) o di difficoltà alla somministrazione intraospedaliera, valutare in alternativa il <b>denosumab</b>.</p>
+      <div class="checklist-box">
+        <p style="margin-bottom:10px;"><b>Zoledronato 5 mg EV — Checklist pre-somministrazione</b></p>
+        <ol>
+          <li><b>Funzione renale:</b> verificare creatinina ed eGFR; controindicato se eGFR &lt; 35 mL/min (valutare denosumab).</li>
+          <li><b>Calcio/Vitamina D:</b> correggere eventuale ipocalcemia; completare la correzione del deficit di vitamina D prima dell'infusione.</li>
+          <li><b>Idratazione:</b> assicurare buona idratazione ed evitare somministrazione in pazienti disidratati.</li>
+          <li><b>Stato clinico:</b> rinviare in caso di infezione severa.</li>
+          <li><b>Valutazione odontoiatrica:</b> escludere patologie odontoiatriche attive, anche con eventuale ortopantomografia (OPT) o dental scan se impossibilità a mantenere la stazione eretta o seduta stabile.</li>
+          <li><b>Somministrazione:</b> infusione endovenosa in almeno 30 minuti.</li>
+          <li><b>Effetti attesi:</b> informare su possibile sindrome simil-influenzale nelle 24–72 ore.</li>
+        </ol>
+      </div>
+      <p style="margin-top:10px;">Rispettare i criteri di rimborsabilità della Nota AIFA 79.</p>
+    `, false, accent)}
+  `;
+}
+
+/* Group A pathway with CCI < 6 (§7.3): complete diagnostic panel + Bone Specialist */
+function groupAFullPathHTML(accent){
+  return `
+    ${accordionSection('icon_lab', 'Esami di laboratorio', PANEL_1 + PANEL_2 + PANEL_3, false, accent)}
+    ${accordionSection('icon_rx', 'Rx della colonna', `
+      <p>Eseguire, durante la degenza, una radiografia della colonna dorso-lombosacrale con quesito clinico "morfometria vertebrale" per escludere fratture vertebrali misconosciute.</p>
+    `, false, accent)}
+    ${accordionSection('icon_dexa', 'Densitometria', `
+      <p>Densitometria ossea (DEXA) del rachide lombare e del femore controlaterale, se non già eseguita negli ultimi 18 mesi.</p>
+    `, false, accent)}
+    ${vitaminDSection(true, accent)}
+    ${accordionSection('icon_ambulatorio', 'Trattamento e Bone Specialist', `
+      <p>Supplementazione di calcio/vitamina D, avviata dal Bone Coordinator.</p>
+      <p>Attivare la presa in carico da parte del <b>Bone Specialist</b>, che definisce la terapia anti-fratturativa individualizzata (es. teriparatide, romosozumab, denosumab, altri) e ne assicura il follow-up.</p>
+      <p>Se la valutazione del Bone Specialist non è conclusa alla dimissione, riportarlo in lettera di dimissione indicando modalità e tempi della presa in carico specialistica successiva.</p>
+    `, false, accent)}
+  `;
+}
+
+/* Charlson Comorbidity Index, age-adjusted (Allegato 2).
+   Conditions sharing a "sev" key are severity forms of the same disease: only the most severe counts. */
+const CCI_AGES = [
+  {label:"50–59", pts:1},
+  {label:"60–69", pts:2},
+  {label:"70–79", pts:3},
+  {label:"≥ 80",  pts:4}
+];
+const CCI_CONDITIONS = [
+  {pts:1, label:"Infarto miocardico pregresso"},
+  {pts:1, label:"Scompenso cardiaco congestizio"},
+  {pts:1, label:"Arteriopatia periferica"},
+  {pts:1, label:"Malattia cerebrovascolare", hint:"ictus o TIA"},
+  {pts:1, label:"Demenza"},
+  {pts:1, label:"Malattia polmonare cronica"},
+  {pts:1, label:"Connettiviti"},
+  {pts:1, label:"Ulcera peptica"},
+  {pts:1, label:"Epatopatia lieve", sev:"liver", hint:"epatite cronica o cirrosi senza ipertensione portale"},
+  {pts:1, label:"Diabete mellito non complicato", sev:"diabetes"},
+  {pts:2, label:"Emiplegia"},
+  {pts:2, label:"Malattia renale moderata o severa", hint:"creatininemia > 3 mg/dL, dialisi, trapianto renale o uremia"},
+  {pts:2, label:"Diabete con danno d'organo", sev:"diabetes", hint:"retinopatia, nefropatia o neuropatia"},
+  {pts:2, label:"Neoplasia solida senza metastasi", sev:"tumor", hint:"trattata inizialmente negli ultimi 5 anni; esclusi tumori cutanei non melanomatosi e carcinoma cervicale in situ"},
+  {pts:2, label:"Leucemia", hint:"leucemie acute e croniche, policitemia vera"},
+  {pts:2, label:"Linfoma", hint:"Hodgkin e non-Hodgkin, macroglobulinemia di Waldenström, mieloma multiplo"},
+  {pts:3, label:"Epatopatia moderata o severa", sev:"liver", hint:"cirrosi con ipertensione portale, con o senza sanguinamento da varici"},
+  {pts:6, label:"Neoplasia solida metastatica", sev:"tumor"},
+  {pts:6, label:"AIDS conclamato"}
+];
+
+let cciCounter = 0;
+function cciCalculatorHTML(accent){
+  cciCounter++;
+  const id = `cci-${cciCounter}`;
+  const ages = CCI_AGES.map((a,i)=>`
+    <button type="button" class="cci-age" data-i="${i}" onclick="selectCCIAge('${id}', ${i})">${a.label}<span>+${a.pts}</span></button>
+  `).join('');
+  let conditions = '';
+  [1,2,3,6].forEach(pts=>{
+    conditions += `<div class="cci-pts-heading">${pts} ${pts===1 ? 'punto' : 'punti'}</div>`;
+    CCI_CONDITIONS.forEach((c,i)=>{
+      if(c.pts !== pts) return;
+      conditions += `
+        <label class="cci-cond">
+          <input type="checkbox" data-i="${i}" onchange="toggleCCICondition('${id}', ${i})">
+          <span>${c.label}${c.hint ? `<small>${c.hint}</small>` : ''}</span>
+        </label>`;
+    });
+  });
+  return `
+    <div class="cci-calc" id="${id}" data-accent="${accent || ''}">
+      <h3>Charlson Comorbidity Index</h3>
+      <p class="cci-intro">Nel Gruppo A, prima di ulteriori accertamenti, calcolare il CCI corretto per l'età per orientare la strategia diagnostico-terapeutica.</p>
+      <div class="cci-step">Età del paziente</div>
+      <div class="cci-ages">${ages}</div>
+      <div class="cci-step">Condizioni cliniche documentate</div>
+      <p class="cci-rules">Considerare solo le condizioni elencate e documentate (diagnosi riportate o accertate durante il ricovero, non sospette). Per le patologie con forme di diversa gravità si conta solo la forma più grave.</p>
+      ${conditions}
+      <div class="cci-score" id="${id}-score">Seleziona la fascia d'età per calcolare il CCI.</div>
+    </div>
+    <div id="${id}-path"></div>
+  `;
+}
+function selectCCIAge(id, i){
+  const root = document.getElementById(id);
+  root.dataset.age = i;
+  root.querySelectorAll('.cci-age').forEach(b=>b.classList.toggle('selected', Number(b.dataset.i)===i));
+  updateCCI(id);
+}
+function toggleCCICondition(id, i){
+  const root = document.getElementById(id);
+  const sev = CCI_CONDITIONS[i].sev;
+  const box = root.querySelector(`.cci-cond input[data-i="${i}"]`);
+  if(sev && box.checked){
+    // only the most severe form of the same disease is scored: uncheck the other form
+    root.querySelectorAll('.cci-cond input').forEach(other=>{
+      const j = Number(other.dataset.i);
+      if(j !== i && CCI_CONDITIONS[j].sev === sev) other.checked = false;
+    });
+  }
+  updateCCI(id);
+}
+function updateCCI(id){
+  const root = document.getElementById(id);
+  if(root.dataset.age === undefined) return;
+  const age = CCI_AGES[Number(root.dataset.age)];
+  let score = age.pts;
+  root.querySelectorAll('.cci-cond input:checked').forEach(box=>{
+    score += CCI_CONDITIONS[Number(box.dataset.i)].pts;
+  });
+  const high = score >= 6;
+  const scoreEl = document.getElementById(`${id}-score`);
+  scoreEl.className = 'cci-score ' + (high ? 'cci-high' : 'cci-low');
+  scoreEl.innerHTML = `<div class="cci-value">CCI = ${score}</div>` + (high
+    ? `<div><b>CCI ≥ 6</b>: si segue il percorso diagnostico-terapeutico del <b>Gruppo B</b>.</div>`
+    : `<div><b>CCI &lt; 6</b>: pannello diagnostico completo e presa in carico da parte del <b>Bone Specialist</b>.</div>`);
+
+  // re-render the pathway only when the branch changes, so open sections stay open
+  const branch = high ? 'B' : 'A';
+  const pathEl = document.getElementById(`${id}-path`);
+  if(pathEl.dataset.branch === branch) return;
+  pathEl.dataset.branch = branch;
+  const accent = root.dataset.accent || null;
+  pathEl.innerHTML = high ? groupBPathHTML(accent) : groupAFullPathHTML(accent);
+  applyImages();
+}
+
 function pathwayHTML(group, cfsId){
   const cat = CFS.find(c=>c.id===cfsId);
   const accent = cat ? accentFromGradient(cat.color) : null;
   if(group===1){
-    return `
-      ${accordionSection('icon_lab', 'Esami di laboratorio', `
-        <div class="panel-box panel-1"><p><b>Pannello 1:</b> creatinina, albumina, calcemia, fosforemia, 25-OH-vitamina D, paratormone (PTH), fosfatasi alcalina (ALP) ossea, protidogramma.</p></div>
-        <div class="panel-box panel-2"><p><b>Pannello 2:</b> telopeptide C-terminale (CTx), calciuria e fosfaturia urine delle 24h.</p></div>
-        <div class="panel-box panel-3"><p><b>Pannello 3:</b> colesterolo totale, colesterolo LDL, colesterolo HDL, trigliceridi, emoglobina glicata (HbA1c).</p></div>
-        <div class="panel-box panel-4">
-          <p><b>Pannello 4</b> (da richiedere in base al sospetto clinico): TSH, proteina C reattiva, testosterone (libero o totale), anticorpi anti-transglutaminasi, triptasi, cortisoluria 24 ore o cortisolo dopo test al desametasone, assetto marziale, IgA, IgG, IgM, catene leggere libere, beta-2-microglobulina e proteinuria di Bence-Jones.</p>
-          <p style="margin-top:8px !important; padding-left:16px !important; position:relative;"><span style="position:absolute; left:0;">•</span>Per orientare il sospetto clinico e decidere quali esami di secondo livello richiedere, consulta <a href="https://aurex-cmd.github.io/Osteo-Help/" target="_blank" rel="noopener">Osteo Help →</a></p>
-        </div>
-      `, false, accent)}
-      ${accordionSection('icon_rx', 'Rx della colonna', `
-        <p>Consigliato eseguire, durante la degenza, una radiografia della colonna dorso-lombosacrale "per morfometria vertebrale" per escludere fratture vertebrali misconosciute.</p>
-      `, false, accent)}
-      ${accordionSection('icon_dexa', 'Densitometria', `
-        <p>Si consiglia completamento diagnostico mediante esecuzione di densitometria ossea (DEXA) del rachide lombare e del femore (lato non fratturato), qualora tale accertamento non sia stato già eseguito negli ultimi 18 mesi.</p>
-      `, false, accent)}
-      ${accordionSection('icon_ambulatorio', 'Valutazione Bone Specialist', `
-        <p>Attivare la presa in carico da parte del Bone Specialist per la definizione della strategia terapeutica più appropriata e per assicurarne il follow-up.</p>
-      `, false, accent)}
-    `;
+    return cciCalculatorHTML(accent);
   }
   if(group===2){
     return `
-      ${accordionSection('icon_lab', 'Esami di laboratorio', `
-        <div class="panel-box panel-1"><p><b>Pannello 1:</b> creatinina, albumina, calcemia, fosforemia, 25-OH-vitamina D, paratormone (PTH), fosfatasi alcalina (ALP) ossea, protidogramma.</p></div>
-        <div class="panel-box panel-2"><p><b>Pannello 2:</b> telopeptide C-terminale (CTx), calciuria e fosfaturia urine delle 24h.</p></div>
-      `, false, accent)}
-      ${accordionSection('icon_ivbag', 'Trattamento', `
-        <p>Supplementazione di calcio/vitamina D ed eventuale somministrazione di <b>acido zoledronico 5 mg EV</b> durante la degenza.</p>
-        <div class="checklist-box">
-          <p style="margin-bottom:10px;"><b>Zoledronato 5 mg EV — Checklist pre-somministrazione</b></p>
-          <ol>
-            <li><b>Funzione renale:</b> verificare creatinina e clearance della creatinina (CrCl); controindicato se CrCl &lt;35 ml/min.</li>
-            <li><b>Calcio/Vitamina D:</b> correggere eventuale ipocalcemia; se Vitamina D sconosciuta o bassa, carico di 150.000–250.000 UI di colecalciferolo orale suddiviso in 1-7 giorni prima dell'infusione.</li>
-            <li><b>Idratazione:</b> assicurare buona idratazione ed evitare somministrazione in pazienti disidratati.</li>
-            <li><b>Stato clinico:</b> rinviare in caso di infezione severa.</li>
-            <li><b>Valutazione odontoiatrica:</b> escludere patologie odontoiatriche attive, anche con eventuale ortopantomografia (OPT) o dental scan se impossibilità a mantenere la stazione eretta o seduta stabile.</li>
-            <li><b>Somministrazione:</b> infusione endovenosa in almeno 15 minuti.</li>
-            <li><b>Effetti attesi:</b> informare su possibile sindrome simil-influenzale nelle 24–72 ore.</li>
-          </ol>
-        </div>
-      `, false, accent)}
+      <p class="path-note">Nel Gruppo B non si calcola il CCI: l'acido zoledronico in singola infusione assicura copertura terapeutica e aderenza ed è la scelta di prima linea, indipendentemente dal carico di comorbidità.</p>
+      ${groupBPathHTML(accent)}
     `;
   }
   // group 3
   return `
-    ${cfsId===9 ? '<p style="font-style:italic; color:var(--navy); margin:0 0 14px 0; text-align:justify; font-family:-apple-system,sans-serif; font-size:.95rem;">La classificazione è basata sulla prognosi di malattia e non sul loro livello di dipendenza funzionale.</p>' : ''}
-    ${accordionSection('icon_lab', 'Esami di laboratorio', `
-      <div class="panel-box panel-1"><p><b>Pannello 1:</b> creatinina, albumina, calcemia, fosforemia, 25-OH-vitamina D, paratormone (PTH), fosfatasi alcalina (ALP) ossea, protidogramma.</p></div>
-    `, false, accent)}
+    ${cfsId===9 ? '<p class="path-note">La classificazione è basata sulla prognosi di malattia e non sul loro livello di dipendenza funzionale.</p>' : ''}
+    ${accordionSection('icon_lab', 'Esami di laboratorio', PANEL_1, false, accent)}
+    ${vitaminDSection(false, accent)}
     ${accordionSection('icon_medbottle', 'Trattamento', `
-      <p>Supplementazione di calcio/vitamina D.</p>
+      <p>Supplementazione di calcio/vitamina D, <b>senza avvio di terapia anti-fratturativa</b>.</p>
+      <p>In presenza di fragilità clinica severa o di un'aspettativa di vita limitata, l'orizzonte temporale residuo è inferiore al tempo necessario perché la terapia anti-fratturativa determini un beneficio clinicamente rilevante, mentre permane il rischio di eventi avversi: il rapporto rischio/beneficio risulta sfavorevole.</p>
     `, false, accent)}
   `;
 }
