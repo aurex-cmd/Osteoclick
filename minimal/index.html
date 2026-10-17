@@ -153,7 +153,7 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 .ages button{border:0;background:transparent;padding:7px 0;border-radius:7px;font-weight:600;font-size:.88rem;color:var(--muted);line-height:1.25}
 .ages button small{display:block;font-size:.72rem;font-weight:500}
 .ages button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.btn{width:100%;border:0;border-radius:12px;background:var(--blue-box);color:var(--blue);padding:14px 16px;font-weight:700;font-size:.98rem}
+.btn{width:100%;border:0;border-radius:12px;background:var(--blue);color:var(--bg);padding:14px 16px;font-weight:700;font-size:.98rem}
 .btn.ghost{background:var(--box);color:var(--muted);font-weight:600;font-size:.9rem;padding:12px 16px;margin-top:6px}
 .cci-sum{display:flex;align-items:center;gap:12px;width:100%;border:0;text-align:left;font:inherit;color:inherit}
 .cci-sum > span{flex:1;min-width:0}
@@ -511,7 +511,7 @@ function cciPathHTML(){
 function cciBoxHTML(forceOpen){
   if(cci.open || forceOpen) return cciCalcHTML(!forceOpen);
   const s = cciScore();
-  if(s === null) return `<button type="button" class="btn" data-cci-open>Calcola</button>`;
+  if(s === null) return `<p class="note">Nel Gruppo A, prima di ulteriori accertamenti, calcolare il CCI corretto per l'età per orientare la strategia diagnostico-terapeutica.</p><button type="button" class="btn" data-cci-open style="margin-top:10px">Calcola</button>`;
   const r = cciResult(s);
   return `<button type="button" class="altb ${r.cls} cci-sum" data-cci-open><span><b>CCI = ${s}</b><small>${r.text}</small></span><em>Modifica</em></button>`;
 }
@@ -663,8 +663,8 @@ function view(route){
 }
 function render(){
   const route = routeNow();
-  // un nuovo questionario riparte con il calcolatore CCI chiuso e vuoto
-  if(route === "cfs-1" && route !== current){ cci.open = false; cci.age = null; cci.cond.clear(); }
+  // ogni volta che si cambia schermata il calcolatore CCI riparte chiuso e vuoto
+  if(route !== current){ cci.open = false; cci.age = null; cci.cond.clear(); }
   const v = view(route);
   if(v.redirect !== undefined){ history.replaceState(null, "", v.redirect ? "#" + v.redirect : location.pathname + location.search); return render(); }
   const changed = route !== current; current = route;
