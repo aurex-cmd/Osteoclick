@@ -100,7 +100,13 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 .rowlink:last-child{border-bottom:0}
 .rowlink small{display:block;font-weight:400;color:var(--muted);font-size:.8rem;margin-top:1px}
 .rowlink > span{min-width:0}
-.rowlink .num{width:26px;flex:0 0 auto;font-weight:700;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.rowlink .th{width:44px;height:56px;flex:0 0 auto;object-fit:contain;background:#fff;border-radius:8px}
+
+/* illustrazioni CFS: hanno fondo bianco, quindi stanno su un riquadro bianco anche nel tema scuro */
+.pic{align-self:center;width:100%;max-width:230px;background:#fff;border-radius:14px;padding:8px;margin:4px 0}
+.pic img{display:block;width:100%;height:auto}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(.pic,.rowlink .th){filter:brightness(.92)}}
+:root[data-theme="dark"] :is(.pic,.rowlink .th){filter:brightness(.92)}
 
 /* elenchi */
 .list{list-style:none;margin:0;padding:0}
@@ -200,23 +206,23 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 
 // Clinical Frailty Scale: gruppo A = CFS 1–4, B = CFS 5–7, C = CFS 8–9
 const CFS = [
-  {id:1, en:"Very Fit", it:"Molto in forma", group:"A",
+  {id:1, h:727, en:"Very Fit", it:"Molto in forma", group:"A",
     desc:"Persone attive ed energiche, con un livello di attività fisica superiore alla media per età: svolgono regolarmente esercizio fisico. Eventuali patologie croniche non interferiscono con le attività quotidiane."},
-  {id:2, en:"Well", it:"In buona salute", group:"A",
+  {id:2, h:746, en:"Well", it:"In buona salute", group:"A",
     desc:"Persone autonome nelle attività quotidiane. Possono presentare patologie croniche, purché non interferiscano con l'autonomia. Svolgono attività fisica o ricreativa, ma non in maniera regolare (es. stagionalmente o occasionalmente)."},
-  {id:3, en:"Managing Well", it:"Ben compensati", group:"A",
+  {id:3, h:707, en:"Managing Well", it:"Ben compensati", group:"A",
     desc:"Persone i cui problemi medici sono ben controllati. Sono autonome nelle attività della vita quotidiana ma non svolgono attività fisica oltre alla camminata di routine."},
-  {id:4, en:"Vulnerable", it:"Vulnerabili", group:"A",
+  {id:4, h:740, en:"Vulnerable", it:"Vulnerabili", group:"A",
     desc:"Persone autonome nelle attività della vita quotidiana che presentano però un iniziale rallentamento funzionale. I sintomi delle patologie croniche di cui sono affetti, pur non compromettendo l'indipendenza, tendono a limitare il livello di attività. Riferiscono frequentemente affaticabilità, con ridotta resistenza allo sforzo e difficoltà nello svolgimento di attività più impegnative."},
-  {id:5, en:"Mildly Frail", it:"Lievemente fragili", group:"B",
+  {id:5, h:691, en:"Mildly Frail", it:"Lievemente fragili", group:"B",
     desc:"Persone che necessitano di aiuto nelle attività strumentali della vita quotidiana: tipicamente sono compromesse attività quali fare la spesa e il camminare fuori casa da soli, la preparazione dei pasti e i lavori domestici. Sono tuttavia indipendenti nelle attività di base della vita quotidiana (igiene personale, vestizione, alimentazione, trasferimenti, uso dei servizi igienici e continenza)."},
-  {id:6, en:"Moderately Frail", it:"Moderatamente fragili", group:"B",
+  {id:6, h:704, en:"Moderately Frail", it:"Moderatamente fragili", group:"B",
     desc:"Persone che necessitano di assistenza per tutte le attività all'esterno (es. fare la spesa) e per il mantenimento della casa. A domicilio sono parzialmente dipendenti nelle attività della vita quotidiana, possono avere difficoltà nel salire le scale senza aiuto, nel lavarsi e nel vestirsi, pur conservando ancora un certo grado di autonomia."},
-  {id:7, en:"Severely Frail", it:"Fragilità severa", group:"B",
+  {id:7, h:713, en:"Severely Frail", it:"Fragilità severa", group:"B",
     desc:"Persone completamente dipendenti per le cure personali (es. igiene personale, vestizione, trasferimenti, uso dei servizi igienici). Nonostante l'elevata dipendenza funzionale, sono clinicamente stabili."},
-  {id:8, en:"Very Severely Frail", it:"Fragilità molto severa", group:"C",
+  {id:8, h:600, en:"Very Severely Frail", it:"Fragilità molto severa", group:"C",
     desc:"Persone completamente dipendenti per le cure personali (es. igiene personale, vestizione, trasferimenti, uso dei servizi igienici). Presentano un'alta fragilità clinica, con marcata vulnerabilità anche a minime variazioni dello stato di salute e spesso frequenti ospedalizzazioni."},
-  {id:9, en:"Terminally Ill", it:"Terminale", group:"C",
+  {id:9, h:693, en:"Terminally Ill", it:"Terminale", group:"C",
     desc:"Persone che presentano aspettativa di vita inferiore a 6 mesi, oppure sono affette da patologie in fase terminale per le quali sono in carico alle cure palliative domiciliari o residenziali (Hospice)."}
 ];
 const GROUPS = {
@@ -333,7 +339,7 @@ function vDomanda(n){
 /* ---------- schede ---------- */
 function vSchede(){
   const h = ["A","B","C"].map(g => `<p class="lbl">${GROUPS[g].label}</p><div class="rows">` +
-    CFS.filter(c => c.group === g).map(c => `<a class="rowlink" href="#scheda-${c.id}"><span class="num">${c.id}</span><span>${c.en}<small>${c.it}</small></span>${CHEV}</a>`).join("") +
+    CFS.filter(c => c.group === g).map(c => `<a class="rowlink" href="#scheda-${c.id}"><img class="th" src="img/cfs-${c.id}-thumb.jpg" alt="" loading="lazy"><span>${c.en}<small>CFS ${c.id} · ${c.it}</small></span>${CHEV}</a>`).join("") +
     `</div>`).join("");
   return { bar:"Schede CFS", html: head("Clinical Frailty Scale", "Le categorie raggruppate per percorso diagnostico-terapeutico.") + h };
 }
@@ -347,7 +353,8 @@ function vCategoria(id, fromQuiz){
   else if(c.group === "B") path = `<p class="small">Nel Gruppo B non si calcola il CCI: l'acido zoledronico in singola infusione assicura copertura terapeutica e aderenza ed è la scelta di prima linea, indipendentemente dal carico di comorbidità.</p><p class="lbl">Percorso</p><div>${pathB()}</div>`;
   else path = `${c.id === 9 ? `<p class="small">La classificazione è basata sulla prognosi di malattia e non sul livello di dipendenza funzionale.</p>` : ""}<p class="lbl">Percorso</p><div>${pathC()}</div>`;
   return { bar: fromQuiz ? "Risultato" : "Scheda", act: fromQuiz ? ["Ricomincia", () => go("cfs-1")] : null,
-    html: head(c.en, `CFS ${c.id} · ${c.it}`, c.group) + `<p class="note">${c.desc}</p>` + path };
+    html: head(c.en, `CFS ${c.id} · ${c.it}`, c.group) +
+      `<div class="pic"><img src="img/cfs-${c.id}.jpg" width="560" height="${c.h}" alt="${c.en}"></div><p class="note">${c.desc}</p>` + path };
 }
 
 /* ---------- percorsi ---------- */

@@ -33,4 +33,5 @@ La cartella `minimal/` contiene una riscrittura grafica di Osteoclick nello stil
 - **Schede CFS**: le 9 categorie raggruppate per percorso (A, B, C).
 - **Gruppo A**: il pulsante **Calcola** apre il calcolatore del CCI; una barra in basso mostra il punteggio mentre si spuntano le condizioni.
 - Dalla home si consultano anche il calcolatore CCI, gli esami di laboratorio, la correzione della vitamina D e le fonti del protocollo.
+- Illustrazioni delle 9 categorie CFS in `minimal/img/` (`cfs-N.jpg` nella scheda, `cfs-N-thumb.jpg` nell'elenco), le stesse dell'app principale con fondo bianco.
 - Unica risorsa esterna: il font Inter da Google Fonts (senza connessione si usa il font di sistema).
