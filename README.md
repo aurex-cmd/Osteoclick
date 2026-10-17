@@ -2,7 +2,7 @@
 
 Algoritmo decisionale Fracture Liaison Service, basato sulla Clinical Frailty Scale (CFS), per la valutazione del paziente con frattura di femore ricoverato in Ortopedia, secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea.
 
-L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`. Interfaccia nello stile di [Osteo Help](https://github.com/aurex-cmd/Osteo-Help): una schermata per volta, tema chiaro/scuro, niente sfondi.
+L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`. Interfaccia minimale: una schermata per volta, fondo grigio chiaro con card bianche arrotondate, home a griglia di tessere, carattere Manrope, tema chiaro/scuro.
 
 ## Come si usa
 
@@ -22,7 +22,7 @@ L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`.
 | `original/` | La versione originale dell'app (vedi sotto) |
 | `minimal/` | Rimando automatico alla pagina principale per chi aveva salvato il vecchio indirizzo `/minimal/` |
 
-Unica risorsa esterna: il font Inter da Google Fonts (senza connessione si usa il font di sistema).
+Unica risorsa esterna: il font Manrope da Google Fonts (senza connessione si usa il font di sistema).
 
 ## Versione originale
 
