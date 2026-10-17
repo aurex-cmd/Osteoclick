@@ -107,9 +107,6 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 .pic img{display:block;width:100%;height:auto}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(.pic,.rowlink .th){filter:brightness(.92)}}
 :root[data-theme="dark"] :is(.pic,.rowlink .th){filter:brightness(.92)}
-.homehead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.homehead h1{flex:1;min-width:0}
-.homehead .ic{width:58px;height:58px;color:var(--teal);margin-top:2px}
 
 /* elenchi */
 .list{list-style:none;margin:0;padding:0}
@@ -300,7 +297,6 @@ const ICONS = {
   dexa:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 33h38M10 33v7M38 33v7"/><path d="M12 33V13a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4v5"/><path d="M26 18h11"/><circle cx="18" cy="27" r="2.6"/><path d="M23 28h13"/></g>',
   iv:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5h18a2 2 0 0 1 2 2v19a11 11 0 0 1-22 0V7a2 2 0 0 1 2-2z"/><path d="M19 14h7M19 20h4"/><path d="M24 37v6"/></g>',
   steth:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h5M24 6h5"/><path d="M13 6v10a7 7 0 0 0 14 0V6"/><path d="M20 23v7a8 8 0 0 0 16 0v-5"/><circle cx="36" cy="21" r="4"/></g>',
-  bone:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path transform="rotate(-35 24 24)" d="M15.96 21.5H32.04A5.8 5.8 0 1 1 38.84 24A5.8 5.8 0 1 1 32.04 26.5H15.96A5.8 5.8 0 1 1 9.16 24A5.8 5.8 0 1 1 15.96 21.5Z"/></g>',
 };
 const ic = name => `<svg class="ic" viewBox="0 0 48 48" aria-hidden="true">${ICONS[name]||""}</svg>`;
 const kat = g => `<span class="kat k-${GROUPS[g].color}">${GROUPS[g].label}</span>`;
@@ -311,7 +307,7 @@ const numList = items => `<ul class="list">${items.map((t,i) => `<li><i>${i+1}</
 
 /* ---------- home ---------- */
 function vHome(){
-  return { bar:"Osteoclick", html: `<div class="homehead"><h1>Fracture Liaison Service</h1>${ic("bone")}</div><div class="rule"></div><p class="sub">Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.</p>` + `
+  return { bar:"Osteoclick", html: head("Fracture Liaison Service", "Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.") + `
     <div class="stack">
       ${entry("cfs-1", "Questionario CFS", "Valuta la fragilità clinica e individua il percorso", "blue big", "clip")}
       ${entry("schede", "Schede CFS", "Le 9 categorie, raggruppate per percorso", "teal big", "grid")}
