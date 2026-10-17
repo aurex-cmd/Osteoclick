@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Osteoclick</title>
+<meta name="description" content="Fracture Liaison Service: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico nel paziente con frattura di femore.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon-180.png">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12161D" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Osteoclick">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; blocchi piatti con barra d'accento a sinistra */
+:root{
+  --bg:#FFFFFF; --ink:#1B2433; --muted:#6F7988; --faint:#B5BECA; --line:#E1E5EB;
+  --box:#F2F4F7; --blue:#6A5C92; --blue-box:#F1EEFB; --teal:#0E7571; --teal-box:#E3F4F3; --focus:#2F5F96; --tile:#FFFFFF;
+  --coral:#B04E37; --coral-box:#F7EBE7; --amber:#9A6B1F;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161D; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#262E39;
+  --box:#1B212A; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
+  --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#12161D; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#262E39;
+  --box:#1B212A; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
+  --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* barra superiore */
+.bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(8px + env(safe-area-inset-top)) 16px 8px}
+.bar-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:72px 1fr 72px;align-items:center;height:32px}
+.bar-t{text-align:center;font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar button{border:0;background:none;padding:4px 0;color:var(--muted);font-size:.85rem;font-weight:500}
+.bar #back{display:flex;align-items:center;justify-self:start}
+.bar #back svg{width:22px;height:22px}
+.bar #act{justify-self:end}
+.bar #act:hover,.bar #back:hover{color:var(--ink)}
+.bar #theme{grid-column:3;grid-row:1;justify-self:end;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--box);color:var(--ink);display:grid;place-items:center;padding:0;transition:background .2s}
+.bar #act{grid-column:3;grid-row:1}
+.bar #theme:hover{border-color:var(--faint)}
+.bar #theme svg{width:17px;height:17px;grid-area:1/1}
+.bar #theme .sun{display:none}
+.bar #theme.dark .sun{display:block} .bar #theme.dark .moon{display:none}
+
+main{max-width:560px;margin:0 auto;padding:4px 16px 120px}
+.screen{display:flex;flex-direction:column;gap:14px}
+h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;text-transform:uppercase;margin:6px 0 0;text-wrap:balance;overflow-wrap:anywhere;hyphens:auto}
+.rule{height:1px;background:var(--line);margin:2px 0 4px}
+.sub{color:var(--muted);font-size:.92rem;line-height:1.45;margin:-4px 0 0}
+.lbl{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 -6px}
+.hint{color:var(--muted);font-size:.9rem;margin:0}
+.foot{font-size:.74rem;color:var(--muted);line-height:1.5;text-align:center;margin:28px 0 0}
+
+/* ingressi */
+.entry{position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;background:var(--box);border-radius:10px;padding:16px 14px 16px 19px}
+.entry::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px;background:var(--faint)}
+.entry.blue{background:var(--blue-box)} .entry.blue::before{background:var(--blue)}
+.entry.teal{background:var(--teal-box)} .entry.teal::before{background:var(--teal)}
+.entry > div{flex:1;min-width:0}
+.entry b{display:block;font-size:1.05rem;letter-spacing:-.01em;line-height:1.3}
+.entry.blue b{color:var(--blue)} .entry.teal b{color:var(--teal)}
+.entry small{display:block;color:var(--muted);font-size:.83rem;margin-top:3px;line-height:1.4}
+.entry.big{padding:20px 14px 20px 19px}
+.entry.big b{font-size:1.12rem;color:var(--ink)}
+.chev{width:16px;height:16px;color:var(--faint);flex:0 0 auto}
+.ic{width:26px;height:26px;flex:0 0 auto}
+.entry > .ic{color:var(--muted)}
+.entry.blue > .ic{color:var(--blue)} .entry.teal > .ic{color:var(--teal)}
+.entry.big > .ic{width:52px;height:52px;padding:10px;border-radius:12px;background:var(--tile)}
+.rowlink > .ic{width:24px;height:24px;color:var(--muted)}
+.rowlink > span{flex:1}
+.katrow{margin:10px 0 -11px}
+.kat{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;background:var(--kb);color:var(--kf)}
+.k-green{--kb:#E6F1E4;--kf:#3D6E35} .k-orange{--kb:#FBEBDF;--kf:#9E511B} .k-red{--kb:#F8E6E6;--kf:#A33A3A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kat{background:color-mix(in srgb,var(--kf) 22%,var(--bg));color:color-mix(in srgb,var(--kf) 45%,#fff)}}
+:root[data-theme="dark"] .kat{background:color-mix(in srgb,var(--kf) 22%,var(--bg));color:color-mix(in srgb,var(--kf) 45%,#fff)}
+.stack{display:flex;flex-direction:column;gap:8px}
+
+/* righe semplici */
+.rows{display:flex;flex-direction:column}
+.rowlink{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:13px 2px;font-weight:600;font-size:.95rem}
+.rowlink:last-child{border-bottom:0}
+.rowlink small{display:block;font-weight:400;color:var(--muted);font-size:.8rem;margin-top:1px}
+.rowlink > span{min-width:0}
+.rowlink .num{width:26px;flex:0 0 auto;font-weight:700;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+
+/* elenchi */
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:.93rem;line-height:1.5}
+.list li:last-child{border-bottom:0}
+.list li i{font-style:normal;font-weight:700;color:var(--blue);font-size:.78rem;width:16px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.list li > span{min-width:0;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.note{font-size:.93rem;line-height:1.65;margin:0;text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.pn{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin:8px 0 -2px}
+.pn:first-child{margin-top:0}
+.pn small{font-size:inherit;color:var(--muted);letter-spacing:.06em;text-transform:none;font-weight:600;margin-left:4px}
+.xlink{color:var(--focus);font-weight:600;font-size:.9rem}
+
+/* accordion */
+details.acc{border-bottom:1px solid var(--line)}
+details.acc > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 2px;cursor:pointer;font-weight:700}
+details.acc > summary::-webkit-details-marker{display:none}
+details.acc > summary > span:first-child{flex:1;min-width:0}
+details.acc[open] > summary .chev{transform:rotate(90deg)}
+.accbody{padding:0 2px 14px;display:flex;flex-direction:column;gap:6px}
+
+/* spunte */
+.ck{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;border:0;background:none;padding:9px 0;border-bottom:1px solid var(--line);font-size:.93rem;line-height:1.4}
+.ck:last-child{border-bottom:0}
+.ck .cb{width:18px;height:18px;border:1.5px solid var(--faint);border-radius:5px;flex:0 0 auto;display:grid;place-items:center;margin-top:1px}
+.ck .cb svg{width:12px;height:12px;color:var(--bg);display:none}
+.ck small{display:block;font-weight:400;color:var(--muted);font-size:.8rem;margin-top:2px}
+.ck[aria-pressed="true"]{font-weight:600}
+.ck[aria-pressed="true"] .cb{background:var(--teal);border-color:var(--teal)}
+.ck[aria-pressed="true"] .cb svg{display:block}
+
+/* esito */
+.altb{position:relative;padding:13px 14px 13px 17px;border-radius:10px;background:var(--box)}
+.altb::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px;background:var(--faint)}
+.altb.t{background:var(--teal-box)} .altb.t::before{background:var(--teal)} .altb.t b{color:var(--teal)}
+.altb.d{background:var(--coral-box)} .altb.d::before{background:var(--coral)} .altb.d b{color:var(--coral)}
+.altb b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.altb small{display:block;color:var(--muted);font-size:.86rem;margin-top:2px;line-height:1.45}
+
+/* controlli */
+.ages{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--box);border-radius:9px;padding:3px}
+.ages button{border:0;background:transparent;padding:7px 0;border-radius:7px;font-weight:600;font-size:.88rem;color:var(--muted);line-height:1.25}
+.ages button small{display:block;font-size:.72rem;font-weight:500}
+.ages button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.btn{width:100%;border:0;border-radius:12px;background:var(--ink);color:var(--bg);padding:14px 16px;font-weight:700;font-size:.98rem}
+.small{font-size:.8rem;color:var(--muted);line-height:1.55;margin:0}
+
+/* questionario */
+.prog{height:3px;border-radius:2px;background:var(--line);overflow:hidden;margin:6px 0 2px}
+.prog > div{height:100%;background:var(--blue)}
+.q{font-size:1.12rem;line-height:1.55;font-weight:500;margin:6px 0 4px}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ans.one{grid-template-columns:1fr}
+.ans button{position:relative;border:0;border-radius:10px;padding:16px 0;font-weight:700;font-size:1.05rem;background:var(--box);color:var(--ink)}
+.ans button.yes{background:var(--teal-box);color:var(--teal)}
+.ans button.yes::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px;background:var(--teal)}
+
+.refsbody{font-size:.84rem;line-height:1.55;color:var(--muted)}
+.refsbody ol{padding-left:0;margin:6px 0;list-style:none}
+.refsbody li{position:relative;padding:9px 12px 9px 40px;border-radius:8px}
+.refsbody li::before{content:counter(list-item) ".";position:absolute;left:12px;width:22px;text-align:right;font-variant-numeric:tabular-nums}
+.refsbody li:nth-child(odd){background:var(--box)}
+.refsbody i{color:var(--ink);font-style:normal;font-weight:500}
+
+/* barra del punteggio CCI in basso */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 70%,transparent)}
+.dock button{width:100%;max-width:528px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;border-radius:12px;background:var(--ink);color:var(--bg);padding:14px 16px;text-align:left}
+.dock b{font-size:.98rem;display:block;font-variant-numeric:tabular-nums}
+.dock span{font-size:.78rem;opacity:.7;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dock div{min-width:0}
+.dock svg{width:18px;height:18px;flex:0 0 auto}
+
+@media (max-width:380px){ h1{font-size:1.6rem} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{ .bar,.dock{display:none!important} }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-in">
+    <button type="button" id="back" aria-label="Indietro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m15 5-7 7 7 7"/></svg></button>
+    <div class="bar-t" id="barT">Osteoclick</div>
+    <button type="button" id="act"></button>
+    <button type="button" id="theme" aria-label="Tema scuro" hidden><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></svg></button>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<div class="dock" id="dock" hidden><button type="button" id="dockBtn"><div><b id="dockT"></b><span id="dockS"></span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></div>
+
+<script>
+/* ============================================================
+   DATI — Protocollo FLS, Azienda ULSS 6 Euganea
+   ============================================================ */
+
+// Clinical Frailty Scale: gruppo A = CFS 1–4, B = CFS 5–7, C = CFS 8–9
+const CFS = [
+  {id:1, en:"Very Fit", it:"Molto in forma", group:"A",
+    desc:"Persone attive ed energiche, con un livello di attività fisica superiore alla media per età: svolgono regolarmente esercizio fisico. Eventuali patologie croniche non interferiscono con le attività quotidiane."},
+  {id:2, en:"Well", it:"In buona salute", group:"A",
+    desc:"Persone autonome nelle attività quotidiane. Possono presentare patologie croniche, purché non interferiscano con l'autonomia. Svolgono attività fisica o ricreativa, ma non in maniera regolare (es. stagionalmente o occasionalmente)."},
+  {id:3, en:"Managing Well", it:"Ben compensati", group:"A",
+    desc:"Persone i cui problemi medici sono ben controllati. Sono autonome nelle attività della vita quotidiana ma non svolgono attività fisica oltre alla camminata di routine."},
+  {id:4, en:"Vulnerable", it:"Vulnerabili", group:"A",
+    desc:"Persone autonome nelle attività della vita quotidiana che presentano però un iniziale rallentamento funzionale. I sintomi delle patologie croniche di cui sono affetti, pur non compromettendo l'indipendenza, tendono a limitare il livello di attività. Riferiscono frequentemente affaticabilità, con ridotta resistenza allo sforzo e difficoltà nello svolgimento di attività più impegnative."},
+  {id:5, en:"Mildly Frail", it:"Lievemente fragili", group:"B",
+    desc:"Persone che necessitano di aiuto nelle attività strumentali della vita quotidiana: tipicamente sono compromesse attività quali fare la spesa e il camminare fuori casa da soli, la preparazione dei pasti e i lavori domestici. Sono tuttavia indipendenti nelle attività di base della vita quotidiana (igiene personale, vestizione, alimentazione, trasferimenti, uso dei servizi igienici e continenza)."},
+  {id:6, en:"Moderately Frail", it:"Moderatamente fragili", group:"B",
+    desc:"Persone che necessitano di assistenza per tutte le attività all'esterno (es. fare la spesa) e per il mantenimento della casa. A domicilio sono parzialmente dipendenti nelle attività della vita quotidiana, possono avere difficoltà nel salire le scale senza aiuto, nel lavarsi e nel vestirsi, pur conservando ancora un certo grado di autonomia."},
+  {id:7, en:"Severely Frail", it:"Fragilità severa", group:"B",
+    desc:"Persone completamente dipendenti per le cure personali (es. igiene personale, vestizione, trasferimenti, uso dei servizi igienici). Nonostante l'elevata dipendenza funzionale, sono clinicamente stabili."},
+  {id:8, en:"Very Severely Frail", it:"Fragilità molto severa", group:"C",
+    desc:"Persone completamente dipendenti per le cure personali (es. igiene personale, vestizione, trasferimenti, uso dei servizi igienici). Presentano un'alta fragilità clinica, con marcata vulnerabilità anche a minime variazioni dello stato di salute e spesso frequenti ospedalizzazioni."},
+  {id:9, en:"Terminally Ill", it:"Terminale", group:"C",
+    desc:"Persone che presentano aspettativa di vita inferiore a 6 mesi, oppure sono affette da patologie in fase terminale per le quali sono in carico alle cure palliative domiciliari o residenziali (Hospice)."}
+];
+const GROUPS = {
+  A: {label:"Gruppo A · CFS 1–4", color:"green"},
+  B: {label:"Gruppo B · CFS 5–7", color:"orange"},
+  C: {label:"Gruppo C · CFS 8–9", color:"red"}
+};
+
+// Domande in ordine: il primo "Sì" assegna il livello CFS
+const QUESTIONS = [
+  {cfs:9, text:"Il paziente ha una prognosi inferiore a 6 mesi oppure è affetto da patologia in fase terminale per la quale è in carico alle cure palliative domiciliari o residenziali (Hospice), non necessariamente in condizione di completa dipendenza?"},
+  {cfs:8, text:"Il paziente è totalmente dipendente per tutte le attività della vita quotidiana (lavarsi, vestirsi ecc.) ed è altamente vulnerabile anche a minime variazioni dello stato clinico, al punto da essere andato incontro a frequenti ospedalizzazioni nell'ultimo periodo?"},
+  {cfs:7, text:"Il paziente è completamente dipendente nelle attività di base della vita quotidiana (come lavarsi, vestirsi ecc.), per cause fisiche o cognitive, ma è clinicamente stabile?"},
+  {cfs:6, text:"Il paziente necessita di assistenza per tutte le attività fuori casa, nonché per alcune attività quotidiane (es. igiene personale o vestizione), pur mantenendo la capacità di spostarsi all'interno dell'abitazione anche se con aiuto?"},
+  {cfs:5, text:"Il paziente ha bisogno di aiuto per le attività strumentali (fare la spesa, preparare i pasti, lavori domestici) ma è indipendente in tutte le attività di base della vita quotidiana (igiene personale, vestizione, alimentazione, uso dei servizi igienici)?"},
+  {cfs:4, text:"Il paziente è autonomo nelle attività quotidiane (strumentali e di base) ma riferisce di sentirsi rallentato, di affaticarsi facilmente o di avere sintomi che limitano le sue attività abituali?"},
+  {cfs:3, text:"Il paziente è autonomo e gestisce bene i propri problemi di salute ma NON svolge attività fisica regolare oltre alle normali camminate occasionali?"},
+  {cfs:2, text:"Il paziente è autonomo e svolge attività fisica o esercizio in modo occasionale o stagionale, ma non regolarmente tutto l'anno?"},
+  {cfs:1, text:"Il paziente svolge attività fisica regolare ed è più energico rispetto alle persone della propria età?"}
+];
+
+// Pannelli di laboratorio (§7.3)
+const PANELS = [
+  "Creatinina, albumina, calcemia, fosforemia, 25-OH-vitamina D, paratormone (PTH), fosfatasi alcalina (ALP) totale, protidogramma.",
+  "Fosfatasi alcalina ossea (isoenzima osseo), telopeptide C-terminale (CTx), calciuria e fosfaturia delle 24 ore, colesterolo totale, LDL e HDL, trigliceridi, emoglobina glicata (HbA1c).",
+  "TSH, proteina C reattiva, testosterone (libero o totale), anticorpi anti-transglutaminasi, triptasi, cortisoluria 24 ore o test al desametasone, assetto marziale, IgA, IgG, IgM, catene leggere libere, beta-2-microglobulina, proteinuria di Bence-Jones."
+];
+
+// Charlson Comorbidity Index corretto per l'età (Allegato 2).
+// Le voci con la stessa chiave "sev" sono forme di diversa gravità della stessa malattia: conta solo la più grave.
+const CCI_AGES = [ {label:"50–59", pts:1}, {label:"60–69", pts:2}, {label:"70–79", pts:3}, {label:"≥ 80", pts:4} ];
+const CCI_CONDITIONS = [
+  {pts:1, label:"Infarto miocardico pregresso"},
+  {pts:1, label:"Scompenso cardiaco congestizio"},
+  {pts:1, label:"Arteriopatia periferica"},
+  {pts:1, label:"Malattia cerebrovascolare", hint:"Ictus o TIA"},
+  {pts:1, label:"Demenza"},
+  {pts:1, label:"Malattia polmonare cronica"},
+  {pts:1, label:"Connettiviti"},
+  {pts:1, label:"Ulcera peptica"},
+  {pts:1, label:"Epatopatia lieve", sev:"liver", hint:"Epatite cronica o cirrosi senza ipertensione portale"},
+  {pts:1, label:"Diabete mellito non complicato", sev:"diabetes"},
+  {pts:2, label:"Emiplegia"},
+  {pts:2, label:"Malattia renale moderata o severa", hint:"Creatininemia > 3 mg/dL, dialisi, trapianto renale o uremia"},
+  {pts:2, label:"Diabete con danno d'organo", sev:"diabetes", hint:"Retinopatia, nefropatia o neuropatia"},
+  {pts:2, label:"Neoplasia solida senza metastasi", sev:"tumor", hint:"Trattata inizialmente negli ultimi 5 anni; esclusi tumori cutanei non melanomatosi e carcinoma cervicale in situ"},
+  {pts:2, label:"Leucemia", hint:"Leucemie acute e croniche, policitemia vera"},
+  {pts:2, label:"Linfoma", hint:"Hodgkin e non-Hodgkin, macroglobulinemia di Waldenström, mieloma multiplo"},
+  {pts:3, label:"Epatopatia moderata o severa", sev:"liver", hint:"Cirrosi con ipertensione portale, con o senza sanguinamento da varici"},
+  {pts:6, label:"Neoplasia solida metastatica", sev:"tumor"},
+  {pts:6, label:"AIDS conclamato"}
+];
+
+/* ============================================================
+   INTERFACCIA — una schermata per volta
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>';
+const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
+const go = r => { location.hash = r; };
+
+/* icone: Health Icons (healthicons.org, licenza MIT, © 2021 Resolve to Save Lives), come in Osteo Help; provetta, calcolatrice e capsula disegnate per l'app */
+const ICONS = {
+  tube:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h20M17.5 5v31a6.5 6.5 0 0 0 13 0V5"/><path d="M17.5 22h13"/></g>',
+  clip:'<path d="M19 15V18H16V20H19V23H21V20H24V18H21V15H19Z" fill="currentColor"/> <path d="M17 26C16.4477 26 16 26.4477 16 27C16 27.5523 16.4477 28 17 28H31C31.5523 28 32 27.5523 32 27C32 26.4477 31.5523 26 31 26H17Z" fill="currentColor"/> <path d="M16 32C16 31.4477 16.4477 31 17 31H31C31.5523 31 32 31.4477 32 32C32 32.5523 31.5523 33 31 33H17C16.4477 33 16 32.5523 16 32Z" fill="currentColor"/> <path d="M17 36C16.4477 36 16 36.4477 16 37C16 37.5523 16.4477 38 17 38H31C31.5523 38 32 37.5523 32 37C32 36.4477 31.5523 36 31 36H17Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M17 7C17 5.34315 18.3431 4 20 4H28C29.6569 4 31 5.34315 31 7H35C36.6569 7 38 8.34315 38 10V41C38 42.6569 36.6569 44 35 44H13C11.3431 44 10 42.6569 10 41V10C10 8.34315 11.3431 7 13 7H17ZM28 12C29.6569 12 31 10.6569 31 9H35C35.5523 9 36 9.44772 36 10V41C36 41.5523 35.5523 42 35 42H13C12.4477 42 12 41.5523 12 41V10C12 9.44772 12.4477 9 13 9H17C17 10.6569 18.3431 12 20 12H28ZM20 6C19.4477 6 19 6.44772 19 7V9C19 9.55228 19.4477 10 20 10H28C28.5523 10 29 9.55228 29 9V7C29 6.44772 28.5523 6 28 6H20Z" fill="currentColor"/>',
+  grid:'<path d="M11.0104 21.0026C14.6795 20.9646 16.7269 21.3354 20.622 22.9258L21.378 21.0742C17.2509 19.389 14.9401 18.9618 10.9896 19.0027L11.0104 21.0026Z" fill="currentColor"/> <path d="M20.622 26.9258C16.7269 25.3354 14.6795 24.9646 11.0104 25.0026L10.9896 23.0027C14.9401 22.9618 17.2509 23.389 21.378 25.0742L20.622 26.9258Z" fill="currentColor"/> <path d="M11.0104 29.0026C14.6795 28.9646 16.7269 29.3354 20.622 30.9258L21.378 29.0742C17.2509 27.389 14.9401 26.9618 10.9896 27.0027L11.0104 29.0026Z" fill="currentColor"/> <path d="M36.9896 29.0026C33.3205 28.9646 31.2731 29.3354 27.378 30.9258L26.622 29.0742C30.7491 27.389 33.0599 26.9618 37.0103 27.0027L36.9896 29.0026Z" fill="currentColor"/> <path d="M27.378 26.9258C31.2731 25.3354 33.3205 24.9646 36.9896 25.0026L37.0103 23.0027C33.0599 22.9618 30.7491 23.389 26.622 25.0742L27.378 26.9258Z" fill="currentColor"/> <path d="M36.9896 21.0026C33.3205 20.9646 31.2731 21.3354 27.378 22.9258L26.622 21.0742C30.7491 19.389 33.0599 18.9618 37.0103 19.0027L36.9896 21.0026Z" fill="currentColor"/> <path d="M13.5 16V13H11.5V16H13.5Z" fill="currentColor"/> <path d="M17 14V17H15V14H17Z" fill="currentColor"/> <path d="M20.5 18V15H18.5V18H20.5Z" fill="currentColor"/> <path d="M34.5 16V13H36.5V16H34.5Z" fill="currentColor"/> <path d="M31 14V17H33V14H31Z" fill="currentColor"/> <path d="M27.5 18V15H29.5V18H27.5Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M24 11.2401C24.0863 11.2217 24.1723 11.2035 24.2579 11.1855C29.2537 8.7786 33.559 7.04884 39.5261 8.57671C40.4175 8.80494 41 9.61248 41 10.492V10.7733C41.7202 10.9178 42.4658 11.0833 43.2434 11.2707C43.6888 11.378 44 11.7783 44 12.2364V37.7749C44 38.4077 43.4173 38.8804 42.7957 38.7618C36.5832 37.5766 32.3951 37.4936 26.6742 38.3611C26.1781 39.3339 25.1669 40 24 40C22.8331 40 21.8219 39.3339 21.3258 38.3611C15.6049 37.4936 11.4168 37.5766 5.20425 38.7618C4.58268 38.8804 4 38.4077 4 37.7749V12.2364C4 11.7783 4.31119 11.378 4.75659 11.2707C5.53424 11.0833 6.27982 10.9178 7 10.7733V10.492C7 9.61248 7.58253 8.80494 8.47389 8.57671C14.441 7.04884 18.7464 8.77861 23.7421 11.1855C23.8277 11.2035 23.9136 11.2217 24 11.2401ZM25 13.0471C29.9792 10.6426 33.7339 9.16738 39 10.5065V33.0552C39 33.0552 38.9967 33.0602 38.9925 33.0635C38.9782 33.075 38.9597 33.0801 38.9396 33.0764C34.0407 32.1775 30.259 33.1127 26.1446 34.9023C25.8272 34.5778 25.4368 34.3251 25 34.1707V13.0471ZM23 13.0481L23 34.1707C22.5632 34.3251 22.1728 34.5778 21.8554 34.9023C17.741 33.1127 13.9593 32.1775 9.06045 33.0764C9.04034 33.0801 9.02183 33.075 9.00746 33.0635L9.00594 33.0622C9.00252 33.059 9 33.0552 9 33.0552V10.5065C14.2661 9.16738 18.0208 10.6436 23 13.0481ZM42 13.0333C41.6604 12.9558 41.3273 12.883 41 12.8146V33.0552C41 34.3654 39.7896 35.2657 38.5786 35.0435C34.8028 34.3507 31.7784 34.8512 28.5061 36.0963C33.0792 35.5628 36.9344 35.6943 42 36.5827V13.0333ZM19.4939 36.0963C16.2217 34.8512 13.1972 34.3507 9.42139 35.0435C8.2104 35.2657 7 34.3654 7 33.0552V12.8146C6.67271 12.883 6.33962 12.9558 6 13.0333V36.5827C11.0656 35.6943 14.9209 35.5628 19.4939 36.0963Z" fill="currentColor"/>',
+  book:'<path d="M30 19L25 19V14H23V19L18 19V21H23V26H25V21H30V19Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M9 10C9 7.23858 11.2386 5 14 5H38C38.5523 5 39 5.44772 39 6V36C39 36.5523 38.5523 37 38 37H14C12.3431 37 11 38.3431 11 40V41H38V43H10C9.44772 43 9 42.5523 9 42V10ZM14 35C12.8744 35 11.8357 35.3719 11 35.9996V10C11 8.34315 12.3431 7 14 7H37V35H14Z" fill="currentColor"/>',
+  calc:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="6" width="26" height="36" rx="3"/><rect x="16" y="11" width="16" height="7" rx="1"/></g><g fill="currentColor"><circle cx="17.5" cy="25" r="1.8"/><circle cx="24" cy="25" r="1.8"/><circle cx="30.5" cy="25" r="1.8"/><circle cx="17.5" cy="31" r="1.8"/><circle cx="24" cy="31" r="1.8"/><circle cx="30.5" cy="31" r="1.8"/><circle cx="17.5" cy="37" r="1.8"/><circle cx="24" cy="37" r="1.8"/><circle cx="30.5" cy="37" r="1.8"/></g>',
+  pill:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10.7 25.9l15.2-15.2a7.5 7.5 0 0 1 10.6 10.6L21.3 36.5a7.5 7.5 0 0 1-10.6-10.6z"/><path d="M18.3 18.3l10.6 10.6"/></g>',
+};
+const ic = name => `<svg class="ic" viewBox="0 0 48 48" aria-hidden="true">${ICONS[name]||""}</svg>`;
+const kat = g => `<span class="kat k-${GROUPS[g].color}">${GROUPS[g].label}</span>`;
+const entry = (href, title, sub, cls, icon) => `<a class="entry ${cls||""}" href="#${href}">${icon?ic(icon):""}<div><b>${title}</b>${sub?`<small>${sub}</small>`:""}</div>${CHEV}</a>`;
+const head = (title, sub, group) => `${group?`<div class="katrow">${kat(group)}</div>`:""}<h1>${title}</h1><div class="rule"></div>${sub?`<p class="sub">${sub}</p>`:""}`;
+const acc = (title, body) => `<details class="acc"><summary><span>${title}</span>${CHEV}</summary><div class="accbody">${body}</div></details>`;
+const numList = items => `<ul class="list">${items.map((t,i) => `<li><i>${i+1}</i><span>${t}</span></li>`).join("")}</ul>`;
+
+/* ---------- home ---------- */
+function vHome(){
+  return { bar:"Osteoclick", html: head("Fracture Liaison Service", "Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.") + `
+    <div class="stack">
+      ${entry("cfs-1", "Questionario CFS", "Valuta la fragilità clinica e individua il percorso", "blue big", "clip")}
+      ${entry("schede", "Schede CFS", "Le 9 categorie, raggruppate per percorso", "teal big", "grid")}
+    </div>
+    <p class="lbl">Consulta</p>
+    <div class="rows">
+      <a class="rowlink" href="#cci">${ic("calc")}<span>Charlson Comorbidity Index<small>Corretto per l'età, per il Gruppo A</small></span>${CHEV}</a>
+      <a class="rowlink" href="#esami">${ic("tube")}<span>Esami di laboratorio<small>Pannelli 1–3 e a chi richiederli</small></span>${CHEV}</a>
+      <a class="rowlink" href="#vitd">${ic("pill")}<span>Correzione della vitamina D<small>Per tutti i gruppi</small></span>${CHEV}</a>
+      <a class="rowlink" href="#fonti">${ic("book")}<span>Fonti</span>${CHEV}</a>
+    </div>
+    <p class="foot">Secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea.<br>Ausilio al ragionamento clinico, non sostitutivo del giudizio specialistico.</p>` };
+}
+
+/* ---------- questionario ---------- */
+function vDomanda(n){
+  const i = n - 1, q = QUESTIONS[i];
+  if(!q) return { redirect:"cfs-1" };
+  const last = i === QUESTIONS.length - 1;
+  return { bar:"Questionario CFS", act: i ? ["Ricomincia", () => go("cfs-1")] : null, html: `
+    <p class="lbl" style="margin-top:6px">Domanda ${n} di ${QUESTIONS.length}</p>
+    <div class="prog"><div style="width:${n / QUESTIONS.length * 100}%"></div></div>
+    <p class="q">${q.text}</p>
+    <div class="ans${last ? " one" : ""}">
+      <button type="button" class="yes" data-goto="esito-${q.cfs}">Sì</button>
+      ${last ? "" : `<button type="button" data-goto="cfs-${n + 1}">No</button>`}
+    </div>
+    ${i ? "" : `<p class="lbl">Come rispondere</p>${numList([
+      "Riferirsi sempre allo stato funzionale del paziente nelle <b>2 settimane precedenti</b> l'evento acuto.",
+      "Procedere con le domande in ordine fino alla prima risposta affermativa.",
+      "In caso di dubbio tra due categorie, assegnare il livello di minor fragilità."])}`}` };
+}
+
+/* ---------- schede ---------- */
+function vSchede(){
+  const h = ["A","B","C"].map(g => `<p class="lbl">${GROUPS[g].label}</p><div class="rows">` +
+    CFS.filter(c => c.group === g).map(c => `<a class="rowlink" href="#scheda-${c.id}"><span class="num">${c.id}</span><span>${c.en}<small>${c.it}</small></span>${CHEV}</a>`).join("") +
+    `</div>`).join("");
+  return { bar:"Schede CFS", html: head("Clinical Frailty Scale", "Le categorie raggruppate per percorso diagnostico-terapeutico.") + h };
+}
+
+/* scheda di una categoria: stessa vista per il risultato del questionario e per le schede */
+function vCategoria(id, fromQuiz){
+  const c = CFS.find(x => x.id === +id);
+  if(!c) return { redirect: fromQuiz ? "cfs-1" : "schede" };
+  let path;
+  if(c.group === "A") path = `<p class="lbl">Charlson Comorbidity Index</p>${cciHTML(true)}`;
+  else if(c.group === "B") path = `<p class="small">Nel Gruppo B non si calcola il CCI: l'acido zoledronico in singola infusione assicura copertura terapeutica e aderenza ed è la scelta di prima linea, indipendentemente dal carico di comorbidità.</p><p class="lbl">Percorso</p><div>${pathB()}</div>`;
+  else path = `${c.id === 9 ? `<p class="small">La classificazione è basata sulla prognosi di malattia e non sul livello di dipendenza funzionale.</p>` : ""}<p class="lbl">Percorso</p><div>${pathC()}</div>`;
+  return { bar: fromQuiz ? "Risultato" : "Scheda", act: fromQuiz ? ["Ricomincia", () => go("cfs-1")] : null,
+    html: head(c.en, `CFS ${c.id} · ${c.it}`, c.group) + `<p class="note">${c.desc}</p>` + path };
+}
+
+/* ---------- percorsi ---------- */
+function panelsHTML(list){
+  return list.map(n => `<p class="pn">Pannello ${n}${n === 3 ? "<small>su sospetto clinico</small>" : ""}</p><p class="note">${PANELS[n-1]}</p>` +
+    (n === 3 ? `<a class="xlink" href="https://aurex-cmd.github.io/Osteo-Help/" target="_blank" rel="noopener">Orienta il sospetto clinico con Osteo Help →</a>` : "")).join("");
+}
+function vitDBody(beforeTherapy){
+  return `<p class="note">Indicata se <b>25-OH-vitamina D &lt; 50 nmol/L</b> oppure in assenza di dati disponibili, tenendo conto di eventuali supplementazioni già assunte a domicilio.${beforeTherapy ? " La correzione deve <b>precedere</b> l'avvio della terapia anti-fratturativa." : ""}</p>` + numList([
+    "Dose di carico di <b>colecalciferolo per os: 150.000–250.000 UI totali</b>, frazionata in 1–7 giorni, salvo controindicazioni (es. ipercalcemia severa).",
+    "Non superare <b>100.000 UI/die</b>.",
+    "Prescrizione nel rispetto dei criteri di rimborsabilità della <b>Nota AIFA 96</b>."]);
+}
+// Gruppo B (§7.4), anche per il Gruppo A con CCI ≥ 6
+function pathB(){
+  return acc("Esami di laboratorio", panelsHTML([1])) +
+    acc("Correzione vitamina D", vitDBody(true)) +
+    acc("Trattamento", `
+      <p class="note">Supplementazione di calcio/vitamina D.</p>
+      <p class="note">Terapia anti-fratturativa di prima scelta: <b>acido zoledronico 5 mg EV</b> (infusione minima 30 minuti), durante il ricovero o, se la degenza non lo consente, nel setting di destinazione.</p>
+      <p class="note">Con controindicazioni (es. eGFR &lt; 35 mL/min) o difficoltà alla somministrazione intraospedaliera: <b>denosumab</b> in alternativa.</p>
+      <p class="pn" style="margin-top:10px">Zoledronato · checklist pre-somministrazione</p>` + numList([
+        "<b>Funzione renale</b>: verificare creatinina ed eGFR; controindicato se eGFR &lt; 35 mL/min (valutare denosumab).",
+        "<b>Calcio e vitamina D</b>: correggere un'eventuale ipocalcemia; completare la correzione del deficit di vitamina D prima dell'infusione.",
+        "<b>Idratazione</b>: assicurare una buona idratazione, evitare la somministrazione nel paziente disidratato.",
+        "<b>Stato clinico</b>: rinviare in caso di infezione severa.",
+        "<b>Valutazione odontoiatrica</b>: escludere patologie odontoiatriche attive, anche con ortopantomografia (OPT) o dental scan se il paziente non mantiene la stazione eretta o seduta stabile.",
+        "<b>Somministrazione</b>: infusione endovenosa in almeno 30 minuti.",
+        "<b>Effetti attesi</b>: informare sulla possibile sindrome simil-influenzale nelle 24–72 ore."]) +
+      `<p class="small">Rispettare i criteri di rimborsabilità della Nota AIFA 79.</p>`);
+}
+// Gruppo A con CCI < 6 (§7.3)
+function pathAFull(){
+  return acc("Esami di laboratorio", panelsHTML([1,2,3])) +
+    acc("Rx della colonna", `<p class="note">Rx della colonna dorso-lombosacrale con quesito clinico "morfometria vertebrale", durante la degenza, per escludere fratture vertebrali misconosciute.</p>`) +
+    acc("Densitometria", `<p class="note">DEXA del rachide lombare e del femore controlaterale, se non già eseguita negli ultimi 18 mesi.</p>`) +
+    acc("Correzione vitamina D", vitDBody(true)) +
+    acc("Trattamento e Bone Specialist", `
+      <p class="note">Supplementazione di calcio/vitamina D, avviata dal Bone Coordinator.</p>
+      <p class="note">Presa in carico da parte del <b>Bone Specialist</b>, che definisce la terapia anti-fratturativa individualizzata (es. teriparatide, romosozumab, denosumab, altri) e ne assicura il follow-up.</p>
+      <p class="note">Se la valutazione non è conclusa alla dimissione, indicare in lettera modalità e tempi della presa in carico specialistica.</p>`);
+}
+// Gruppo C (§7.5)
+function pathC(){
+  return acc("Esami di laboratorio", panelsHTML([1])) +
+    acc("Correzione vitamina D", vitDBody(false)) +
+    acc("Trattamento", `
+      <p class="note">Supplementazione di calcio/vitamina D, <b>senza avvio di terapia anti-fratturativa</b>.</p>
+      <p class="note">Con fragilità clinica severa o aspettativa di vita limitata, il tempo residuo è inferiore a quello necessario perché la terapia anti-fratturativa dia un beneficio clinicamente rilevante, mentre resta il rischio di eventi avversi: il rapporto rischio/beneficio è sfavorevole.</p>`);
+}
+
+/* ---------- CCI ---------- */
+const cci = { open:false, age:null, cond:new Set() };
+function cciScore(){
+  if(cci.age === null) return null;
+  let s = CCI_AGES[cci.age].pts;
+  cci.cond.forEach(i => { s += CCI_CONDITIONS[i].pts; });
+  return s;
+}
+function cciOutHTML(){
+  const s = cciScore();
+  if(s === null) return `<p class="hint">Seleziona l'età per calcolare il CCI.</p>`;
+  return s >= 6
+    ? `<div class="altb d"><b>CCI = ${s}</b><small>CCI ≥ 6: si segue il percorso diagnostico-terapeutico del Gruppo B.</small></div>`
+    : `<div class="altb t"><b>CCI = ${s}</b><small>CCI &lt; 6: pannello diagnostico completo e presa in carico da parte del Bone Specialist.</small></div>`;
+}
+function cciPathHTML(){
+  const s = cciScore();
+  if(s === null) return "";
+  return `<p class="lbl">Percorso</p><div>${s >= 6 ? pathB() : pathAFull()}</div>`;
+}
+function cciHTML(withPath, forceOpen){
+  if(!cci.open && !forceOpen) return `<button type="button" class="btn" data-cci-open>Calcola</button>`;
+  let conds = "";
+  [1,2,3,6].forEach(pts => {
+    conds += `<p class="pn" style="margin-top:10px">${pts} ${pts === 1 ? "punto" : "punti"}</p><div>` +
+      CCI_CONDITIONS.map((c,i) => c.pts !== pts ? "" :
+        `<button type="button" class="ck" data-cci="${i}" aria-pressed="${cci.cond.has(i)}"><span class="cb">${TICK}</span><span>${c.label}${c.hint ? `<small>${c.hint}</small>` : ""}</span></button>`).join("") + `</div>`;
+  });
+  return `
+    <div class="ages" role="group" aria-label="Età">${CCI_AGES.map((a,i) => `<button type="button" data-age="${i}" aria-pressed="${cci.age === i}">${a.label}<small>+${a.pts}</small></button>`).join("")}</div>
+    <div id="cciOut">${cciOutHTML()}</div>
+    <details class="acc" open><summary><span>Condizioni cliniche documentate</span>${CHEV}</summary><div class="accbody">
+      <p class="small">Solo le condizioni elencate e documentate (non sospette). Per le malattie con forme di diversa gravità conta solo la più grave.</p>
+      ${conds}
+    </div></details>
+    ${withPath ? `<div id="cciPath">${cciPathHTML()}</div>` : ""}`;
+}
+function vCCI(){
+  return { bar:"CCI", act:["Azzera", () => { cci.age = null; cci.cond.clear(); render(); }], html:
+    head("Charlson Comorbidity Index", "Corretto per l'età (Allegato 2). Nel Gruppo A orienta il percorso: CCI ≥ 6 percorso del Gruppo B, CCI &lt; 6 pannello completo e Bone Specialist.") + cciHTML(false, true) };
+}
+function updateDock(){
+  const s = $("#cciOut") ? cciScore() : null;
+  $("#dock").hidden = s === null;
+  if(s === null) return;
+  $("#dockT").textContent = "CCI = " + s;
+  $("#dockS").textContent = s >= 6 ? "≥ 6 · percorso del Gruppo B" : "< 6 · pannello completo e Bone Specialist";
+}
+$("#dockBtn").addEventListener("click", () => {
+  const t = $("#cciPath .lbl") || $("#cciOut");
+  if(t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 56, behavior:"smooth" });
+});
+function updateCCI(){
+  updateDock();
+  const out = $("#cciOut"); if(out) out.innerHTML = cciOutHTML();
+  // il percorso si ridisegna solo quando cambia il ramo, così le tendine aperte restano aperte
+  const p = $("#cciPath"); if(!p) return;
+  const s = cciScore(), branch = s === null ? "" : s >= 6 ? "B" : "A";
+  if(p.dataset.branch === branch) return;
+  p.dataset.branch = branch; p.innerHTML = cciPathHTML();
+}
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-cci-open]")){ cci.open = true; render(); return; }
+  const a = e.target.closest("[data-age]");
+  if(a){
+    cci.age = +a.dataset.age;
+    document.querySelectorAll("[data-age]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.age === cci.age));
+    updateCCI(); return;
+  }
+  const b = e.target.closest("[data-cci]"); if(!b) return;
+  const i = +b.dataset.cci, sev = CCI_CONDITIONS[i].sev;
+  if(cci.cond.has(i)) cci.cond.delete(i);
+  else {
+    cci.cond.add(i);
+    // conta solo la forma più grave: togli l'altra forma della stessa malattia
+    if(sev) CCI_CONDITIONS.forEach((c,j) => { if(j !== i && c.sev === sev) cci.cond.delete(j); });
+  }
+  document.querySelectorAll("[data-cci]").forEach(x => x.setAttribute("aria-pressed", cci.cond.has(+x.dataset.cci)));
+  updateCCI();
+});
+document.addEventListener("click", e => { const b = e.target.closest("[data-goto]"); if(b) go(b.dataset.goto); });
+
+/* ---------- consultazione ---------- */
+function vEsami(){
+  return { bar:"Esami", html: head("Esami di laboratorio") + `
+    <p class="small"><b>Pannelli 1–3</b>: Gruppo A con CCI &lt; 6.<br><b>Solo Pannello 1</b>: Gruppo B, Gruppo A con CCI ≥ 6, Gruppo C.</p>
+    ${panelsHTML([1,2,3])}
+    <p class="lbl">Imaging · Gruppo A con CCI &lt; 6</p>
+    ${numList([
+      "Rx della colonna dorso-lombosacrale con quesito clinico \"morfometria vertebrale\", durante la degenza.",
+      "DEXA del rachide lombare e del femore controlaterale, se non già eseguita negli ultimi 18 mesi."])}` };
+}
+function vVitD(){
+  return { bar:"Vitamina D", html: head("Correzione della vitamina D", "Per tutti i gruppi (A, B e C).") + vitDBody(false) +
+    `<p class="small">Nei pazienti candidati a terapia anti-fratturativa (Gruppo A e Gruppo B) la correzione deve precedere l'avvio del trattamento.</p>` };
+}
+function vFonti(){
+  return { bar:"Fonti", html: head("Fonti") + `<div class="refsbody"><ol>
+    <li>Regione del Veneto, Decreto n. 17001 del 07/08/2026. <i>Percorso Preventivo Diagnostico Terapeutico Assistenziale (PPDTA) del paziente di età ≥65 anni con frattura di femore prossimale</i>.</li>
+    <li>Regione del Veneto, DGR n. 685 del 18 giugno 2024. <i>Definizione dei criteri di appropriatezza dei ricoveri ospedalieri riabilitativi (codice 56, 28 e 75)</i>.</li>
+    <li>Rockwood K, Song X, MacKnight C, et al. <i>A global clinical measure of fitness and frailty in elderly people</i>. CMAJ 2005;173(5):489-495.</li>
+    <li><i>Clinical Frailty Scale</i>, versione 1.2 a 9 livelli. © 2005–2008 Geriatric Medicine Research, Dalhousie University, Halifax, Canada.</li>
+    <li>Charlson ME, Pompei P, Ales KL, MacKenzie CR. <i>A new method of classifying prognostic comorbidity in longitudinal studies: development and validation</i>. J Chronic Dis 1987;40(5):373-383.</li>
+    <li>Charlson M, Szatrowski TP, Peterson J, Gold J. <i>Validation of a combined comorbidity index</i>. J Clin Epidemiol 1994;47(11):1245-1251.</li>
+    <li>Istituto Superiore di Sanità. <i>Linea guida "Diagnosi, stratificazione del rischio e continuità assistenziale delle Fratture da Fragilità"</i>, 18 ottobre 2021.</li>
+    <li>AIFA. <i>Nota 79</i>: criteri di rimborsabilità dei farmaci anti-fratturativi (testo vigente).</li>
+    <li>AIFA. <i>Nota 96</i>: criteri di rimborsabilità della vitamina D nella prevenzione e nel trattamento della carenza nell'adulto (testo vigente).</li>
+    <li>Regione del Veneto. <i>Documento di indirizzo regionale per l'impiego dei farmaci per il trattamento dell'osteoporosi</i> (versione vigente).</li>
+    <li><i>Acido zoledronico 5 mg/100 mL soluzione per infusione</i>: Riassunto delle Caratteristiche del Prodotto, Banca Dati Farmaci AIFA.</li>
+    <li>Lyles KW, Colón-Emeric CS, Magaziner JS, et al. <i>Zoledronic acid and clinical fractures and mortality after hip fracture</i>. N Engl J Med 2007;357(18):1799-1809.</li>
+    <li><i>Denosumab 60 mg soluzione iniettabile</i>: Riassunto delle Caratteristiche del Prodotto, Banca Dati Farmaci AIFA.</li>
+    <li><i>Colecalciferolo, specialità medicinali per uso orale</i>: Riassunto delle Caratteristiche del Prodotto, Banca Dati Farmaci AIFA.</li>
+    <li>Adami S, Romagnoli E, Carnevale V, et al. <i>Linee guida su prevenzione e trattamento dell'ipovitaminosi D con colecalciferolo (SIOMMMS)</i>. Reumatismo 2011;63(3):129-147.</li>
+    <li>International Osteoporosis Foundation, iniziativa <i>"Capture the Fracture"</i>; SIOMMMS, progetto <i>"IMPACT"</i>.</li>
+    <li><i>2016 SIOMMMS Guidelines</i>; <i>2019 IOF/ESCEO European guidance</i>; <i>2020 AACE/ACE Clinical practice guidelines</i> (bibliografia completa nel PPDTA regionale).</li>
+  </ol></div>` };
+}
+
+/* ---------- tema chiaro / scuro ---------- */
+const darkMQ = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
+function storedTheme(){ try{ return localStorage.getItem("oc-theme"); }catch(e){ return null; } }
+function isDark(){ const t = document.documentElement.dataset.theme; return t ? t === "dark" : !!(darkMQ && darkMQ.matches); }
+function paintThemeBtn(){
+  const d = isDark(), b = $("#theme");
+  b.classList.toggle("dark", d);
+  b.setAttribute("aria-label", d ? "Passa al tema chiaro" : "Passa al tema scuro");
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute("content", d ? "#12161D" : "#FFFFFF"));
+}
+function setTheme(t){
+  document.documentElement.dataset.theme = t;
+  try{ localStorage.setItem("oc-theme", t); }catch(e){}
+  paintThemeBtn();
+}
+if(storedTheme() === "dark" || storedTheme() === "light") document.documentElement.dataset.theme = storedTheme();
+$("#theme").addEventListener("click", () => setTheme(isDark() ? "light" : "dark"));
+if(darkMQ && darkMQ.addEventListener) darkMQ.addEventListener("change", paintThemeBtn);
+
+/* ---------- navigazione ---------- */
+const ROUTES = { "":vHome, schede:vSchede, cci:vCCI, esami:vEsami, vitd:vVitD, fonti:vFonti };
+const PARENT = r => {
+  const m = /^cfs-(\d+)$/.exec(r);
+  if(m) return +m[1] > 1 ? "cfs-" + (m[1] - 1) : "";
+  return r.startsWith("scheda-") ? "schede" : "";
+};
+const stack = [];
+let current = null, actFn = null;
+const routeNow = () => location.hash.replace(/^#/, "");
+function view(route){
+  if(route.startsWith("cfs-")) return vDomanda(+route.slice(4));
+  if(route.startsWith("esito-")) return vCategoria(route.slice(6), true);
+  if(route.startsWith("scheda-")) return vCategoria(route.slice(7), false);
+  return (ROUTES[route] || vHome)();
+}
+function render(){
+  const route = routeNow();
+  // un nuovo questionario riparte con il calcolatore CCI chiuso e vuoto
+  if(route === "cfs-1" && route !== current){ cci.open = false; cci.age = null; cci.cond.clear(); }
+  const v = view(route);
+  if(v.redirect !== undefined){ history.replaceState(null, "", v.redirect ? "#" + v.redirect : location.pathname + location.search); return render(); }
+  const changed = route !== current; current = route;
+  $("#main").innerHTML = `<div class="screen">${v.html}</div>`;
+  $("#barT").textContent = v.bar;
+  $("#back").style.visibility = route ? "visible" : "hidden";
+  $("#theme").hidden = !!route; $("#act").hidden = !route;
+  $("#act").textContent = v.act ? v.act[0] : ""; actFn = v.act ? v.act[1] : null;
+  updateDock();
+  if(changed) window.scrollTo(0, 0);
+}
+function goBack(){ if(stack.length > 1) history.back(); else go(PARENT(current)); }
+$("#act").addEventListener("click", () => { if(actFn) actFn(); });
+$("#back").addEventListener("click", goBack);
+window.addEventListener("hashchange", () => {
+  const r = routeNow();
+  if(stack.length > 1 && stack[stack.length - 2] === r) stack.pop(); else stack.push(r);
+  render();
+});
+stack.push(routeNow());
+paintThemeBtn();
+render();
+</script>
+</body>
+</html>
