@@ -352,7 +352,7 @@ function vHome(){
     <p class="lbl">Consulta</p>
     <div class="rows">
       <a class="rowlink" href="#cci">${ic("calc")}<span>Charlson Comorbidity Index<small>Corretto per l'età, per il Gruppo A</small></span>${CHEV}</a>
-      <a class="rowlink" href="#esami">${ic("tube")}<span>Esami di laboratorio<small>Pannelli 1–3 e a chi richiederli</small></span>${CHEV}</a>
+      <a class="rowlink" href="#esami">${ic("tube")}<span>Esami<small>Laboratorio e imaging, e a chi richiederli</small></span>${CHEV}</a>
       <a class="rowlink" href="#vitd">${ic("pill")}<span>Correzione della vitamina D<small>Per tutti i gruppi</small></span>${CHEV}</a>
     </div>
     <p class="foot">Secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea.<br>Ausilio al ragionamento clinico, non sostitutivo del giudizio specialistico.<br><a href="#fonti">Fonti</a></p>` };
@@ -596,7 +596,8 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-goto
 
 /* ---------- consultazione ---------- */
 function vEsami(){
-  return { bar:"Esami", html: head("Esami di laboratorio") + `
+  return { bar:"Esami", html: head("Esami") + `
+    <p class="lbl">Laboratorio</p>
     <p class="small"><b>Pannelli 1–3</b>: Gruppo A con CCI &lt; 6.<br><b>Solo Pannello 1</b>: Gruppo B, Gruppo A con CCI ≥ 6, Gruppo C.</p>
     ${panelsHTML([1,2,3])}
     <p class="lbl">Imaging · Gruppo A con CCI &lt; 6</p>
