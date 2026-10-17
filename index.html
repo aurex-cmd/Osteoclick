@@ -9,30 +9,30 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon-180.png">
-<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#F3F4F6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12161D" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Osteoclick">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; blocchi piatti con barra d'accento a sinistra */
+/* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; fondo grigio chiaro e card bianche arrotondate */
 :root{
-  --bg:#FFFFFF; --ink:#1B2433; --muted:#6F7988; --faint:#B5BECA; --line:#E1E5EB;
-  --box:#F2F4F7; --blue:#6A5C92; --blue-box:#F1EEFB; --teal:#0E7571; --teal-box:#E3F4F3; --focus:#2F5F96; --tile:#FFFFFF;
+  --bg:#F3F4F6; --card:#FFFFFF; --ink:#172231; --muted:#6B7584; --faint:#B5BECA; --line:#E6E9EE;
+  --box:#E8EBEF; --accent:#2B587D; --blue:#6A5C92; --blue-box:#F1EEFB; --teal:#0E7571; --teal-box:#E3F4F3; --focus:#2F5F96; --tile:#FFFFFF;
   --coral:#B04E37; --coral-box:#F7EBE7; --amber:#9A6B1F;
-  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12161D; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#262E39;
-  --box:#1B212A; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
+  --bg:#12161D; --card:#1B212A; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
+  --box:#262E39; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
   --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62; color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#12161D; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#262E39;
-  --box:#1B212A; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
+  --bg:#12161D; --card:#1B212A; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
+  --box:#262E39; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
   --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62; color-scheme:dark }
 
 *{box-sizing:border-box}
@@ -47,46 +47,55 @@ a{color:inherit;text-decoration:none}
 
 /* barra superiore */
 .bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(8px + env(safe-area-inset-top)) 16px 8px}
-.bar-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:72px 1fr 72px;align-items:center;height:32px}
+.bar-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:72px 1fr 72px;align-items:center;height:44px}
 .bar-t{text-align:center;font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar button{border:0;background:none;padding:4px 0;color:var(--muted);font-size:.85rem;font-weight:500}
 .bar #back{display:flex;align-items:center;justify-self:start}
 .bar #back svg{width:22px;height:22px}
 .bar #act{justify-self:end}
 .bar #act:hover,.bar #back:hover{color:var(--ink)}
-.bar #theme{grid-column:3;grid-row:1;justify-self:end;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--box);color:var(--ink);display:grid;place-items:center;padding:0;transition:background .2s}
+.bar #theme{grid-column:3;grid-row:1;justify-self:end;width:42px;height:42px;border-radius:50%;border:0;background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0;transition:background .2s}
 .bar #act{grid-column:3;grid-row:1}
-.bar #theme:hover{border-color:var(--faint)}
+.bar.home .bar-in{grid-template-columns:1fr 72px}
+.bar.home #back{display:none}
+.bar.home .bar-t{grid-column:1;display:flex;align-items:center;gap:10px;font-weight:800;font-size:.95rem;letter-spacing:-.01em}
+.bar.home #theme{grid-column:2}
+.oc{width:30px;height:30px;border-radius:9px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:.7rem;font-weight:800;letter-spacing:-.02em}
 .bar #theme svg{width:17px;height:17px;grid-area:1/1}
 .bar #theme .sun{display:none}
 .bar #theme.dark .sun{display:block} .bar #theme.dark .moon{display:none}
 
 main{max-width:560px;margin:0 auto;padding:4px 16px 120px}
 .screen{display:flex;flex-direction:column;gap:14px}
-h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;text-transform:uppercase;margin:6px 0 0;text-wrap:balance;overflow-wrap:anywhere;hyphens:auto}
-.rule{height:1px;background:var(--line);margin:2px 0 4px}
-.sub{color:var(--muted);font-size:.92rem;line-height:1.45;margin:-4px 0 0}
+h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;margin:10px 0 0;text-wrap:balance;overflow-wrap:anywhere;hyphens:auto}
+.rule{display:none}
+.sub{color:var(--muted);font-size:.92rem;line-height:1.5;margin:-6px 0 0}
 .lbl{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 -6px}
 .hint{color:var(--muted);font-size:.9rem;margin:0}
 .foot{font-size:.74rem;color:var(--muted);line-height:1.5;text-align:center;margin:28px 0 0}
-.foot a{color:var(--focus);font-weight:600}
+.foot a{color:var(--accent);font-weight:700}
 
-/* ingressi */
-.entry{position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;background:var(--box);border-radius:10px;padding:16px 14px 16px 19px}
-.entry::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px;background:var(--faint)}
-.entry.blue{background:var(--blue-box)} .entry.blue::before{background:var(--blue)}
-.entry.teal{background:var(--teal-box)} .entry.teal::before{background:var(--teal)}
-.entry > div{flex:1;min-width:0}
-.entry b{display:block;font-size:1.05rem;letter-spacing:-.01em;line-height:1.3}
-.entry.blue b{color:var(--blue)} .entry.teal b{color:var(--teal)}
-.entry small{display:block;color:var(--muted);font-size:.83rem;margin-top:3px;line-height:1.4}
-.entry.big{padding:20px 14px 20px 19px}
-.entry.big b{font-size:1.12rem;color:var(--ink)}
+/* home: griglia di tessere */
+.home-h{margin-top:22px}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:40px}
+.tile{display:flex;width:100%;border:0;border-radius:22px;background:var(--card);color:var(--ink);text-align:left;font:inherit;transition:transform .12s}
+.tile:active{transform:scale(.98)}
+.tile b{display:block;font-weight:700;font-size:1rem;letter-spacing:-.01em}
+.tile small{display:block;margin-top:2px;font-size:.78rem;color:var(--muted)}
+.tile svg{width:24px;height:24px;flex:0 0 auto}
+.tile-main{grid-column:span 2;flex-direction:column;justify-content:space-between;height:148px;padding:18px 20px;background:var(--accent);color:#fff}
+.tile-main b{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.tile-main small{color:rgba(255,255,255,.82);font-size:.84rem;margin-top:4px}
+.tile-top{display:flex;justify-content:space-between;align-items:flex-start}
+.tile-main .tile-top > svg{width:30px;height:30px}
+.tile-go{width:40px;height:40px;border-radius:20px;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.tile-go svg{width:18px;height:18px}
+.tile-row{grid-column:span 2;align-items:center;justify-content:space-between;height:60px;padding:0 20px}
+.tile-row .tile-l{display:flex;align-items:center;gap:14px}
+.tile-row em{font-style:normal;font-size:.82rem;font-weight:600;color:var(--muted)}
+.tile-sq{flex-direction:column;justify-content:space-between;height:108px;padding:18px}
 .chev{width:16px;height:16px;color:var(--faint);flex:0 0 auto}
 .ic{width:26px;height:26px;flex:0 0 auto}
-.entry > .ic{color:var(--muted)}
-.entry.blue > .ic{color:var(--blue)} .entry.teal > .ic{color:var(--teal)}
-.entry.big > .ic{width:52px;height:52px;padding:10px;border-radius:12px;background:var(--tile)}
 .rowlink > .ic{width:24px;height:24px;color:var(--muted)}
 .rowlink > span{flex:1}
 .katrow{margin:10px 0 -11px}
@@ -97,15 +106,15 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 .stack{display:flex;flex-direction:column;gap:8px}
 
 /* righe semplici */
-.rows{display:flex;flex-direction:column}
-.rowlink{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:13px 2px;font-weight:600;font-size:.95rem}
+.rows{display:flex;flex-direction:column;background:var(--card);border-radius:20px;padding:0 16px}
+.rowlink{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:13px 0;font-weight:600;font-size:.95rem}
 .rowlink:last-child{border-bottom:0}
 .rowlink small{display:block;font-weight:400;color:var(--muted);font-size:.8rem;margin-top:1px}
 .rowlink > span{min-width:0}
 .rowlink .th{width:44px;height:56px;flex:0 0 auto;object-fit:contain;background:#fff;border-radius:8px}
 
 /* illustrazioni CFS: hanno fondo bianco, quindi stanno su un riquadro bianco anche nel tema scuro */
-.pic{align-self:center;width:100%;max-width:230px;background:#fff;border-radius:14px;padding:8px;margin:4px 0}
+.pic{align-self:center;width:100%;max-width:230px;background:#fff;border-radius:22px;padding:10px;margin:4px 0}
 .pic img{display:block;width:100%;height:auto}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(.pic,.rowlink .th){filter:brightness(.92)}}
 :root[data-theme="dark"] :is(.pic,.rowlink .th){filter:brightness(.92)}
@@ -124,13 +133,14 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 .xlink{color:var(--focus);font-weight:600;font-size:.9rem}
 
 /* accordion */
-details.acc{border-bottom:1px solid var(--line)}
-details.acc > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 2px;cursor:pointer;font-weight:700}
+details.acc{background:var(--card);border-radius:18px;padding:0 16px}
+details.acc + details.acc{margin-top:8px}
+details.acc > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:15px 0;cursor:pointer;font-weight:700}
 details.acc > summary::-webkit-details-marker{display:none}
 details.acc > summary > span{flex:1;min-width:0}
 details.acc > summary > .ic{width:24px;height:24px;color:var(--muted)}
 details.acc[open] > summary .chev{transform:rotate(90deg)}
-.accbody{padding:0 2px 14px;display:flex;flex-direction:column;gap:6px}
+.accbody{padding:0 0 16px;display:flex;flex-direction:column;gap:6px}
 
 /* spunte */
 .ck{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;border:0;background:none;padding:9px 0;border-bottom:1px solid var(--line);font-size:.93rem;line-height:1.4}
@@ -143,22 +153,21 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 .ck[aria-pressed="true"] .cb svg{display:block}
 
 /* esito */
-.altb{position:relative;padding:13px 14px 13px 17px;border-radius:10px;background:var(--box)}
-.altb::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px;background:var(--faint)}
-.altb.t{background:var(--teal-box)} .altb.t::before{background:var(--teal)} .altb.t b{color:var(--teal)}
-.altb.d{background:var(--coral-box)} .altb.d::before{background:var(--coral)} .altb.d b{color:var(--coral)}
+.altb{position:relative;padding:14px 18px;border-radius:18px;background:var(--card)}
+.altb.t{background:var(--teal-box)} .altb.t b{color:var(--teal)}
+.altb.d{background:var(--coral-box)} .altb.d b{color:var(--coral)}
 .altb b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums}
 .altb small{display:block;color:var(--muted);font-size:.86rem;margin-top:2px;line-height:1.45}
 
 /* controlli */
-.ages{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--box);border-radius:9px;padding:3px}
-.ages button{border:0;background:transparent;padding:7px 0;border-radius:7px;font-weight:600;font-size:.88rem;color:var(--muted);line-height:1.25}
+.ages{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--box);border-radius:14px;padding:4px}
+.ages button{border:0;background:transparent;padding:8px 0;border-radius:11px;font-weight:600;font-size:.88rem;color:var(--muted);line-height:1.25}
 .ages button small{display:block;font-size:.72rem;font-weight:500}
-.ages button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ages button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 /* pulsante Calcola nel blu dell'app originale, uguale nei due temi */
-.btn{width:100%;border:0;border-radius:12px;background:#2B587D;color:#fff;padding:14px 16px;font-weight:700;font-size:.98rem}
+.btn{width:100%;border:0;border-radius:18px;background:#2B587D;color:#fff;padding:16px;font-weight:700;font-size:.98rem}
 .btn:active{background:#1E4560}
-.btn.ghost{background:var(--box);color:var(--muted);font-weight:600;font-size:.9rem;padding:12px 16px;margin-top:6px}
+.btn.ghost{background:var(--card);color:var(--muted);font-weight:600;font-size:.9rem;padding:12px 16px;margin-top:6px}
 .cci-sum{display:flex;align-items:center;gap:12px;width:100%;border:0;text-align:left;font:inherit;color:inherit}
 .cci-sum > span{flex:1;min-width:0}
 .cci-sum em{font-style:normal;font-size:.8rem;font-weight:600;color:var(--muted);white-space:nowrap}
@@ -166,24 +175,24 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 
 /* questionario */
 .prog{height:3px;border-radius:2px;background:var(--line);overflow:hidden;margin:6px 0 2px}
-.prog > div{height:100%;background:var(--blue)}
+.prog > div{height:100%;background:var(--accent)}
 .q{font-size:1.12rem;line-height:1.55;font-weight:500;margin:6px 0 4px}
 .ans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ans.one{grid-template-columns:1fr}
-.ans button{position:relative;border:0;border-radius:10px;padding:16px 0;font-weight:700;font-size:1.05rem;background:var(--box);color:var(--ink)}
-.ans button.yes{background:var(--teal-box);color:var(--teal)}
-.ans button.yes::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px;background:var(--teal)}
+.ans button{border:0;border-radius:18px;padding:18px 0;font-weight:700;font-size:1.05rem;background:var(--card);color:var(--ink);transition:transform .12s}
+.ans button:active{transform:scale(.98)}
+.ans button.yes{background:var(--accent);color:#fff}
 
 .refsbody{font-size:.84rem;line-height:1.55;color:var(--muted)}
-.refsbody ol{padding-left:0;margin:6px 0;list-style:none}
-.refsbody li{position:relative;padding:9px 12px 9px 40px;border-radius:8px}
+.refsbody ol{padding:6px;margin:6px 0;list-style:none;background:var(--card);border-radius:20px}
+.refsbody li{position:relative;padding:9px 12px 9px 40px;border-radius:14px}
 .refsbody li::before{content:counter(list-item) ".";position:absolute;left:12px;width:22px;text-align:right;font-variant-numeric:tabular-nums}
-.refsbody li:nth-child(odd){background:var(--box)}
+.refsbody li:nth-child(odd){background:var(--bg)}
 .refsbody i{color:var(--ink);font-style:normal;font-weight:500}
 
 /* barra del punteggio CCI in basso */
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 70%,transparent)}
-.dock button{width:100%;max-width:528px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;border-radius:12px;background:var(--ink);color:var(--bg);padding:14px 16px;text-align:left}
+.dock button{width:100%;max-width:528px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;border:0;border-radius:18px;background:var(--ink);color:var(--bg);padding:14px 16px;text-align:left}
 .dock b{font-size:.98rem;display:block;font-variant-numeric:tabular-nums}
 .dock span{font-size:.78rem;opacity:.7;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dock div{min-width:0}
@@ -192,18 +201,18 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 /* pannello a scomparsa delle schede CFS */
 .sheet{position:fixed;inset:0;z-index:30}
 .sheet-bg{position:absolute;inset:0;background:rgba(15,20,28,.38);opacity:0;transition:opacity .25s}
-.sheet-panel{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;max-height:86vh;display:flex;flex-direction:column;background:var(--bg);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.14);transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom)}
+.sheet-panel{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;max-height:86vh;display:flex;flex-direction:column;background:var(--bg);border-radius:22px 22px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.14);transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom)}
 .sheet.open .sheet-bg{opacity:1}
 .sheet.open .sheet-panel{transform:none}
 .sheet-head{position:relative;display:flex;align-items:center;justify-content:center;padding:20px 16px 8px;touch-action:none}
 .sheet-head::before{content:"";position:absolute;top:7px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--line)}
 .sheet-head b{font-size:.9rem;font-weight:600}
-.sheet-head button{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;border:0;background:var(--box);color:var(--muted);display:grid;place-items:center;padding:0}
+.sheet-head button{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;border:0;background:var(--card);color:var(--muted);display:grid;place-items:center;padding:0}
 .sheet-head button svg{width:16px;height:16px}
 .sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:0 16px 20px}
 .sheet-body .lbl{margin:14px 0 2px}
 .sheet-body .lbl:first-child{margin-top:4px}
-.sheet-body .rowlink{padding:7px 2px}
+.sheet-body .rowlink{padding:7px 0}
 .sheet-body .rowlink .th{width:36px;height:46px}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sheet-bg{background:rgba(0,0,0,.55)} :root:not([data-theme="light"]) .sheet-panel{border-top:1px solid var(--line)}}
 :root[data-theme="dark"] .sheet-bg{background:rgba(0,0,0,.55)}
@@ -322,40 +331,43 @@ const CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentC
 const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
 const go = r => { location.hash = r; };
 
-/* icone: Health Icons (healthicons.org, licenza MIT, © 2021 Resolve to Save Lives), come in Osteo Help; provetta, calcolatrice, capsula e icone del percorso disegnate per l'app */
+/* icone del percorso: a linea, disegnate per l'app */
 const ICONS = {
   tube:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h20M17.5 5v31a6.5 6.5 0 0 0 13 0V5"/><path d="M17.5 22h13"/></g>',
-  clip:'<path d="M19 15V18H16V20H19V23H21V20H24V18H21V15H19Z" fill="currentColor"/> <path d="M17 26C16.4477 26 16 26.4477 16 27C16 27.5523 16.4477 28 17 28H31C31.5523 28 32 27.5523 32 27C32 26.4477 31.5523 26 31 26H17Z" fill="currentColor"/> <path d="M16 32C16 31.4477 16.4477 31 17 31H31C31.5523 31 32 31.4477 32 32C32 32.5523 31.5523 33 31 33H17C16.4477 33 16 32.5523 16 32Z" fill="currentColor"/> <path d="M17 36C16.4477 36 16 36.4477 16 37C16 37.5523 16.4477 38 17 38H31C31.5523 38 32 37.5523 32 37C32 36.4477 31.5523 36 31 36H17Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M17 7C17 5.34315 18.3431 4 20 4H28C29.6569 4 31 5.34315 31 7H35C36.6569 7 38 8.34315 38 10V41C38 42.6569 36.6569 44 35 44H13C11.3431 44 10 42.6569 10 41V10C10 8.34315 11.3431 7 13 7H17ZM28 12C29.6569 12 31 10.6569 31 9H35C35.5523 9 36 9.44772 36 10V41C36 41.5523 35.5523 42 35 42H13C12.4477 42 12 41.5523 12 41V10C12 9.44772 12.4477 9 13 9H17C17 10.6569 18.3431 12 20 12H28ZM20 6C19.4477 6 19 6.44772 19 7V9C19 9.55228 19.4477 10 20 10H28C28.5523 10 29 9.55228 29 9V7C29 6.44772 28.5523 6 28 6H20Z" fill="currentColor"/>',
-  grid:'<path d="M11.0104 21.0026C14.6795 20.9646 16.7269 21.3354 20.622 22.9258L21.378 21.0742C17.2509 19.389 14.9401 18.9618 10.9896 19.0027L11.0104 21.0026Z" fill="currentColor"/> <path d="M20.622 26.9258C16.7269 25.3354 14.6795 24.9646 11.0104 25.0026L10.9896 23.0027C14.9401 22.9618 17.2509 23.389 21.378 25.0742L20.622 26.9258Z" fill="currentColor"/> <path d="M11.0104 29.0026C14.6795 28.9646 16.7269 29.3354 20.622 30.9258L21.378 29.0742C17.2509 27.389 14.9401 26.9618 10.9896 27.0027L11.0104 29.0026Z" fill="currentColor"/> <path d="M36.9896 29.0026C33.3205 28.9646 31.2731 29.3354 27.378 30.9258L26.622 29.0742C30.7491 27.389 33.0599 26.9618 37.0103 27.0027L36.9896 29.0026Z" fill="currentColor"/> <path d="M27.378 26.9258C31.2731 25.3354 33.3205 24.9646 36.9896 25.0026L37.0103 23.0027C33.0599 22.9618 30.7491 23.389 26.622 25.0742L27.378 26.9258Z" fill="currentColor"/> <path d="M36.9896 21.0026C33.3205 20.9646 31.2731 21.3354 27.378 22.9258L26.622 21.0742C30.7491 19.389 33.0599 18.9618 37.0103 19.0027L36.9896 21.0026Z" fill="currentColor"/> <path d="M13.5 16V13H11.5V16H13.5Z" fill="currentColor"/> <path d="M17 14V17H15V14H17Z" fill="currentColor"/> <path d="M20.5 18V15H18.5V18H20.5Z" fill="currentColor"/> <path d="M34.5 16V13H36.5V16H34.5Z" fill="currentColor"/> <path d="M31 14V17H33V14H31Z" fill="currentColor"/> <path d="M27.5 18V15H29.5V18H27.5Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M24 11.2401C24.0863 11.2217 24.1723 11.2035 24.2579 11.1855C29.2537 8.7786 33.559 7.04884 39.5261 8.57671C40.4175 8.80494 41 9.61248 41 10.492V10.7733C41.7202 10.9178 42.4658 11.0833 43.2434 11.2707C43.6888 11.378 44 11.7783 44 12.2364V37.7749C44 38.4077 43.4173 38.8804 42.7957 38.7618C36.5832 37.5766 32.3951 37.4936 26.6742 38.3611C26.1781 39.3339 25.1669 40 24 40C22.8331 40 21.8219 39.3339 21.3258 38.3611C15.6049 37.4936 11.4168 37.5766 5.20425 38.7618C4.58268 38.8804 4 38.4077 4 37.7749V12.2364C4 11.7783 4.31119 11.378 4.75659 11.2707C5.53424 11.0833 6.27982 10.9178 7 10.7733V10.492C7 9.61248 7.58253 8.80494 8.47389 8.57671C14.441 7.04884 18.7464 8.77861 23.7421 11.1855C23.8277 11.2035 23.9136 11.2217 24 11.2401ZM25 13.0471C29.9792 10.6426 33.7339 9.16738 39 10.5065V33.0552C39 33.0552 38.9967 33.0602 38.9925 33.0635C38.9782 33.075 38.9597 33.0801 38.9396 33.0764C34.0407 32.1775 30.259 33.1127 26.1446 34.9023C25.8272 34.5778 25.4368 34.3251 25 34.1707V13.0471ZM23 13.0481L23 34.1707C22.5632 34.3251 22.1728 34.5778 21.8554 34.9023C17.741 33.1127 13.9593 32.1775 9.06045 33.0764C9.04034 33.0801 9.02183 33.075 9.00746 33.0635L9.00594 33.0622C9.00252 33.059 9 33.0552 9 33.0552V10.5065C14.2661 9.16738 18.0208 10.6436 23 13.0481ZM42 13.0333C41.6604 12.9558 41.3273 12.883 41 12.8146V33.0552C41 34.3654 39.7896 35.2657 38.5786 35.0435C34.8028 34.3507 31.7784 34.8512 28.5061 36.0963C33.0792 35.5628 36.9344 35.6943 42 36.5827V13.0333ZM19.4939 36.0963C16.2217 34.8512 13.1972 34.3507 9.42139 35.0435C8.2104 35.2657 7 34.3654 7 33.0552V12.8146C6.67271 12.883 6.33962 12.9558 6 13.0333V36.5827C11.0656 35.6943 14.9209 35.5628 19.4939 36.0963Z" fill="currentColor"/>',
-  book:'<path d="M30 19L25 19V14H23V19L18 19V21H23V26H25V21H30V19Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M9 10C9 7.23858 11.2386 5 14 5H38C38.5523 5 39 5.44772 39 6V36C39 36.5523 38.5523 37 38 37H14C12.3431 37 11 38.3431 11 40V41H38V43H10C9.44772 43 9 42.5523 9 42V10ZM14 35C12.8744 35 11.8357 35.3719 11 35.9996V10C11 8.34315 12.3431 7 14 7H37V35H14Z" fill="currentColor"/>',
-  calc:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="6" width="26" height="36" rx="3"/><rect x="16" y="11" width="16" height="7" rx="1"/></g><g fill="currentColor"><circle cx="17.5" cy="25" r="1.8"/><circle cx="24" cy="25" r="1.8"/><circle cx="30.5" cy="25" r="1.8"/><circle cx="17.5" cy="31" r="1.8"/><circle cx="24" cy="31" r="1.8"/><circle cx="30.5" cy="31" r="1.8"/><circle cx="17.5" cy="37" r="1.8"/><circle cx="24" cy="37" r="1.8"/><circle cx="30.5" cy="37" r="1.8"/></g>',
   pill:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10.7 25.9l15.2-15.2a7.5 7.5 0 0 1 10.6 10.6L21.3 36.5a7.5 7.5 0 0 1-10.6-10.6z"/><path d="M18.3 18.3l10.6 10.6"/></g>',
   rx:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="5" width="30" height="38" rx="3"/><rect x="19" y="11" width="10" height="6" rx="2"/><rect x="19" y="21" width="10" height="6" rx="2"/><rect x="19" y="31" width="10" height="6" rx="2"/></g>',
   dexa:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 33h38M10 33v7M38 33v7"/><path d="M12 33V13a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4v5"/><path d="M26 18h11"/><circle cx="18" cy="27" r="2.6"/><path d="M23 28h13"/></g>',
   iv:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5h18a2 2 0 0 1 2 2v19a11 11 0 0 1-22 0V7a2 2 0 0 1 2-2z"/><path d="M19 14h7M19 20h4"/><path d="M24 37v6"/></g>',
   steth:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h5M24 6h5"/><path d="M13 6v10a7 7 0 0 0 14 0V6"/><path d="M20 23v7a8 8 0 0 0 16 0v-5"/><circle cx="36" cy="21" r="4"/></g>',
 };
+/* icone delle tessere della home (tratto sottile, 24×24) */
+const TILE_IC = {
+  clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 10h7M8.5 14h7M8.5 18h4"/></svg>',
+  go:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>',
+  cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="4" width="12" height="15" rx="2"/><path d="M4.5 8v10a2 2 0 0 0 2 2H15"/></svg>',
+  calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><rect x="8" y="6" width="8" height="4" rx="1"/><path d="M8.5 14h.01M12 14h.01M15.5 14h.01M8.5 17.5h.01M12 17.5h.01M15.5 17.5h.01"/></svg>',
+  tube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v14a2 2 0 0 0 4 0V3M10 11h4"/></svg>',
+  pill:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5.6 13.4 7.8-7.8a4 4 0 0 1 5.6 5.6l-7.8 7.8a4 4 0 0 1-5.6-5.6z"/><path d="m9.5 9.5 5 5"/></svg>'
+};
 const ic = name => `<svg class="ic" viewBox="0 0 48 48" aria-hidden="true">${ICONS[name]||""}</svg>`;
 const kat = g => `<span class="kat k-${GROUPS[g].color}">${GROUPS[g].label}</span>`;
-const entry = (href, title, sub, cls, icon) => `<a class="entry ${cls||""}" href="#${href}">${icon?ic(icon):""}<div><b>${title}</b>${sub?`<small>${sub}</small>`:""}</div>${CHEV}</a>`;
 const head = (title, sub, group) => `${group?`<div class="katrow">${kat(group)}</div>`:""}<h1>${title}</h1><div class="rule"></div>${sub?`<p class="sub">${sub}</p>`:""}`;
 const acc = (title, body, icon) => `<details class="acc"><summary>${icon ? ic(icon) : ""}<span>${title}</span>${CHEV}</summary><div class="accbody">${body}</div></details>`;
 const numList = items => `<ul class="list">${items.map((t,i) => `<li><i>${i+1}</i><span>${t}</span></li>`).join("")}</ul>`;
 
 /* ---------- home ---------- */
 function vHome(){
-  return { bar:"Osteoclick", html: head("Fracture Liaison Service", "Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.") + `
-    <div class="stack">
-      ${entry("cfs-1", "Questionario CFS", "Valuta la fragilità clinica e individua il percorso", "blue big", "clip")}
-      <button type="button" class="entry teal big" data-sheet-open>${ic("grid")}<div><b>Schede CFS</b><small>Le 9 categorie, raggruppate per percorso</small></div>${CHEV}</button>
+  return { bar:"Osteoclick", html: `
+    <h1 class="home-h">Fracture Liaison Service</h1>
+    <p class="sub">Frattura di femore da fragilità, secondo il Protocollo FLS dell'ULSS 6 Euganea.</p>
+    <div class="tiles">
+      <a class="tile tile-main" href="#cfs-1"><div class="tile-top">${TILE_IC.clip}<span class="tile-go">${TILE_IC.go}</span></div><div><b>Questionario CFS</b><small>Valuta la fragilità e individua il percorso</small></div></a>
+      <button type="button" class="tile tile-row" data-sheet-open><span class="tile-l">${TILE_IC.cards}<b>Schede CFS</b></span><em>1–9</em></button>
+      <a class="tile tile-sq" href="#cci">${TILE_IC.calc}<div><b>CCI</b><small>Gruppo A</small></div></a>
+      <a class="tile tile-sq" href="#esami">${TILE_IC.tube}<div><b>Esami</b><small>Laboratorio e imaging</small></div></a>
+      <a class="tile tile-row" href="#vitd"><span class="tile-l">${TILE_IC.pill}<b>Vitamina D</b></span><em>Correzione</em></a>
     </div>
-    <p class="lbl">Consulta</p>
-    <div class="rows">
-      <a class="rowlink" href="#cci">${ic("calc")}<span>Charlson Comorbidity Index<small>Corretto per l'età, per il Gruppo A</small></span>${CHEV}</a>
-      <a class="rowlink" href="#esami">${ic("tube")}<span>Esami<small>Laboratorio e imaging, e a chi richiederli</small></span>${CHEV}</a>
-      <a class="rowlink" href="#vitd">${ic("pill")}<span>Correzione della vitamina D<small>Per tutti i gruppi</small></span>${CHEV}</a>
-    </div>
-    <p class="foot">Secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea.<br>Ausilio al ragionamento clinico, non sostitutivo del giudizio specialistico.<br><a href="#fonti">Fonti</a></p>` };
+    <p class="foot">Ausilio al ragionamento clinico · <a href="#fonti">Fonti</a></p>` };
 }
 
 /* ---------- questionario ---------- */
@@ -639,7 +651,7 @@ function paintThemeBtn(){
   const d = isDark(), b = $("#theme");
   b.classList.toggle("dark", d);
   b.setAttribute("aria-label", d ? "Passa al tema chiaro" : "Passa al tema scuro");
-  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute("content", d ? "#12161D" : "#FFFFFF"));
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute("content", d ? "#12161D" : "#F3F4F6"));
 }
 function setTheme(t){
   document.documentElement.dataset.theme = t;
@@ -675,7 +687,9 @@ function render(){
   const changed = route !== current; current = route;
   closeSheet(true);
   $("#main").innerHTML = `<div class="screen">${v.html}</div>`;
-  $("#barT").textContent = v.bar;
+  // in home la barra mostra il marchio OC accanto al nome
+  $(".bar").classList.toggle("home", !route);
+  if(route) $("#barT").textContent = v.bar; else $("#barT").innerHTML = `<span class="oc">OC</span>${v.bar}`;
   $("#back").style.visibility = route ? "visible" : "hidden";
   $("#theme").hidden = !!route; $("#act").hidden = !route;
   $("#act").textContent = v.act ? v.act[0] : ""; actFn = v.act ? v.act[1] : null;
