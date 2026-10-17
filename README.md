@@ -21,4 +21,6 @@ App single-file, offline-capable, pensata per essere pubblicata su GitHub Pages.
 
 - **Questionario C.F.S.**: 9 domande sequenziali per determinare la categoria di fragilità clinica del paziente
 - **Schede visive**: consultazione diretta delle 9 categorie CFS, raggruppate per percorso diagnostico-terapeutico
-- Percorso diagnostico-terapeutico automatico in base al gruppo di fragilità (1: CFS 1–4, 2: CFS 5–7, 3: CFS 8–9)
+- Percorso diagnostico-terapeutico automatico in base al gruppo di fragilità (A: CFS 1–4, B: CFS 5–7, C: CFS 8–9), secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea
+- **Calcolatore Charlson Comorbidity Index (CCI)** per il Gruppo A, corretto per l'età: CCI ≥ 6 → percorso del Gruppo B; CCI < 6 → pannello diagnostico completo e Bone Specialist
+- Correzione del deficit di vitamina D per tutti i gruppi
