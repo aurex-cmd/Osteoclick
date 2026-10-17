@@ -107,6 +107,11 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 .pic img{display:block;width:100%;height:auto}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(.pic,.rowlink .th){filter:brightness(.92)}}
 :root[data-theme="dark"] :is(.pic,.rowlink .th){filter:brightness(.92)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) details.acc > summary > img{filter:brightness(.92)}}
+:root[data-theme="dark"] details.acc > summary > img{filter:brightness(.92)}
+.homehead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.homehead h1{flex:1;min-width:0}
+.homehead img{width:84px;height:auto;flex:0 0 auto;margin-top:2px}
 
 /* elenchi */
 .list{list-style:none;margin:0;padding:0}
@@ -124,7 +129,8 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 details.acc{border-bottom:1px solid var(--line)}
 details.acc > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 2px;cursor:pointer;font-weight:700}
 details.acc > summary::-webkit-details-marker{display:none}
-details.acc > summary > span:first-child{flex:1;min-width:0}
+details.acc > summary > span{flex:1;min-width:0}
+details.acc > summary > img{width:36px;height:36px;flex:0 0 auto;object-fit:contain;background:#fff;border-radius:9px;padding:2px}
 details.acc[open] > summary .chev{transform:rotate(90deg)}
 .accbody{padding:0 2px 14px;display:flex;flex-direction:column;gap:6px}
 
@@ -297,12 +303,12 @@ const ic = name => `<svg class="ic" viewBox="0 0 48 48" aria-hidden="true">${ICO
 const kat = g => `<span class="kat k-${GROUPS[g].color}">${GROUPS[g].label}</span>`;
 const entry = (href, title, sub, cls, icon) => `<a class="entry ${cls||""}" href="#${href}">${icon?ic(icon):""}<div><b>${title}</b>${sub?`<small>${sub}</small>`:""}</div>${CHEV}</a>`;
 const head = (title, sub, group) => `${group?`<div class="katrow">${kat(group)}</div>`:""}<h1>${title}</h1><div class="rule"></div>${sub?`<p class="sub">${sub}</p>`:""}`;
-const acc = (title, body) => `<details class="acc"><summary><span>${title}</span>${CHEV}</summary><div class="accbody">${body}</div></details>`;
+const acc = (title, body, img) => `<details class="acc"><summary>${img ? `<img src="img/${img}.jpg" alt="">` : ""}<span>${title}</span>${CHEV}</summary><div class="accbody">${body}</div></details>`;
 const numList = items => `<ul class="list">${items.map((t,i) => `<li><i>${i+1}</i><span>${t}</span></li>`).join("")}</ul>`;
 
 /* ---------- home ---------- */
 function vHome(){
-  return { bar:"Osteoclick", html: head("Fracture Liaison Service", "Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.") + `
+  return { bar:"Osteoclick", html: `<div class="homehead"><h1>Fracture Liaison Service</h1><img src="img/osso.png" width="500" height="378" alt=""></div><div class="rule"></div><p class="sub">Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.</p>` + `
     <div class="stack">
       ${entry("cfs-1", "Questionario CFS", "Valuta la fragilità clinica e individua il percorso", "blue big", "clip")}
       ${entry("schede", "Schede CFS", "Le 9 categorie, raggruppate per percorso", "teal big", "grid")}
@@ -370,8 +376,8 @@ function vitDBody(beforeTherapy){
 }
 // Gruppo B (§7.4), anche per il Gruppo A con CCI ≥ 6
 function pathB(){
-  return acc("Esami di laboratorio", panelsHTML([1])) +
-    acc("Correzione vitamina D", vitDBody(true)) +
+  return acc("Esami di laboratorio", panelsHTML([1]), "esami") +
+    acc("Correzione vitamina D", vitDBody(true), "farmaco") +
     acc("Trattamento", `
       <p class="note">Supplementazione di calcio/vitamina D.</p>
       <p class="note">Terapia anti-fratturativa di prima scelta: <b>acido zoledronico 5 mg EV</b> (infusione minima 30 minuti), durante il ricovero o, se la degenza non lo consente, nel setting di destinazione.</p>
@@ -384,26 +390,26 @@ function pathB(){
         "<b>Valutazione odontoiatrica</b>: escludere patologie odontoiatriche attive, anche con ortopantomografia (OPT) o dental scan se il paziente non mantiene la stazione eretta o seduta stabile.",
         "<b>Somministrazione</b>: infusione endovenosa in almeno 30 minuti.",
         "<b>Effetti attesi</b>: informare sulla possibile sindrome simil-influenzale nelle 24–72 ore."]) +
-      `<p class="small">Rispettare i criteri di rimborsabilità della Nota AIFA 79.</p>`);
+      `<p class="small">Rispettare i criteri di rimborsabilità della Nota AIFA 79.</p>`, "flebo");
 }
 // Gruppo A con CCI < 6 (§7.3)
 function pathAFull(){
-  return acc("Esami di laboratorio", panelsHTML([1,2,3])) +
-    acc("Rx della colonna", `<p class="note">Rx della colonna dorso-lombosacrale con quesito clinico "morfometria vertebrale", durante la degenza, per escludere fratture vertebrali misconosciute.</p>`) +
-    acc("Densitometria", `<p class="note">DEXA del rachide lombare e del femore controlaterale, se non già eseguita negli ultimi 18 mesi.</p>`) +
-    acc("Correzione vitamina D", vitDBody(true)) +
+  return acc("Esami di laboratorio", panelsHTML([1,2,3]), "esami") +
+    acc("Rx della colonna", `<p class="note">Rx della colonna dorso-lombosacrale con quesito clinico "morfometria vertebrale", durante la degenza, per escludere fratture vertebrali misconosciute.</p>`, "rx") +
+    acc("Densitometria", `<p class="note">DEXA del rachide lombare e del femore controlaterale, se non già eseguita negli ultimi 18 mesi.</p>`, "dexa") +
+    acc("Correzione vitamina D", vitDBody(true), "farmaco") +
     acc("Trattamento e Bone Specialist", `
       <p class="note">Supplementazione di calcio/vitamina D, avviata dal Bone Coordinator.</p>
       <p class="note">Presa in carico da parte del <b>Bone Specialist</b>, che definisce la terapia anti-fratturativa individualizzata (es. teriparatide, romosozumab, denosumab, altri) e ne assicura il follow-up.</p>
-      <p class="note">Se la valutazione non è conclusa alla dimissione, indicare in lettera modalità e tempi della presa in carico specialistica.</p>`);
+      <p class="note">Se la valutazione non è conclusa alla dimissione, indicare in lettera modalità e tempi della presa in carico specialistica.</p>`, "ambulatorio");
 }
 // Gruppo C (§7.5)
 function pathC(){
-  return acc("Esami di laboratorio", panelsHTML([1])) +
-    acc("Correzione vitamina D", vitDBody(false)) +
+  return acc("Esami di laboratorio", panelsHTML([1]), "esami") +
+    acc("Correzione vitamina D", vitDBody(false), "farmaco") +
     acc("Trattamento", `
       <p class="note">Supplementazione di calcio/vitamina D, <b>senza avvio di terapia anti-fratturativa</b>.</p>
-      <p class="note">Con fragilità clinica severa o aspettativa di vita limitata, il tempo residuo è inferiore a quello necessario perché la terapia anti-fratturativa dia un beneficio clinicamente rilevante, mentre resta il rischio di eventi avversi: il rapporto rischio/beneficio è sfavorevole.</p>`);
+      <p class="note">Con fragilità clinica severa o aspettativa di vita limitata, il tempo residuo è inferiore a quello necessario perché la terapia anti-fratturativa dia un beneficio clinicamente rilevante, mentre resta il rischio di eventi avversi: il rapporto rischio/beneficio è sfavorevole.</p>`, "farmaco");
 }
 
 /* ---------- CCI ---------- */
