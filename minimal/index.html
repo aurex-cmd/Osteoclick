@@ -153,7 +153,11 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 .ages button{border:0;background:transparent;padding:7px 0;border-radius:7px;font-weight:600;font-size:.88rem;color:var(--muted);line-height:1.25}
 .ages button small{display:block;font-size:.72rem;font-weight:500}
 .ages button[aria-pressed="true"]{background:var(--bg);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.btn{width:100%;border:0;border-radius:12px;background:var(--ink);color:var(--bg);padding:14px 16px;font-weight:700;font-size:.98rem}
+.btn{width:100%;border:0;border-radius:12px;background:var(--blue-box);color:var(--blue);padding:14px 16px;font-weight:700;font-size:.98rem}
+.btn.ghost{background:var(--box);color:var(--muted);font-weight:600;font-size:.9rem;padding:12px 16px;margin-top:6px}
+.cci-sum{display:flex;align-items:center;gap:12px;width:100%;border:0;text-align:left;font:inherit;color:inherit}
+.cci-sum > span{flex:1;min-width:0}
+.cci-sum em{font-style:normal;font-size:.8rem;font-weight:600;color:var(--muted);white-space:nowrap}
 .small{font-size:.8rem;color:var(--muted);line-height:1.55;margin:0}
 
 /* questionario */
@@ -487,20 +491,36 @@ function cciScore(){
   cci.cond.forEach(i => { s += CCI_CONDITIONS[i].pts; });
   return s;
 }
+function cciResult(s){
+  return s >= 6
+    ? { cls:"d", text:"CCI ≥ 6: si segue il percorso diagnostico-terapeutico del Gruppo B." }
+    : { cls:"t", text:"CCI &lt; 6: pannello diagnostico completo e presa in carico da parte del Bone Specialist." };
+}
 function cciOutHTML(){
   const s = cciScore();
   if(s === null) return `<p class="hint">Seleziona l'età per calcolare il CCI.</p>`;
-  return s >= 6
-    ? `<div class="altb d"><b>CCI = ${s}</b><small>CCI ≥ 6: si segue il percorso diagnostico-terapeutico del Gruppo B.</small></div>`
-    : `<div class="altb t"><b>CCI = ${s}</b><small>CCI &lt; 6: pannello diagnostico completo e presa in carico da parte del Bone Specialist.</small></div>`;
+  const r = cciResult(s);
+  return `<div class="altb ${r.cls}"><b>CCI = ${s}</b><small>${r.text}</small></div>`;
 }
 function cciPathHTML(){
   const s = cciScore();
   if(s === null) return "";
   return `<p class="lbl">Percorso</p><div>${s >= 6 ? pathB() : pathAFull()}</div>`;
 }
+/* calcolatore ridotto: pulsante Calcola, oppure il risultato già calcolato che riapre il calcolatore */
+function cciBoxHTML(forceOpen){
+  if(cci.open || forceOpen) return cciCalcHTML(!forceOpen);
+  const s = cciScore();
+  if(s === null) return `<button type="button" class="btn" data-cci-open>Calcola</button>`;
+  const r = cciResult(s);
+  return `<button type="button" class="altb ${r.cls} cci-sum" data-cci-open><span><b>CCI = ${s}</b><small>${r.text}</small></span><em>Modifica</em></button>`;
+}
 function cciHTML(withPath, forceOpen){
-  if(!cci.open && !forceOpen) return `<button type="button" class="btn" data-cci-open>Calcola</button>`;
+  const s = cciScore(), branch = s === null ? "" : s >= 6 ? "B" : "A";
+  return `<div id="cciBox">${cciBoxHTML(forceOpen)}</div>` +
+    (withPath ? `<div id="cciPath" data-branch="${branch}">${cciPathHTML()}</div>` : "");
+}
+function cciCalcHTML(canClose){
   let conds = "";
   [1,2,3,6].forEach(pts => {
     conds += `<p class="pn" style="margin-top:10px">${pts} ${pts === 1 ? "punto" : "punti"}</p><div>` +
@@ -514,7 +534,7 @@ function cciHTML(withPath, forceOpen){
       <p class="small">Solo le condizioni elencate e documentate (non sospette). Per le malattie con forme di diversa gravità conta solo la più grave.</p>
       ${conds}
     </div></details>
-    ${withPath ? `<div id="cciPath">${cciPathHTML()}</div>` : ""}`;
+    ${canClose ? `<button type="button" class="btn ghost" data-cci-close>Riduci il calcolatore</button>` : ""}`;
 }
 function vCCI(){
   return { bar:"CCI", act:["Azzera", () => { cci.age = null; cci.cond.clear(); render(); }], html:
@@ -541,7 +561,16 @@ function updateCCI(){
   p.dataset.branch = branch; p.innerHTML = cciPathHTML();
 }
 document.addEventListener("click", e => {
-  if(e.target.closest("[data-cci-open]")){ cci.open = true; render(); return; }
+  const t = e.target.closest("[data-cci-open],[data-cci-close]");
+  if(t){
+    cci.open = t.hasAttribute("data-cci-open");
+    const box = $("#cciBox");
+    box.innerHTML = cciBoxHTML(false);
+    updateDock();
+    // riducendo dal fondo dell'elenco, riporta in vista il riquadro del CCI
+    if(!cci.open && box.getBoundingClientRect().top < 56) window.scrollTo({ top: box.getBoundingClientRect().top + window.scrollY - 70 });
+    return;
+  }
   const a = e.target.closest("[data-age]");
   if(a){
     cci.age = +a.dataset.age;
