@@ -18,27 +18,29 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; fondo bianco e card grigio tenue; solo la home ha fondo grigio chiaro e tessere bianche con un filo di contorno */
+/* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; fondo bianco senza card colorate; solo la home ha fondo grigio chiaro e tessere bianche con un filo di contorno */
 :root{
-  --bg:#FFFFFF; --card:#F4F5F7; --edge:#E3E7EC; --home-bg:#F3F4F6; --home-card:#FFFFFF; --ink:#172231; --muted:#6B7584; --faint:#B5BECA; --line:#E6E9EE;
+  --bg:#FFFFFF; --card:#FFFFFF; --fill:#F4F5F7; --page-bg:#FFFFFF; --page-card:#FFFFFF; --page-fill:#F4F5F7; --cardpad:0px; --edge:#E3E7EC; --home-bg:#F3F4F6; --home-card:#FFFFFF; --ink:#172231; --muted:#6B7584; --faint:#B5BECA; --line:#E6E9EE;
   --box:#E8EBEF; --accent:#2B587D; --blue:#6A5C92; --blue-box:#F1EEFB; --teal:#0E7571; --teal-box:#E3F4F3; --focus:#2F5F96; --tile:#FFFFFF;
   --coral:#B04E37; --coral-box:#F7EBE7; --amber:#9A6B1F;
   --sans:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12161D; --card:#1B212A; --edge:#2A323E; --home-bg:#12161D; --home-card:#1B212A; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
+  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --page-bg:#12161D; --page-card:#1B212A; --page-fill:#1B212A; --cardpad:16px; --edge:#2A323E; --home-bg:#12161D; --home-card:#1B212A; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
   --box:#262E39; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
   --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62; color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#12161D; --card:#1B212A; --edge:#2A323E; --home-bg:#12161D; --home-card:#1B212A; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
+  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --page-bg:#12161D; --page-card:#1B212A; --page-fill:#1B212A; --cardpad:16px; --edge:#2A323E; --home-bg:#12161D; --home-card:#1B212A; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
   --box:#262E39; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
   --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62; color-scheme:dark }
 
 *{box-sizing:border-box}
 /* testi leggermente più grandi di Osteo Help: tutte le misure in rem seguono questa base */
 html{-webkit-text-size-adjust:100%;font-size:108%}
-body.is-home{--bg:var(--home-bg);--card:var(--home-card)}
+body.is-home{--bg:var(--home-bg);--card:var(--home-card);--fill:var(--home-card)}
+/* il pannello delle schede si apre sulla home ma ha il fondo bianco delle altre schermate */
+.sheet{--bg:var(--page-bg);--card:var(--page-card);--fill:var(--page-fill)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -55,7 +57,7 @@ a{color:inherit;text-decoration:none}
 .bar #back svg{width:22px;height:22px}
 .bar #act{justify-self:end}
 .bar #act:hover,.bar #back:hover{color:var(--ink)}
-.bar #theme{grid-column:3;grid-row:1;justify-self:end;width:42px;height:42px;border-radius:50%;border:0;background:var(--card);color:var(--ink);display:grid;place-items:center;padding:0;transition:background .2s}
+.bar #theme{grid-column:3;grid-row:1;justify-self:end;width:42px;height:42px;border-radius:50%;border:0;background:var(--fill);color:var(--ink);display:grid;place-items:center;padding:0;transition:background .2s}
 .bar #act{grid-column:3;grid-row:1}
 .bar.home .bar-in{grid-template-columns:1fr 72px}
 .bar.home #back{display:none}
@@ -107,7 +109,7 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 .stack{display:flex;flex-direction:column;gap:8px}
 
 /* righe semplici */
-.rows{display:flex;flex-direction:column;background:var(--card);border-radius:20px;padding:0 16px}
+.rows{display:flex;flex-direction:column;background:var(--card);border-radius:20px;padding:0 var(--cardpad)}
 .rowlink{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:13px 0;font-weight:600;font-size:.95rem}
 .rowlink:last-child{border-bottom:0}
 .rowlink small{display:block;font-weight:400;color:var(--muted);font-size:.8rem;margin-top:1px}
@@ -134,7 +136,7 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 .xlink{color:var(--focus);font-weight:600;font-size:.9rem}
 
 /* accordion */
-details.acc{background:var(--card);border-radius:18px;padding:0 16px}
+details.acc{background:var(--card);border-radius:18px;padding:0 var(--cardpad)}
 details.acc + details.acc{margin-top:8px}
 details.acc > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:15px 0;cursor:pointer;font-weight:700}
 details.acc > summary::-webkit-details-marker{display:none}
@@ -168,7 +170,7 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 /* pulsante Calcola nel blu dell'app originale, uguale nei due temi */
 .btn{width:100%;border:0;border-radius:18px;background:#2B587D;color:#fff;padding:16px;font-weight:700;font-size:.98rem}
 .btn:active{background:#1E4560}
-.btn.ghost{background:var(--card);color:var(--muted);font-weight:600;font-size:.9rem;padding:12px 16px;margin-top:6px}
+.btn.ghost{background:var(--fill);color:var(--muted);font-weight:600;font-size:.9rem;padding:12px 16px;margin-top:6px}
 .cci-sum{display:flex;align-items:center;gap:12px;width:100%;border:0;text-align:left;font:inherit;color:inherit}
 .cci-sum > span{flex:1;min-width:0}
 .cci-sum em{font-style:normal;font-size:.8rem;font-weight:600;color:var(--muted);white-space:nowrap}
@@ -180,7 +182,7 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 .q{font-size:1.12rem;line-height:1.55;font-weight:500;margin:6px 0 4px}
 .ans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ans.one{grid-template-columns:1fr}
-.ans button{border:0;border-radius:18px;padding:18px 0;font-weight:700;font-size:1.05rem;background:var(--card);color:var(--ink);transition:transform .12s}
+.ans button{border:0;border-radius:18px;padding:18px 0;font-weight:700;font-size:1.05rem;background:var(--fill);color:var(--ink);transition:transform .12s}
 .ans button:active{transform:scale(.98)}
 .ans button.yes{background:var(--accent);color:#fff}
 
@@ -208,7 +210,7 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 .sheet-head{position:relative;display:flex;align-items:center;justify-content:center;padding:20px 16px 8px;touch-action:none}
 .sheet-head::before{content:"";position:absolute;top:7px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--line)}
 .sheet-head b{font-size:.9rem;font-weight:600}
-.sheet-head button{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;border:0;background:var(--card);color:var(--muted);display:grid;place-items:center;padding:0}
+.sheet-head button{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;border:0;background:var(--fill);color:var(--muted);display:grid;place-items:center;padding:0}
 .sheet-head button svg{width:16px;height:16px}
 .sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:0 16px 20px}
 .sheet-body .lbl{margin:14px 0 2px}

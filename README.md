@@ -2,7 +2,7 @@
 
 Algoritmo decisionale Fracture Liaison Service, basato sulla Clinical Frailty Scale (CFS), per la valutazione del paziente con frattura di femore ricoverato in Ortopedia, secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea.
 
-L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`. Interfaccia minimale: una schermata per volta, home a fondo grigio chiaro con tessere bianche, resto su fondo bianco con card grigio tenue, home a griglia di tessere, carattere Manrope, tema chiaro/scuro.
+L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`. Interfaccia minimale: una schermata per volta, home a fondo grigio chiaro con tessere bianche, resto su fondo bianco, home a griglia di tessere, carattere Manrope, tema chiaro/scuro.
 
 ## Come si usa
 
