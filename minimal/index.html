@@ -68,6 +68,7 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 .lbl{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 -6px}
 .hint{color:var(--muted);font-size:.9rem;margin:0}
 .foot{font-size:.74rem;color:var(--muted);line-height:1.5;text-align:center;margin:28px 0 0}
+.foot a{color:var(--focus);font-weight:600}
 
 /* ingressi */
 .entry{position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;background:var(--box);border-radius:10px;padding:16px 14px 16px 19px}
@@ -180,6 +181,26 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 .dock div{min-width:0}
 .dock svg{width:18px;height:18px;flex:0 0 auto}
 
+/* pannello a scomparsa delle schede CFS */
+.sheet{position:fixed;inset:0;z-index:30}
+.sheet-bg{position:absolute;inset:0;background:rgba(15,20,28,.38);opacity:0;transition:opacity .25s}
+.sheet-panel{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;max-height:86vh;display:flex;flex-direction:column;background:var(--bg);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.14);transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom)}
+.sheet.open .sheet-bg{opacity:1}
+.sheet.open .sheet-panel{transform:none}
+.sheet-head{position:relative;display:flex;align-items:center;justify-content:center;padding:20px 16px 8px;touch-action:none}
+.sheet-head::before{content:"";position:absolute;top:7px;left:50%;width:36px;height:4px;margin-left:-18px;border-radius:2px;background:var(--line)}
+.sheet-head b{font-size:.9rem;font-weight:600}
+.sheet-head button{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:50%;border:0;background:var(--box);color:var(--muted);display:grid;place-items:center;padding:0}
+.sheet-head button svg{width:16px;height:16px}
+.sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:0 16px 20px}
+.sheet-body .lbl{margin:14px 0 2px}
+.sheet-body .lbl:first-child{margin-top:4px}
+.sheet-body .rowlink{padding:7px 2px}
+.sheet-body .rowlink .th{width:36px;height:46px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sheet-bg{background:rgba(0,0,0,.55)} :root:not([data-theme="light"]) .sheet-panel{border-top:1px solid var(--line)}}
+:root[data-theme="dark"] .sheet-bg{background:rgba(0,0,0,.55)}
+:root[data-theme="dark"] .sheet-panel{border-top:1px solid var(--line)}
+
 @media (max-width:380px){ h1{font-size:1.6rem} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 @media print{ .bar,.dock{display:none!important} }
@@ -197,6 +218,14 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 </header>
 
 <main id="main"></main>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-bg" data-sheet-close></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetT">
+    <div class="sheet-head" id="sheetHead"><b id="sheetT">Schede CFS</b><button type="button" data-sheet-close aria-label="Chiudi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
 
 <div class="dock" id="dock" hidden><button type="button" id="dockBtn"><div><b id="dockT"></b><span id="dockS"></span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></button></div>
 
@@ -310,16 +339,15 @@ function vHome(){
   return { bar:"Osteoclick", html: head("Fracture Liaison Service", "Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.") + `
     <div class="stack">
       ${entry("cfs-1", "Questionario CFS", "Valuta la fragilità clinica e individua il percorso", "blue big", "clip")}
-      ${entry("schede", "Schede CFS", "Le 9 categorie, raggruppate per percorso", "teal big", "grid")}
+      <button type="button" class="entry teal big" data-sheet-open>${ic("grid")}<div><b>Schede CFS</b><small>Le 9 categorie, raggruppate per percorso</small></div>${CHEV}</button>
     </div>
     <p class="lbl">Consulta</p>
     <div class="rows">
       <a class="rowlink" href="#cci">${ic("calc")}<span>Charlson Comorbidity Index<small>Corretto per l'età, per il Gruppo A</small></span>${CHEV}</a>
       <a class="rowlink" href="#esami">${ic("tube")}<span>Esami di laboratorio<small>Pannelli 1–3 e a chi richiederli</small></span>${CHEV}</a>
       <a class="rowlink" href="#vitd">${ic("pill")}<span>Correzione della vitamina D<small>Per tutti i gruppi</small></span>${CHEV}</a>
-      <a class="rowlink" href="#fonti">${ic("book")}<span>Fonti</span>${CHEV}</a>
     </div>
-    <p class="foot">Secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea.<br>Ausilio al ragionamento clinico, non sostitutivo del giudizio specialistico.</p>` };
+    <p class="foot">Secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea · <a href="#fonti">Fonti</a><br>Ausilio al ragionamento clinico, non sostitutivo del giudizio specialistico.</p>` };
 }
 
 /* ---------- questionario ---------- */
@@ -341,18 +369,58 @@ function vDomanda(n){
       "In caso di dubbio tra due categorie, assegnare il livello di minor fragilità."])}`}` };
 }
 
-/* ---------- schede ---------- */
-function vSchede(){
-  const h = ["A","B","C"].map(g => `<p class="lbl">${GROUPS[g].label}</p><div class="rows">` +
+/* ---------- schede: pannello a scomparsa dalla home ---------- */
+function schedeHTML(){
+  return ["A","B","C"].map(g => `<p class="lbl">${GROUPS[g].label}</p><div class="rows">` +
     CFS.filter(c => c.group === g).map(c => `<a class="rowlink" href="#scheda-${c.id}"><img class="th" src="img/cfs-${c.id}-thumb.jpg" alt="" loading="lazy"><span>${c.en}<small>CFS ${c.id} · ${c.it}</small></span>${CHEV}</a>`).join("") +
     `</div>`).join("");
-  return { bar:"Schede CFS", html: head("Clinical Frailty Scale", "Le categorie raggruppate per percorso diagnostico-terapeutico.") + h };
 }
+let reopenSheet = false;   // tornando indietro da una scheda aperta dal pannello, il pannello si riapre
+function openSheet(){
+  const sh = $("#sheet");
+  if(!sh.hidden) return;
+  $("#sheetBody").innerHTML = schedeHTML();
+  sh.hidden = false;
+  sh.offsetHeight;   // fa partire la transizione dallo stato chiuso
+  sh.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeSheet(instant){
+  const sh = $("#sheet");
+  if(sh.hidden) return;
+  sh.classList.remove("open");
+  $(".sheet-panel").style.transform = "";
+  document.body.style.overflow = "";
+  if(instant) sh.hidden = true;
+  else setTimeout(() => { if(!sh.classList.contains("open")) sh.hidden = true; }, 300);
+}
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-sheet-open]")){ openSheet(); return; }
+  if(e.target.closest("[data-sheet-close]")){ closeSheet(); return; }
+  if(e.target.closest("#sheet a")){ reopenSheet = true; closeSheet(true); }
+});
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
+/* trascinando in giù l'intestazione il pannello si chiude */
+(function(){
+  let y0 = null, dy = 0;
+  const panel = () => $(".sheet-panel");
+  $("#sheetHead").addEventListener("touchstart", e => { y0 = e.touches[0].clientY; dy = 0; panel().style.transition = "none"; }, {passive:true});
+  $("#sheetHead").addEventListener("touchmove", e => {
+    if(y0 === null) return;
+    dy = Math.max(0, e.touches[0].clientY - y0);
+    panel().style.transform = `translateY(${dy}px)`;
+  }, {passive:true});
+  $("#sheetHead").addEventListener("touchend", () => {
+    if(y0 === null) return;
+    y0 = null; panel().style.transition = "";
+    if(dy > 80) closeSheet(); else panel().style.transform = "";
+  }, {passive:true});
+})();
 
 /* scheda di una categoria: stessa vista per il risultato del questionario e per le schede */
 function vCategoria(id, fromQuiz){
   const c = CFS.find(x => x.id === +id);
-  if(!c) return { redirect: fromQuiz ? "cfs-1" : "schede" };
+  if(!c) return { redirect: fromQuiz ? "cfs-1" : "" };
   let path;
   if(c.group === "A") path = `<p class="lbl">Charlson Comorbidity Index</p>${cciHTML(true)}`;
   else if(c.group === "B") path = `<p class="lbl">Percorso</p><div>${pathB()}</div>`;
@@ -549,11 +617,11 @@ $("#theme").addEventListener("click", () => setTheme(isDark() ? "light" : "dark"
 if(darkMQ && darkMQ.addEventListener) darkMQ.addEventListener("change", paintThemeBtn);
 
 /* ---------- navigazione ---------- */
-const ROUTES = { "":vHome, schede:vSchede, cci:vCCI, esami:vEsami, vitd:vVitD, fonti:vFonti };
+const ROUTES = { "":vHome, cci:vCCI, esami:vEsami, vitd:vVitD, fonti:vFonti };
 const PARENT = r => {
   const m = /^cfs-(\d+)$/.exec(r);
   if(m) return +m[1] > 1 ? "cfs-" + (m[1] - 1) : "";
-  return r.startsWith("scheda-") ? "schede" : "";
+  return "";
 };
 const stack = [];
 let current = null, actFn = null;
@@ -571,6 +639,7 @@ function render(){
   const v = view(route);
   if(v.redirect !== undefined){ history.replaceState(null, "", v.redirect ? "#" + v.redirect : location.pathname + location.search); return render(); }
   const changed = route !== current; current = route;
+  closeSheet(true);
   $("#main").innerHTML = `<div class="screen">${v.html}</div>`;
   $("#barT").textContent = v.bar;
   $("#back").style.visibility = route ? "visible" : "hidden";
@@ -578,6 +647,8 @@ function render(){
   $("#act").textContent = v.act ? v.act[0] : ""; actFn = v.act ? v.act[1] : null;
   updateDock();
   if(changed) window.scrollTo(0, 0);
+  if(route === "" && reopenSheet) openSheet();
+  if(!route.startsWith("scheda-")) reopenSheet = false;
 }
 function goBack(){ if(stack.length > 1) history.back(); else go(PARENT(current)); }
 $("#act").addEventListener("click", () => { if(actFn) actFn(); });

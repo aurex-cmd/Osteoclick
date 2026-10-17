@@ -30,8 +30,8 @@ App single-file, offline-capable, pensata per essere pubblicata su GitHub Pages.
 La cartella `minimal/` contiene una riscrittura grafica di Osteoclick nello stile di [Osteo Help](https://github.com/aurex-cmd/Osteo-Help): stessi contenuti clinici e stessa logica, interfaccia ridotta all'essenziale (niente sfondi né illustrazioni, una schermata per volta, tema chiaro/scuro). È pubblicata su `https://<username>.github.io/osteoclick/minimal/`.
 
 - **Questionario CFS**: una domanda per schermata; il primo "Sì" porta alla scheda del risultato.
-- **Schede CFS**: le 9 categorie raggruppate per percorso (A, B, C).
+- **Schede CFS**: la card della home apre un pannello a scomparsa con le 9 categorie raggruppate per percorso (A, B, C); tornando indietro da una scheda il pannello si riapre. Si chiude toccando fuori, con la X o trascinandolo in giù.
 - **Gruppo A**: il pulsante **Calcola** apre il calcolatore del CCI; una barra in basso mostra il punteggio mentre si spuntano le condizioni.
-- Dalla home si consultano anche il calcolatore CCI, gli esami di laboratorio, la correzione della vitamina D e le fonti del protocollo.
+- Dalla home si consultano anche il calcolatore CCI, gli esami di laboratorio e la correzione della vitamina D; le fonti del protocollo sono linkate in fondo alla pagina.
 - Illustrazioni delle 9 categorie CFS in `minimal/img/` (`cfs-N.jpg` nella scheda, `cfs-N-thumb.jpg` nell'elenco), le stesse dell'app principale con fondo bianco.
 - Unica risorsa esterna: il font Inter da Google Fonts (senza connessione si usa il font di sistema).
