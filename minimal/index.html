@@ -68,6 +68,7 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 .lbl{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 -6px}
 .hint{color:var(--muted);font-size:.9rem;margin:0}
 .foot{font-size:.74rem;color:var(--muted);line-height:1.5;text-align:center;margin:28px 0 0}
+.foot a{color:var(--focus);font-weight:600}
 
 /* ingressi */
 .entry{position:relative;display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;background:var(--box);border-radius:10px;padding:16px 14px 16px 19px}
@@ -93,6 +94,18 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kat{background:color-mix(in srgb,var(--kf) 22%,var(--bg));color:color-mix(in srgb,var(--kf) 45%,#fff)}}
 :root[data-theme="dark"] .kat{background:color-mix(in srgb,var(--kf) 22%,var(--bg));color:color-mix(in srgb,var(--kf) 45%,#fff)}
 .stack{display:flex;flex-direction:column;gap:8px}
+
+/* livelli CFS in home: un tocco porta alla scheda, raggruppati per gruppo A/B/C */
+.lblrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:14px 0 -6px}
+.lblrow .lbl{margin:0}
+.lblrow a{font-size:.8rem;font-weight:600;color:var(--muted)}
+.levels{display:grid;grid-template-columns:4fr 3fr 2fr;gap:8px}
+.lvg > span{display:block;font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--kf);margin:0 0 4px 2px}
+.lvg > div{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
+.lvg a{display:grid;place-items:center;height:46px;border-radius:9px;background:var(--kb);color:var(--kf);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lvg{--kb:color-mix(in srgb,var(--kf) 22%,var(--bg))} :root:not([data-theme="light"]) .lvg > span,:root:not([data-theme="light"]) .lvg a{color:color-mix(in srgb,var(--kf) 45%,#fff)}}
+:root[data-theme="dark"] .lvg{--kb:color-mix(in srgb,var(--kf) 22%,var(--bg))}
+:root[data-theme="dark"] .lvg > span,:root[data-theme="dark"] .lvg a{color:color-mix(in srgb,var(--kf) 45%,#fff)}
 
 /* righe semplici */
 .rows{display:flex;flex-direction:column}
@@ -310,16 +323,17 @@ function vHome(){
   return { bar:"Osteoclick", html: head("Fracture Liaison Service", "Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.") + `
     <div class="stack">
       ${entry("cfs-1", "Questionario CFS", "Valuta la fragilità clinica e individua il percorso", "blue big", "clip")}
-      ${entry("schede", "Schede CFS", "Le 9 categorie, raggruppate per percorso", "teal big", "grid")}
     </div>
+    <div class="lblrow"><p class="lbl">Livello CFS già noto?</p><a href="#schede">Schede ›</a></div>
+    <div class="levels">${["A","B","C"].map(g => `<div class="lvg k-${GROUPS[g].color}"><span>${g}</span><div>` +
+      CFS.filter(c => c.group === g).map(c => `<a href="#scheda-${c.id}" aria-label="CFS ${c.id} · ${c.en}">${c.id}</a>`).join("") + `</div></div>`).join("")}</div>
     <p class="lbl">Consulta</p>
     <div class="rows">
       <a class="rowlink" href="#cci">${ic("calc")}<span>Charlson Comorbidity Index<small>Corretto per l'età, per il Gruppo A</small></span>${CHEV}</a>
       <a class="rowlink" href="#esami">${ic("tube")}<span>Esami di laboratorio<small>Pannelli 1–3 e a chi richiederli</small></span>${CHEV}</a>
       <a class="rowlink" href="#vitd">${ic("pill")}<span>Correzione della vitamina D<small>Per tutti i gruppi</small></span>${CHEV}</a>
-      <a class="rowlink" href="#fonti">${ic("book")}<span>Fonti</span>${CHEV}</a>
     </div>
-    <p class="foot">Secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea.<br>Ausilio al ragionamento clinico, non sostitutivo del giudizio specialistico.</p>` };
+    <p class="foot">Secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea · <a href="#fonti">Fonti</a><br>Ausilio al ragionamento clinico, non sostitutivo del giudizio specialistico.</p>` };
 }
 
 /* ---------- questionario ---------- */
