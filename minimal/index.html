@@ -107,11 +107,9 @@ h1{font-size:1.85rem;line-height:1.05;font-weight:800;letter-spacing:-.025em;tex
 .pic img{display:block;width:100%;height:auto}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(.pic,.rowlink .th){filter:brightness(.92)}}
 :root[data-theme="dark"] :is(.pic,.rowlink .th){filter:brightness(.92)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) details.acc > summary > img{filter:brightness(.92)}}
-:root[data-theme="dark"] details.acc > summary > img{filter:brightness(.92)}
 .homehead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .homehead h1{flex:1;min-width:0}
-.homehead img{width:84px;height:auto;flex:0 0 auto;margin-top:2px}
+.homehead .ic{width:58px;height:58px;color:var(--teal);margin-top:2px}
 
 /* elenchi */
 .list{list-style:none;margin:0;padding:0}
@@ -130,7 +128,7 @@ details.acc{border-bottom:1px solid var(--line)}
 details.acc > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 2px;cursor:pointer;font-weight:700}
 details.acc > summary::-webkit-details-marker{display:none}
 details.acc > summary > span{flex:1;min-width:0}
-details.acc > summary > img{width:36px;height:36px;flex:0 0 auto;object-fit:contain;background:#fff;border-radius:9px;padding:2px}
+details.acc > summary > .ic{width:24px;height:24px;color:var(--muted)}
 details.acc[open] > summary .chev{transform:rotate(90deg)}
 .accbody{padding:0 2px 14px;display:flex;flex-direction:column;gap:6px}
 
@@ -290,7 +288,7 @@ const CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentC
 const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
 const go = r => { location.hash = r; };
 
-/* icone: Health Icons (healthicons.org, licenza MIT, © 2021 Resolve to Save Lives), come in Osteo Help; provetta, calcolatrice e capsula disegnate per l'app */
+/* icone: Health Icons (healthicons.org, licenza MIT, © 2021 Resolve to Save Lives), come in Osteo Help; provetta, calcolatrice, capsula e icone del percorso disegnate per l'app */
 const ICONS = {
   tube:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h20M17.5 5v31a6.5 6.5 0 0 0 13 0V5"/><path d="M17.5 22h13"/></g>',
   clip:'<path d="M19 15V18H16V20H19V23H21V20H24V18H21V15H19Z" fill="currentColor"/> <path d="M17 26C16.4477 26 16 26.4477 16 27C16 27.5523 16.4477 28 17 28H31C31.5523 28 32 27.5523 32 27C32 26.4477 31.5523 26 31 26H17Z" fill="currentColor"/> <path d="M16 32C16 31.4477 16.4477 31 17 31H31C31.5523 31 32 31.4477 32 32C32 32.5523 31.5523 33 31 33H17C16.4477 33 16 32.5523 16 32Z" fill="currentColor"/> <path d="M17 36C16.4477 36 16 36.4477 16 37C16 37.5523 16.4477 38 17 38H31C31.5523 38 32 37.5523 32 37C32 36.4477 31.5523 36 31 36H17Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M17 7C17 5.34315 18.3431 4 20 4H28C29.6569 4 31 5.34315 31 7H35C36.6569 7 38 8.34315 38 10V41C38 42.6569 36.6569 44 35 44H13C11.3431 44 10 42.6569 10 41V10C10 8.34315 11.3431 7 13 7H17ZM28 12C29.6569 12 31 10.6569 31 9H35C35.5523 9 36 9.44772 36 10V41C36 41.5523 35.5523 42 35 42H13C12.4477 42 12 41.5523 12 41V10C12 9.44772 12.4477 9 13 9H17C17 10.6569 18.3431 12 20 12H28ZM20 6C19.4477 6 19 6.44772 19 7V9C19 9.55228 19.4477 10 20 10H28C28.5523 10 29 9.55228 29 9V7C29 6.44772 28.5523 6 28 6H20Z" fill="currentColor"/>',
@@ -298,17 +296,22 @@ const ICONS = {
   book:'<path d="M30 19L25 19V14H23V19L18 19V21H23V26H25V21H30V19Z" fill="currentColor"/> <path fill-rule="evenodd" clip-rule="evenodd" d="M9 10C9 7.23858 11.2386 5 14 5H38C38.5523 5 39 5.44772 39 6V36C39 36.5523 38.5523 37 38 37H14C12.3431 37 11 38.3431 11 40V41H38V43H10C9.44772 43 9 42.5523 9 42V10ZM14 35C12.8744 35 11.8357 35.3719 11 35.9996V10C11 8.34315 12.3431 7 14 7H37V35H14Z" fill="currentColor"/>',
   calc:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="11" y="6" width="26" height="36" rx="3"/><rect x="16" y="11" width="16" height="7" rx="1"/></g><g fill="currentColor"><circle cx="17.5" cy="25" r="1.8"/><circle cx="24" cy="25" r="1.8"/><circle cx="30.5" cy="25" r="1.8"/><circle cx="17.5" cy="31" r="1.8"/><circle cx="24" cy="31" r="1.8"/><circle cx="30.5" cy="31" r="1.8"/><circle cx="17.5" cy="37" r="1.8"/><circle cx="24" cy="37" r="1.8"/><circle cx="30.5" cy="37" r="1.8"/></g>',
   pill:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10.7 25.9l15.2-15.2a7.5 7.5 0 0 1 10.6 10.6L21.3 36.5a7.5 7.5 0 0 1-10.6-10.6z"/><path d="M18.3 18.3l10.6 10.6"/></g>',
+  rx:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="5" width="30" height="38" rx="3"/><rect x="19" y="11" width="10" height="6" rx="2"/><rect x="19" y="21" width="10" height="6" rx="2"/><rect x="19" y="31" width="10" height="6" rx="2"/></g>',
+  dexa:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 33h38M10 33v7M38 33v7"/><path d="M12 33V13a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4v5"/><path d="M26 18h11"/><circle cx="18" cy="27" r="2.6"/><path d="M23 28h13"/></g>',
+  iv:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5h18a2 2 0 0 1 2 2v19a11 11 0 0 1-22 0V7a2 2 0 0 1 2-2z"/><path d="M19 14h7M19 20h4"/><path d="M24 37v6"/></g>',
+  steth:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h5M24 6h5"/><path d="M13 6v10a7 7 0 0 0 14 0V6"/><path d="M20 23v7a8 8 0 0 0 16 0v-5"/><circle cx="36" cy="21" r="4"/></g>',
+  bone:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path transform="rotate(-35 24 24)" d="M15.96 21.5H32.04A5.8 5.8 0 1 1 38.84 24A5.8 5.8 0 1 1 32.04 26.5H15.96A5.8 5.8 0 1 1 9.16 24A5.8 5.8 0 1 1 15.96 21.5Z"/></g>',
 };
 const ic = name => `<svg class="ic" viewBox="0 0 48 48" aria-hidden="true">${ICONS[name]||""}</svg>`;
 const kat = g => `<span class="kat k-${GROUPS[g].color}">${GROUPS[g].label}</span>`;
 const entry = (href, title, sub, cls, icon) => `<a class="entry ${cls||""}" href="#${href}">${icon?ic(icon):""}<div><b>${title}</b>${sub?`<small>${sub}</small>`:""}</div>${CHEV}</a>`;
 const head = (title, sub, group) => `${group?`<div class="katrow">${kat(group)}</div>`:""}<h1>${title}</h1><div class="rule"></div>${sub?`<p class="sub">${sub}</p>`:""}`;
-const acc = (title, body, img) => `<details class="acc"><summary>${img ? `<img src="img/${img}.jpg" alt="">` : ""}<span>${title}</span>${CHEV}</summary><div class="accbody">${body}</div></details>`;
+const acc = (title, body, icon) => `<details class="acc"><summary>${icon ? ic(icon) : ""}<span>${title}</span>${CHEV}</summary><div class="accbody">${body}</div></details>`;
 const numList = items => `<ul class="list">${items.map((t,i) => `<li><i>${i+1}</i><span>${t}</span></li>`).join("")}</ul>`;
 
 /* ---------- home ---------- */
 function vHome(){
-  return { bar:"Osteoclick", html: `<div class="homehead"><h1>Fracture Liaison Service</h1><img src="img/osso.png" width="500" height="378" alt=""></div><div class="rule"></div><p class="sub">Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.</p>` + `
+  return { bar:"Osteoclick", html: `<div class="homehead"><h1>Fracture Liaison Service</h1>${ic("bone")}</div><div class="rule"></div><p class="sub">Frattura di femore da fragilità: dalla Clinical Frailty Scale al percorso diagnostico-terapeutico.</p>` + `
     <div class="stack">
       ${entry("cfs-1", "Questionario CFS", "Valuta la fragilità clinica e individua il percorso", "blue big", "clip")}
       ${entry("schede", "Schede CFS", "Le 9 categorie, raggruppate per percorso", "teal big", "grid")}
@@ -376,8 +379,8 @@ function vitDBody(beforeTherapy){
 }
 // Gruppo B (§7.4), anche per il Gruppo A con CCI ≥ 6
 function pathB(){
-  return acc("Esami di laboratorio", panelsHTML([1]), "esami") +
-    acc("Correzione vitamina D", vitDBody(true), "farmaco") +
+  return acc("Esami di laboratorio", panelsHTML([1]), "tube") +
+    acc("Correzione vitamina D", vitDBody(true), "pill") +
     acc("Trattamento", `
       <p class="note">Supplementazione di calcio/vitamina D.</p>
       <p class="note">Terapia anti-fratturativa di prima scelta: <b>acido zoledronico 5 mg EV</b> (infusione minima 30 minuti), durante il ricovero o, se la degenza non lo consente, nel setting di destinazione.</p>
@@ -390,26 +393,26 @@ function pathB(){
         "<b>Valutazione odontoiatrica</b>: escludere patologie odontoiatriche attive, anche con ortopantomografia (OPT) o dental scan se il paziente non mantiene la stazione eretta o seduta stabile.",
         "<b>Somministrazione</b>: infusione endovenosa in almeno 30 minuti.",
         "<b>Effetti attesi</b>: informare sulla possibile sindrome simil-influenzale nelle 24–72 ore."]) +
-      `<p class="small">Rispettare i criteri di rimborsabilità della Nota AIFA 79.</p>`, "flebo");
+      `<p class="small">Rispettare i criteri di rimborsabilità della Nota AIFA 79.</p>`, "iv");
 }
 // Gruppo A con CCI < 6 (§7.3)
 function pathAFull(){
-  return acc("Esami di laboratorio", panelsHTML([1,2,3]), "esami") +
+  return acc("Esami di laboratorio", panelsHTML([1,2,3]), "tube") +
     acc("Rx della colonna", `<p class="note">Rx della colonna dorso-lombosacrale con quesito clinico "morfometria vertebrale", durante la degenza, per escludere fratture vertebrali misconosciute.</p>`, "rx") +
     acc("Densitometria", `<p class="note">DEXA del rachide lombare e del femore controlaterale, se non già eseguita negli ultimi 18 mesi.</p>`, "dexa") +
-    acc("Correzione vitamina D", vitDBody(true), "farmaco") +
+    acc("Correzione vitamina D", vitDBody(true), "pill") +
     acc("Trattamento e Bone Specialist", `
       <p class="note">Supplementazione di calcio/vitamina D, avviata dal Bone Coordinator.</p>
       <p class="note">Presa in carico da parte del <b>Bone Specialist</b>, che definisce la terapia anti-fratturativa individualizzata (es. teriparatide, romosozumab, denosumab, altri) e ne assicura il follow-up.</p>
-      <p class="note">Se la valutazione non è conclusa alla dimissione, indicare in lettera modalità e tempi della presa in carico specialistica.</p>`, "ambulatorio");
+      <p class="note">Se la valutazione non è conclusa alla dimissione, indicare in lettera modalità e tempi della presa in carico specialistica.</p>`, "steth");
 }
 // Gruppo C (§7.5)
 function pathC(){
-  return acc("Esami di laboratorio", panelsHTML([1]), "esami") +
-    acc("Correzione vitamina D", vitDBody(false), "farmaco") +
+  return acc("Esami di laboratorio", panelsHTML([1]), "tube") +
+    acc("Correzione vitamina D", vitDBody(false), "pill") +
     acc("Trattamento", `
       <p class="note">Supplementazione di calcio/vitamina D, <b>senza avvio di terapia anti-fratturativa</b>.</p>
-      <p class="note">Con fragilità clinica severa o aspettativa di vita limitata, il tempo residuo è inferiore a quello necessario perché la terapia anti-fratturativa dia un beneficio clinicamente rilevante, mentre resta il rischio di eventi avversi: il rapporto rischio/beneficio è sfavorevole.</p>`, "farmaco");
+      <p class="note">Con fragilità clinica severa o aspettativa di vita limitata, il tempo residuo è inferiore a quello necessario perché la terapia anti-fratturativa dia un beneficio clinicamente rilevante, mentre resta il rischio di eventi avversi: il rapporto rischio/beneficio è sfavorevole.</p>`, "pill");
 }
 
 /* ---------- CCI ---------- */
