@@ -350,7 +350,7 @@ function vCategoria(id, fromQuiz){
   if(!c) return { redirect: fromQuiz ? "cfs-1" : "schede" };
   let path;
   if(c.group === "A") path = `<p class="lbl">Charlson Comorbidity Index</p>${cciHTML(true)}`;
-  else if(c.group === "B") path = `<p class="small">Nel Gruppo B non si calcola il CCI: l'acido zoledronico in singola infusione assicura copertura terapeutica e aderenza ed è la scelta di prima linea, indipendentemente dal carico di comorbidità.</p><p class="lbl">Percorso</p><div>${pathB()}</div>`;
+  else if(c.group === "B") path = `<p class="lbl">Percorso</p><div>${pathB()}</div>`;
   else path = `${c.id === 9 ? `<p class="small">La classificazione è basata sulla prognosi di malattia e non sul livello di dipendenza funzionale.</p>` : ""}<p class="lbl">Percorso</p><div>${pathC()}</div>`;
   return { bar: fromQuiz ? "Risultato" : "Scheda", act: fromQuiz ? ["Ricomincia", () => go("cfs-1")] : null,
     html: head(c.en, `CFS ${c.id} · ${c.it}`, c.group) +
