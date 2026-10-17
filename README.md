@@ -24,3 +24,13 @@ App single-file, offline-capable, pensata per essere pubblicata su GitHub Pages.
 - Percorso diagnostico-terapeutico automatico in base al gruppo di fragilità (A: CFS 1–4, B: CFS 5–7, C: CFS 8–9), secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea
 - **Calcolatore Charlson Comorbidity Index (CCI)** per il Gruppo A, corretto per l'età: CCI ≥ 6 → percorso del Gruppo B; CCI < 6 → pannello diagnostico completo e Bone Specialist
 - Correzione del deficit di vitamina D per tutti i gruppi
+
+## Versione minimal
+
+La cartella `minimal/` contiene una riscrittura grafica di Osteoclick nello stile di [Osteo Help](https://github.com/aurex-cmd/Osteo-Help): stessi contenuti clinici e stessa logica, interfaccia ridotta all'essenziale (niente sfondi né illustrazioni, una schermata per volta, tema chiaro/scuro). È pubblicata su `https://<username>.github.io/osteoclick/minimal/`.
+
+- **Questionario CFS**: una domanda per schermata; il primo "Sì" porta alla scheda del risultato.
+- **Schede CFS**: le 9 categorie raggruppate per percorso (A, B, C).
+- **Gruppo A**: il pulsante **Calcola** apre il calcolatore del CCI; una barra in basso mostra il punteggio mentre si spuntano le condizioni.
+- Dalla home si consultano anche il calcolatore CCI, gli esami di laboratorio, la correzione della vitamina D e le fonti del protocollo.
+- Unica risorsa esterna: il font Inter da Google Fonts (senza connessione si usa il font di sistema).
