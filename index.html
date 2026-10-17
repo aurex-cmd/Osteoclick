@@ -250,6 +250,10 @@
   .cci-calc h3{ font-family:'Georgia',serif; color:var(--navy); font-size:1.25rem; margin:0 0 6px 0; }
   .cci-intro, .cci-rules{ font-size:.9rem; line-height:1.45; color:#555; margin:0 0 12px 0; text-align:justify; hyphens:auto; }
   .cci-rules{ font-size:.82rem; color:#8a8a8a; }
+  .cci-open{ margin:4px 0 0 0; }
+  .cci-body{ display:none; }
+  .cci-calc.open .cci-open{ display:none; }
+  .cci-calc.open .cci-body{ display:block; animation: fadeIn .25s ease; }
   .cci-step{ font-weight:700; color:var(--navy); font-size:.95rem; margin:16px 0 8px 0; }
   .cci-ages{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
   .cci-age{
@@ -917,15 +921,21 @@ function cciCalculatorHTML(accent){
     <div class="cci-calc" id="${id}" data-accent="${accent || ''}">
       <h3>Charlson Comorbidity Index</h3>
       <p class="cci-intro">Nel Gruppo A, prima di ulteriori accertamenti, calcolare il CCI corretto per l'età per orientare la strategia diagnostico-terapeutica.</p>
-      <div class="cci-step">Età del paziente</div>
-      <div class="cci-ages">${ages}</div>
-      <div class="cci-step">Condizioni cliniche documentate</div>
-      <p class="cci-rules">Considerare solo le condizioni elencate e documentate (diagnosi riportate o accertate durante il ricovero, non sospette). Per le patologie con forme di diversa gravità si conta solo la forma più grave.</p>
-      ${conditions}
-      <div class="cci-score" id="${id}-score">Seleziona la fascia d'età per calcolare il CCI.</div>
+      <button type="button" class="btn-primary cci-open" onclick="openCCI('${id}')">CALCOLA</button>
+      <div class="cci-body">
+        <div class="cci-step">Età del paziente</div>
+        <div class="cci-ages">${ages}</div>
+        <div class="cci-step">Condizioni cliniche documentate</div>
+        <p class="cci-rules">Considerare solo le condizioni elencate e documentate (diagnosi riportate o accertate durante il ricovero, non sospette). Per le patologie con forme di diversa gravità si conta solo la forma più grave.</p>
+        ${conditions}
+        <div class="cci-score" id="${id}-score">Seleziona la fascia d'età per calcolare il CCI.</div>
+      </div>
     </div>
     <div id="${id}-path"></div>
   `;
+}
+function openCCI(id){
+  document.getElementById(id).classList.add('open');
 }
 function selectCCIAge(id, i){
   const root = document.getElementById(id);
