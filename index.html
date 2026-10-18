@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-title" content="Osteoclick">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; fondo bianco; in home due riquadri pastello e l'elenco Consulta, come Osteo Help */
 :root{
@@ -90,6 +90,18 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 .home-list .rowlink{padding:10px 0;font-size:1rem}
 .home-list .rowlink small{font-size:.84rem;margin-top:0}
 .home-list .rowlink > svg:first-child{width:26px;height:26px;color:var(--muted);flex:0 0 auto;margin-right:6px}
+/* solo la home usa il carattere e le misure di Osteo Help (Inter, base 16px: misure in px per non seguire la base più grande del resto dell'app) */
+body.is-home :is(.bar,main){font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+body.is-home .bar-t{font-size:14.4px}
+body.is-home .home-h{font-size:29.6px;letter-spacing:-.025em}
+body.is-home .home-sub{font-size:14.7px;line-height:1.45}
+body.is-home .hero b{font-size:17.9px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+body.is-home .hero small{font-size:13.3px;margin-top:3px}
+body.is-home main .lbl{font-size:10.9px}
+body.is-home .home-list .rowlink{font-size:15.2px}
+body.is-home .home-list .rowlink small{font-size:12.8px;margin-top:1px}
+body.is-home main .foot{font-size:11.8px}
+@media (max-width:380px){ body.is-home .home-h{font-size:25.6px} }
 .chev{width:16px;height:16px;color:var(--faint);flex:0 0 auto}
 .ic{width:26px;height:26px;flex:0 0 auto}
 .rowlink > .ic{width:24px;height:24px;color:var(--muted)}
@@ -714,6 +726,7 @@ function render(){
   $("#main").innerHTML = `<div class="screen">${v.html}</div>`;
   // in home la barra mostra il marchio OC accanto al nome
   $(".bar").classList.toggle("home", !route);
+  document.body.classList.toggle("is-home", !route);
   $("#barT").textContent = v.bar;
   $("#back").style.visibility = route ? "visible" : "hidden";
   $("#theme").hidden = !!route; $("#act").hidden = !route;
