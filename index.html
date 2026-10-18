@@ -79,13 +79,13 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 .home-rule{height:1px;background:var(--line);margin:4px 0 0}
 .home-sub{margin:0;font-size:1rem}
 .heroes{display:grid;grid-auto-rows:1fr;gap:12px;margin-top:6px}
-.hero{display:flex;align-items:center;gap:16px;width:100%;min-height:124px;padding:18px 16px 18px 18px;border:0;border-radius:22px;background:var(--hb);color:var(--ink);text-align:left;font:inherit;transition:transform .12s}
+.hero{display:flex;align-items:center;gap:14px;width:100%;min-height:92px;padding:14px 16px 14px 14px;border:0;border-radius:22px;background:var(--hb);color:var(--ink);text-align:left;font:inherit;transition:transform .12s}
 .hero:active{transform:scale(.98)}
-.hero-ic{width:64px;height:64px;border-radius:16px;background:var(--h-ic);color:var(--hf);display:grid;place-items:center;flex:0 0 auto}
-.hero-ic svg{width:32px;height:32px}
+.hero-ic{width:54px;height:54px;border-radius:14px;background:var(--h-ic);color:var(--hf);display:grid;place-items:center;flex:0 0 auto}
+.hero-ic svg{width:28px;height:28px}
 .hero > span:not(.hero-ic){flex:1;min-width:0}
 .hero b{display:block;font-size:1.2rem;font-weight:800;letter-spacing:-.015em;line-height:1.25}
-.hero small{display:block;margin-top:4px;font-size:.9rem;color:var(--muted);line-height:1.4}
+.hero small{display:block;margin-top:2px;font-size:.9rem;color:var(--muted);line-height:1.4}
 .hero-1{--hb:var(--h1-bg);--hf:var(--h1-fg)} .hero-2{--hb:var(--h2-bg);--hf:var(--h2-fg)}
 .home-list .rowlink{padding:16px 0;font-size:1.02rem}
 .home-list .rowlink small{font-size:.86rem;margin-top:2px}
@@ -359,8 +359,8 @@ function vHome(){
     <div class="home-rule"></div>
     <p class="sub home-sub">Frattura di femore da fragilità, secondo il Protocollo FLS dell'ULSS 6 Euganea.</p>
     <div class="heroes">
-      <a class="hero hero-1" href="#cfs-1"><span class="hero-ic">${TILE_IC.clip}</span><span><b>Questionario CFS</b><small>Valuta la fragilità e individua il percorso</small></span>${CHEV}</a>
-      <button type="button" class="hero hero-2" data-sheet-open><span class="hero-ic">${TILE_IC.cards}</span><span><b>Schede CFS</b><small>Le 9 categorie, divise per gruppo</small></span>${CHEV}</button>
+      <a class="hero hero-1" href="#cfs-1"><span class="hero-ic">${TILE_IC.clip}</span><span><b>Questionario CFS</b><small>Valuta la fragilità del paziente</small></span>${CHEV}</a>
+      <button type="button" class="hero hero-2" data-sheet-open><span class="hero-ic">${TILE_IC.cards}</span><span><b>Schede CFS</b><small>Le 9 categorie per gruppo</small></span>${CHEV}</button>
     </div>
     <p class="lbl">Consulta</p>
     <div class="rows home-list">
