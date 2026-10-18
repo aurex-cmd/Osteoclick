@@ -59,7 +59,12 @@ a{color:inherit;text-decoration:none}
 .bar #act:hover,.bar #back:hover{color:var(--ink)}
 .bar #theme{grid-column:3;grid-row:1;justify-self:end;width:42px;height:42px;border-radius:50%;border:0;background:var(--fill);color:var(--ink);display:grid;place-items:center;padding:0;transition:background .2s}
 .bar #act{grid-column:3;grid-row:1}
-.bar.home #back{visibility:hidden}
+.bar.home .bar-in{grid-template-columns:1fr 72px}
+.bar.home #back{display:none}
+/* in home: marchio OC e nome a sinistra, come nella bozza */
+.bar.home .bar-t{grid-column:1;display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
+.bar.home #theme{grid-column:2}
+.oc{width:32px;height:32px;border-radius:9px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:13px;font-weight:800;letter-spacing:-.02em;flex:0 0 auto}
 .bar #theme svg{width:17px;height:17px;grid-area:1/1}
 .bar #theme .sun{display:none}
 .bar #theme.dark .sun{display:block} .bar #theme.dark .moon{display:none}
@@ -93,7 +98,7 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 .home-list .rowlink > svg:first-child{width:26px;height:26px;color:var(--muted);flex:0 0 auto;margin-right:6px}
 /* solo la home usa il carattere e le misure di Osteo Help (Inter, base 16px: misure in px per non seguire la base più grande del resto dell'app) */
 body.is-home :is(.bar,main){font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-body.is-home .bar-t{font-size:14.4px}
+body.is-home .bar-t{font-size:16px}
 body.is-home .home-h{font-size:29.6px;letter-spacing:-.025em}
 body.is-home .home-sub{font-size:14.7px;line-height:1.45}
 body.is-home .hero b{font-size:17.9px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
@@ -728,7 +733,7 @@ function render(){
   // in home la barra mostra il marchio OC accanto al nome
   $(".bar").classList.toggle("home", !route);
   document.body.classList.toggle("is-home", !route);
-  $("#barT").textContent = v.bar;
+  if(route) $("#barT").textContent = v.bar; else $("#barT").innerHTML = `<span class="oc">OC</span>${v.bar}`;
   $("#back").style.visibility = route ? "visible" : "hidden";
   $("#theme").hidden = !!route; $("#act").hidden = !route;
   $("#act").textContent = v.act ? v.act[0] : ""; actFn = v.act ? v.act[1] : null;
