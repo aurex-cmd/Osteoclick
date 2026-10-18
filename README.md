@@ -2,7 +2,7 @@
 
 Algoritmo decisionale Fracture Liaison Service, basato sulla Clinical Frailty Scale (CFS), per la valutazione del paziente con frattura di femore ricoverato in Ortopedia, secondo il Protocollo FLS dell'Azienda ULSS 6 Euganea.
 
-L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`. Interfaccia minimale: una schermata per volta, home a fondo grigio chiaro con tessere bianche, resto su fondo bianco, home a griglia di tessere, carattere Manrope, tema chiaro/scuro.
+L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`. Interfaccia minimale: una schermata per volta, fondo bianco, home nello stile di Osteo Help (due riquadri pastello e l’elenco Consulta), carattere Manrope, tema chiaro/scuro.
 
 ## Come si usa
 
@@ -10,7 +10,7 @@ L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`.
 - **Schede CFS**: la card della home apre un pannello a scomparsa con le 9 categorie raggruppate per percorso (A: CFS 1–4, B: CFS 5–7, C: CFS 8–9); tornando indietro da una scheda il pannello si riapre. Si chiude toccando fuori, con la X o trascinandolo in giù.
 - **Scheda della categoria**: illustrazione, descrizione e percorso diagnostico-terapeutico in tendine (esami, imaging, vitamina D, trattamento).
 - **Gruppo A**: il pulsante **Calcola** apre il calcolatore del Charlson Comorbidity Index corretto per l'età. CCI ≥ 6 → percorso del Gruppo B; CCI < 6 → pannello diagnostico completo e Bone Specialist. Una barra in basso mostra il punteggio mentre si spuntano le condizioni; il calcolatore si può ridurre e si azzera a ogni cambio di schermata.
-- Dalla home si consultano anche il calcolatore CCI, gli esami di laboratorio e la correzione della vitamina D; le fonti del protocollo sono linkate in fondo alla pagina.
+- Dalla home si consultano anche il calcolatore CCI, gli esami di laboratorio e la correzione della vitamina D; oltre alle fonti del protocollo.
 
 ## File
 
