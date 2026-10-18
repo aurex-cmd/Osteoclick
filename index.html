@@ -18,29 +18,29 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; fondo bianco senza card colorate; solo la home ha fondo grigio chiaro e tessere bianche con un filo di contorno */
+/* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; fondo bianco; in home due riquadri pastello e l'elenco Consulta, come Osteo Help */
 :root{
-  --bg:#FFFFFF; --card:#FFFFFF; --fill:#F4F5F7; --page-bg:#FFFFFF; --page-card:#FFFFFF; --page-fill:#F4F5F7; --cardpad:0px; --edge:#E3E7EC; --home-bg:#F3F4F6; --home-card:#FFFFFF; --ink:#172231; --muted:#6B7584; --faint:#B5BECA; --line:#E6E9EE;
+  --bg:#FFFFFF; --card:#FFFFFF; --fill:#F4F5F7; --cardpad:0px; --ink:#172231; --muted:#6B7584; --faint:#B5BECA; --line:#E6E9EE;
   --box:#E8EBEF; --accent:#2B587D; --blue:#6A5C92; --blue-box:#F1EEFB; --teal:#0E7571; --teal-box:#E3F4F3; --focus:#2F5F96; --tile:#FFFFFF;
   --coral:#B04E37; --coral-box:#F7EBE7; --amber:#9A6B1F;
+  --h1-bg:#E5EEF7; --h1-fg:#2B587D; --h2-bg:#FBECE1; --h2-fg:#B0582F; --h-ic:#FFFFFF;
   --sans:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --page-bg:#12161D; --page-card:#1B212A; --page-fill:#1B212A; --cardpad:16px; --edge:#2A323E; --home-bg:#12161D; --home-card:#1B212A; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
+  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --cardpad:16px; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
   --box:#262E39; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
-  --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62; color-scheme:dark }}
+  --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62;
+  --h1-bg:#1A2633; --h1-fg:#8DB4E2; --h2-bg:#2C211B; --h2-fg:#EBA67F; --h-ic:#12161D; color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --page-bg:#12161D; --page-card:#1B212A; --page-fill:#1B212A; --cardpad:16px; --edge:#2A323E; --home-bg:#12161D; --home-card:#1B212A; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
+  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --cardpad:16px; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
   --box:#262E39; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
-  --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62; color-scheme:dark }
+  --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62;
+  --h1-bg:#1A2633; --h1-fg:#8DB4E2; --h2-bg:#2C211B; --h2-fg:#EBA67F; --h-ic:#12161D; color-scheme:dark }
 
 *{box-sizing:border-box}
 /* testi leggermente più grandi di Osteo Help: tutte le misure in rem seguono questa base */
 html{-webkit-text-size-adjust:100%;font-size:108%}
-body.is-home{--bg:var(--home-bg);--card:var(--home-card);--fill:var(--home-card)}
-/* il pannello delle schede si apre sulla home ma ha il fondo bianco delle altre schermate */
-.sheet{--bg:var(--page-bg);--card:var(--page-card);--fill:var(--page-fill)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -59,11 +59,7 @@ a{color:inherit;text-decoration:none}
 .bar #act:hover,.bar #back:hover{color:var(--ink)}
 .bar #theme{grid-column:3;grid-row:1;justify-self:end;width:42px;height:42px;border-radius:50%;border:0;background:var(--fill);color:var(--ink);display:grid;place-items:center;padding:0;transition:background .2s}
 .bar #act{grid-column:3;grid-row:1}
-.bar.home .bar-in{grid-template-columns:1fr 72px}
-.bar.home #back{display:none}
-.bar.home .bar-t{grid-column:1;display:flex;align-items:center;gap:10px;font-weight:800;font-size:.95rem;letter-spacing:-.01em}
-.bar.home #theme{grid-column:2}
-.oc{width:30px;height:30px;border-radius:9px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:.7rem;font-weight:800;letter-spacing:-.02em}
+.bar.home #back{visibility:hidden}
 .bar #theme svg{width:17px;height:17px;grid-area:1/1}
 .bar #theme .sun{display:none}
 .bar #theme.dark .sun{display:block} .bar #theme.dark .moon{display:none}
@@ -78,25 +74,22 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 .foot{font-size:.74rem;color:var(--muted);line-height:1.5;text-align:center;margin:28px 0 0}
 .foot a{color:var(--accent);font-weight:700}
 
-/* home: griglia di tessere */
-.home-h{margin-top:22px}
-.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:76px}
-.tile{display:flex;width:100%;border:1px solid var(--edge);border-radius:22px;background:var(--card);color:var(--ink);text-align:left;font:inherit;transition:transform .12s}
-.tile:active{transform:scale(.98)}
-.tile b{display:block;font-weight:700;font-size:1rem;letter-spacing:-.01em}
-.tile small{display:block;margin-top:2px;font-size:.78rem;color:var(--muted)}
-.tile svg{width:24px;height:24px;flex:0 0 auto}
-.tile-main{grid-column:span 2;flex-direction:column;justify-content:space-between;height:148px;padding:18px 20px;background:var(--accent);border-color:var(--accent);color:#fff}
-.tile-main b{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
-.tile-main small{color:rgba(255,255,255,.82);font-size:.84rem;margin-top:4px}
-.tile-top{display:flex;justify-content:space-between;align-items:flex-start}
-.tile-main .tile-top > svg{width:30px;height:30px}
-.tile-go{width:40px;height:40px;border-radius:20px;background:rgba(255,255,255,.16);display:grid;place-items:center}
-.tile-go svg{width:18px;height:18px}
-.tile-row{grid-column:span 2;align-items:center;justify-content:space-between;height:60px;padding:0 20px}
-.tile-row .tile-l{display:flex;align-items:center;gap:14px}
-.tile-row em{font-style:normal;font-size:.82rem;font-weight:600;color:var(--muted)}
-.tile-sq{flex-direction:column;justify-content:space-between;height:108px;padding:18px}
+/* home: due riquadri pastello della stessa misura, poi l'elenco Consulta */
+.home-h{margin-top:18px;font-size:2.15rem;line-height:1.05;letter-spacing:-.03em;text-transform:uppercase}
+.home-rule{height:1px;background:var(--line);margin:4px 0 0}
+.home-sub{margin:0;font-size:1rem}
+.heroes{display:grid;grid-auto-rows:1fr;gap:12px;margin-top:6px}
+.hero{display:flex;align-items:center;gap:16px;width:100%;min-height:124px;padding:18px 16px 18px 18px;border:0;border-radius:22px;background:var(--hb);color:var(--ink);text-align:left;font:inherit;transition:transform .12s}
+.hero:active{transform:scale(.98)}
+.hero-ic{width:64px;height:64px;border-radius:16px;background:var(--h-ic);color:var(--hf);display:grid;place-items:center;flex:0 0 auto}
+.hero-ic svg{width:32px;height:32px}
+.hero > span:not(.hero-ic){flex:1;min-width:0}
+.hero b{display:block;font-size:1.2rem;font-weight:800;letter-spacing:-.015em;line-height:1.25}
+.hero small{display:block;margin-top:4px;font-size:.9rem;color:var(--muted);line-height:1.4}
+.hero-1{--hb:var(--h1-bg);--hf:var(--h1-fg)} .hero-2{--hb:var(--h2-bg);--hf:var(--h2-fg)}
+.home-list .rowlink{padding:16px 0;font-size:1.02rem}
+.home-list .rowlink small{font-size:.86rem;margin-top:2px}
+.home-list .rowlink > svg:first-child{width:26px;height:26px;color:var(--muted);flex:0 0 auto;margin-right:6px}
 .chev{width:16px;height:16px;color:var(--faint);flex:0 0 auto}
 .ic{width:26px;height:26px;flex:0 0 auto}
 .rowlink > .ic{width:24px;height:24px;color:var(--muted)}
@@ -343,13 +336,13 @@ const ICONS = {
   iv:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5h18a2 2 0 0 1 2 2v19a11 11 0 0 1-22 0V7a2 2 0 0 1 2-2z"/><path d="M19 14h7M19 20h4"/><path d="M24 37v6"/></g>',
   steth:'<g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6h5M24 6h5"/><path d="M13 6v10a7 7 0 0 0 14 0V6"/><path d="M20 23v7a8 8 0 0 0 16 0v-5"/><circle cx="36" cy="21" r="4"/></g>',
 };
-/* icone delle tessere della home (tratto sottile, 24×24) */
+/* icone della home (tratto sottile, 24×24) */
 const TILE_IC = {
   clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M8.5 10h7M8.5 14h7M8.5 18h4"/></svg>',
-  go:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>',
   cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="4" width="12" height="15" rx="2"/><path d="M4.5 8v10a2 2 0 0 0 2 2H15"/></svg>',
   calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><rect x="8" y="6" width="8" height="4" rx="1"/><path d="M8.5 14h.01M12 14h.01M15.5 14h.01M8.5 17.5h.01M12 17.5h.01M15.5 17.5h.01"/></svg>',
   tube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v14a2 2 0 0 0 4 0V3M10 11h4"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M12 7.5v5M9.5 10h5"/></svg>',
   pill:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5.6 13.4 7.8-7.8a4 4 0 0 1 5.6 5.6l-7.8 7.8a4 4 0 0 1-5.6-5.6z"/><path d="m9.5 9.5 5 5"/></svg>'
 };
 const ic = name => `<svg class="ic" viewBox="0 0 48 48" aria-hidden="true">${ICONS[name]||""}</svg>`;
@@ -360,17 +353,23 @@ const numList = items => `<ul class="list">${items.map((t,i) => `<li><i>${i+1}</
 
 /* ---------- home ---------- */
 function vHome(){
+  const row = (href, icon, t, sub) => `<a class="rowlink" href="#${href}">${TILE_IC[icon]}<span>${t}<small>${sub}</small></span>${CHEV}</a>`;
   return { bar:"Osteoclick", html: `
     <h1 class="home-h">Fracture Liaison Service</h1>
-    <p class="sub">Frattura di femore da fragilità, secondo il Protocollo FLS dell'ULSS 6 Euganea.</p>
-    <div class="tiles">
-      <a class="tile tile-main" href="#cfs-1"><div class="tile-top">${TILE_IC.clip}<span class="tile-go">${TILE_IC.go}</span></div><div><b>Questionario CFS</b><small>Valuta la fragilità e individua il percorso</small></div></a>
-      <button type="button" class="tile tile-row" data-sheet-open><span class="tile-l">${TILE_IC.cards}<b>Schede CFS</b></span><em>1–9</em></button>
-      <a class="tile tile-sq" href="#cci">${TILE_IC.calc}<div><b>CCI</b><small>Gruppo A</small></div></a>
-      <a class="tile tile-sq" href="#esami">${TILE_IC.tube}<div><b>Esami</b><small>Laboratorio e imaging</small></div></a>
-      <a class="tile tile-row" href="#vitd"><span class="tile-l">${TILE_IC.pill}<b>Vitamina D</b></span><em>Correzione</em></a>
+    <div class="home-rule"></div>
+    <p class="sub home-sub">Frattura di femore da fragilità, secondo il Protocollo FLS dell'ULSS 6 Euganea.</p>
+    <div class="heroes">
+      <a class="hero hero-1" href="#cfs-1"><span class="hero-ic">${TILE_IC.clip}</span><span><b>Questionario CFS</b><small>Valuta la fragilità e individua il percorso</small></span>${CHEV}</a>
+      <button type="button" class="hero hero-2" data-sheet-open><span class="hero-ic">${TILE_IC.cards}</span><span><b>Schede CFS</b><small>Le 9 categorie, divise per gruppo</small></span>${CHEV}</button>
     </div>
-    <p class="foot">Ausilio al ragionamento clinico · <a href="#fonti">Fonti</a></p>` };
+    <p class="lbl">Consulta</p>
+    <div class="rows home-list">
+      ${row("cci", "calc", "Charlson Comorbidity Index", "Calcolatore per il Gruppo A")}
+      ${row("esami", "tube", "Esami", "Laboratorio e imaging")}
+      ${row("vitd", "pill", "Vitamina D", "Correzione del deficit")}
+      ${row("fonti", "book", "Fonti", "Protocollo e bibliografia")}
+    </div>
+    <p class="foot">Ausilio al ragionamento clinico</p>` };
 }
 
 /* ---------- questionario ---------- */
@@ -654,7 +653,7 @@ function paintThemeBtn(){
   const d = isDark(), b = $("#theme");
   b.classList.toggle("dark", d);
   b.setAttribute("aria-label", d ? "Passa al tema chiaro" : "Passa al tema scuro");
-  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute("content", d ? "#12161D" : document.body.classList.contains("is-home") ? "#F3F4F6" : "#FFFFFF"));
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.setAttribute("content", d ? "#12161D" : "#FFFFFF"));
 }
 function setTheme(t){
   document.documentElement.dataset.theme = t;
@@ -692,9 +691,7 @@ function render(){
   $("#main").innerHTML = `<div class="screen">${v.html}</div>`;
   // in home la barra mostra il marchio OC accanto al nome
   $(".bar").classList.toggle("home", !route);
-  document.body.classList.toggle("is-home", !route);
-  paintThemeBtn();
-  if(route) $("#barT").textContent = v.bar; else $("#barT").innerHTML = `<span class="oc">OC</span>${v.bar}`;
+  $("#barT").textContent = v.bar;
   $("#back").style.visibility = route ? "visible" : "hidden";
   $("#theme").hidden = !!route; $("#act").hidden = !route;
   $("#act").textContent = v.act ? v.act[0] : ""; actFn = v.act ? v.act[1] : null;
