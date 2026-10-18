@@ -422,21 +422,44 @@ document.addEventListener("click", e => {
   if(e.target.closest("#sheet a")){ reopenSheet = true; closeSheet(true); }
 });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeSheet(); });
-/* trascinando in giù l'intestazione il pannello si chiude */
+/* trascinando in giù il pannello (da qualunque punto, se l'elenco è già in cima) si chiude;
+   un tocco senza trascinamento apre la scheda come sempre */
 (function(){
-  let y0 = null, dy = 0;
-  const panel = () => $(".sheet-panel");
-  $("#sheetHead").addEventListener("touchstart", e => { y0 = e.touches[0].clientY; dy = 0; panel().style.transition = "none"; }, {passive:true});
-  $("#sheetHead").addEventListener("touchmove", e => {
-    if(y0 === null) return;
-    dy = Math.max(0, e.touches[0].clientY - y0);
-    panel().style.transform = `translateY(${dy}px)`;
+  let y0 = null, x0 = 0, dy = 0, t0 = 0, mode = null, noClick = 0;
+  const panel = $(".sheet-panel"), body = $("#sheetBody");
+  panel.addEventListener("touchstart", e => {
+    if(e.touches.length > 1){ y0 = null; return; }
+    y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; dy = 0; t0 = Date.now();
+    mode = e.target.closest("#sheetHead") ? "drag" : null;
   }, {passive:true});
-  $("#sheetHead").addEventListener("touchend", () => {
+  panel.addEventListener("touchmove", e => {
     if(y0 === null) return;
-    y0 = null; panel().style.transition = "";
-    if(dy > 80) closeSheet(); else panel().style.transform = "";
-  }, {passive:true});
+    const y = e.touches[0].clientY, d = y - y0;
+    if(!mode){
+      if(Math.abs(d) < 8 && Math.abs(e.touches[0].clientX - x0) < 8) return;
+      // si trascina il pannello solo se il gesto è verso il basso e l'elenco non ha nulla sopra da scorrere
+      mode = d > 0 && body.scrollTop <= 0 && Math.abs(d) > Math.abs(e.touches[0].clientX - x0) ? "drag" : "scroll";
+      if(mode === "drag"){ y0 = y; t0 = Date.now(); }
+    }
+    if(mode !== "drag") return;
+    e.preventDefault();
+    panel.style.transition = "none";
+    dy = Math.max(0, y - y0);
+    panel.style.transform = `translateY(${dy}px)`;
+  }, {passive:false});
+  const end = () => {
+    if(y0 === null) return;
+    y0 = null;
+    if(mode !== "drag") return;
+    if(dy > 0) noClick = Date.now();
+    panel.style.transition = "";
+    const fast = dy > 30 && dy / Math.max(1, Date.now() - t0) > .6;
+    if(dy > 80 || fast) closeSheet(); else panel.style.transform = "";
+  };
+  panel.addEventListener("touchend", end, {passive:true});
+  panel.addEventListener("touchcancel", end, {passive:true});
+  // dopo un trascinamento non deve partire il tocco sulla scheda sotto il dito
+  panel.addEventListener("click", e => { if(Date.now() - noClick < 400){ e.preventDefault(); e.stopPropagation(); } }, true);
 })();
 
 /* scheda di una categoria: stessa vista per il risultato del questionario e per le schede */
