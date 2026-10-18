@@ -7,7 +7,7 @@ L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`.
 ## Come si usa
 
 - **Questionario CFS**: una domanda per schermata; il primo "Sì" porta alla scheda del risultato.
-- **Schede CFS**: la card della home apre un pannello a scomparsa con le 9 categorie raggruppate per percorso (A: CFS 1–4, B: CFS 5–7, C: CFS 8–9); tornando indietro da una scheda il pannello si riapre. Si chiude toccando fuori, con la X o trascinandolo in giù.
+- **Schede CFS**: la card della home apre un pannello a scomparsa con le 9 categorie raggruppate per percorso (Gruppo A, B, C); tornando indietro da una scheda il pannello si riapre. Si chiude toccando fuori, con la X o trascinandolo in giù.
 - **Scheda della categoria**: illustrazione, descrizione e percorso diagnostico-terapeutico in tendine (esami, imaging, vitamina D, trattamento).
 - **Gruppo A**: il pulsante **Calcola** apre il calcolatore del Charlson Comorbidity Index corretto per l'età. CCI ≥ 6 → percorso del Gruppo B; CCI < 6 → pannello diagnostico completo e Bone Specialist. Una barra in basso mostra il punteggio mentre si spuntano le condizioni; il calcolatore si può ridurre e si azzera a ogni cambio di schermata.
 - Dalla home si consultano anche il calcolatore CCI, gli esami di laboratorio e la correzione della vitamina D; oltre alle fonti del protocollo.
