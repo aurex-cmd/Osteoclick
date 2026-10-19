@@ -425,7 +425,7 @@ function vDomanda(n){
 /* ---------- schede: pannello a scomparsa dalla home ---------- */
 function schedeHTML(){
   return ["A","B","C"].map(g => `<p class="lbl">${GROUPS[g].label}</p><div class="rows">` +
-    CFS.filter(c => c.group === g).map(c => `<a class="rowlink" href="#scheda-${c.id}"><img class="th" src="img/cfs-${c.id}-thumb.jpg" alt="" loading="lazy"><span>${c.en}<small>CFS ${c.id} · ${c.it}</small></span>${CHEV}</a>`).join("") +
+    CFS.filter(c => c.group === g).map(c => `<a class="rowlink" href="#scheda-${c.id}"><img class="th" src="img/cfs-${c.id}-thumb.jpg" alt="" decoding="async"><span>${c.en}<small>CFS ${c.id} · ${c.it}</small></span>${CHEV}</a>`).join("") +
     `</div>`).join("");
 }
 let reopenSheet = false;   // tornando indietro da una scheda aperta dal pannello, il pannello si riapre
@@ -856,6 +856,15 @@ window.addEventListener("hashchange", () => {
 stack.push(routeNow());
 paintThemeBtn();
 render();
+// precarica miniature e schede CFS appena la pagina è pronta, così si aprono senza attesa
+const PRELOAD = [];
+function preload(){
+  CFS.forEach(c => [`img/cfs-${c.id}-thumb.jpg`, `img/cfs-${c.id}.jpg?v=3`].forEach(src => {
+    const im = new Image(); im.src = src; if(im.decode) im.decode().catch(() => {}); PRELOAD.push(im);
+  }));
+}
+if(document.readyState === "complete") preload(); else window.addEventListener("load", preload);
+if("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>
 </body>
 </html>
