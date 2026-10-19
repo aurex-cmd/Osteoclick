@@ -93,6 +93,12 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 .hero small{display:block;margin-top:2px;font-size:.9rem;color:var(--h-sub);line-height:1.4}
 .hero-1{--hb:var(--h1-bg);--hf:var(--h1-fg)} .hero-2{--hb:var(--h2-bg);--hf:var(--h2-fg)}
 .hero .chev{color:var(--h-sub);opacity:.55}
+.fc{position:relative;overflow:hidden;margin:4px -16px 0;background:#fff;touch-action:pan-y}
+.fc.zoomed{touch-action:none}
+.fc img{display:block;width:100%;height:auto;transform-origin:0 0;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc img{filter:brightness(.92)}}
+:root[data-theme="dark"] .fc img{filter:brightness(.92)}
+.fc-hint{text-align:center}
 .home-list .rowlink{padding:10px 0;font-size:1rem}
 .home-list .rowlink small{font-size:.84rem;margin-top:0}
 .home-list .rowlink > svg:first-child{width:26px;height:26px;color:var(--muted);flex:0 0 auto;margin-right:6px}
@@ -360,6 +366,7 @@ const TILE_IC = {
   cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="4" width="12" height="15" rx="2"/><path d="M4.5 8v10a2 2 0 0 0 2 2H15"/></svg>',
   calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><rect x="8" y="6" width="8" height="4" rx="1"/><path d="M8.5 14h.01M12 14h.01M15.5 14h.01M8.5 17.5h.01M12 17.5h.01M15.5 17.5h.01"/></svg>',
   tube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v14a2 2 0 0 0 4 0V3M10 11h4"/></svg>',
+  flow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8.5" y="2.5" width="7" height="4" rx="1"/><path d="M12 6.5V9l3 3-3 3-3-3 3-3M9 12H5.5v5M15 12h3.5v5"/><rect x="3" y="17" width="5" height="4" rx="1"/><rect x="16" y="17" width="5" height="4" rx="1"/></svg>',
   book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M12 7.5v5M9.5 10h5"/></svg>',
   pill:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5.6 13.4 7.8-7.8a4 4 0 0 1 5.6 5.6l-7.8 7.8a4 4 0 0 1-5.6-5.6z"/><path d="m9.5 9.5 5 5"/></svg>'
 };
@@ -382,6 +389,7 @@ function vHome(){
     </div>
     <p class="lbl">Consulta</p>
     <div class="rows home-list">
+      ${row("flusso", "flow", "Diagramma di flusso", "Il percorso del protocollo")}
       ${row("cci", "calc", "Charlson Comorbidity Index", "Calcolatore per il Gruppo A")}
       ${row("esami", "tube", "Esami", "Laboratorio e imaging")}
       ${row("vitd", "pill", "Vitamina D", "Correzione del deficit")}
@@ -664,6 +672,67 @@ function vVitD(){
   return { bar:"Vitamina D", html: head("Correzione della vitamina D", "Per tutti i gruppi (A, B e C).") + vitDBody(false) +
     `<p class="small">Nei pazienti candidati a terapia anti-fratturativa (Gruppo A e Gruppo B) la correzione deve precedere l'avvio del trattamento.</p>` };
 }
+/* ---------- diagramma di flusso del protocollo (§6), ingrandibile con due dita ---------- */
+function vFlusso(){
+  return { bar:"Diagramma di flusso", html: head("Diagramma di flusso", "Il percorso FLS del protocollo, dalla frattura al follow-up.") + `
+    <div class="fc" id="fc"><img src="img/flusso.jpg" width="2099" height="2250" draggable="false" alt="Diagramma di flusso: paziente con frattura di femore da fragilità, segnalazione al Bone Coordinator, valutazione CFS; Gruppo A (CFS 1–4) calcolo del CCI, con CCI ≥ 6 percorso del Gruppo B, altrimenti pannello diagnostico completo e Bone Specialist; Gruppo B (CFS 5–7) Pannello 1 e terapia con acido zoledronico; Gruppo C (CFS 8–9) Pannello 1 e supplementazione; per tutti presa in carico riabilitativa entro 48 ore e follow-up."></div>
+    <p class="small fc-hint">Allarga con due dita · doppio tocco per ingrandire o tornare alla misura intera</p>` };
+}
+function initZoom(box){
+  const img = box.querySelector("img");
+  let s = 1, x = 0, y = 0, g = null, lastTap = 0;
+  const pt = t => { const r = box.getBoundingClientRect(); return [t.clientX - r.left, t.clientY - r.top]; };
+  const apply = anim => {
+    const W = box.clientWidth, H = box.clientHeight;
+    s = Math.min(5, Math.max(1, s));
+    x = Math.min(0, Math.max(W - W * s, x)); y = Math.min(0, Math.max(H - H * s, y));
+    img.style.transition = anim ? "transform .2s" : "none";
+    img.style.transform = `translate(${x}px,${y}px) scale(${s})`;
+    box.classList.toggle("zoomed", s > 1.01);
+  };
+  // doppio tocco: ingrandisce attorno al punto toccato, oppure torna alla misura intera
+  const toggle = p => {
+    if(s > 1.01){ s = 1; x = 0; y = 0; }
+    else { const n = 2.5; x = p[0] - (p[0] - x) * n / s; y = p[1] - (p[1] - y) * n / s; s = n; }
+    apply(true);
+  };
+  const begin = e => {
+    if(e.touches.length === 2){
+      const a = pt(e.touches[0]), b = pt(e.touches[1]);
+      g = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, m: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], s, x, y };
+    } else if(e.touches.length === 1){
+      g = { p: pt(e.touches[0]), x, y };
+    }
+  };
+  box.addEventListener("touchstart", e => {
+    if(e.touches.length === 1){
+      const now = Date.now();
+      if(now - lastTap < 300){ e.preventDefault(); lastTap = 0; g = null; toggle(pt(e.touches[0])); return; }
+      lastTap = now;
+    }
+    begin(e);
+  }, {passive:false});
+  box.addEventListener("touchmove", e => {
+    if(!g) return;
+    if(e.touches.length === 2 && g.d){
+      e.preventDefault();
+      const a = pt(e.touches[0]), b = pt(e.touches[1]);
+      const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      const n = Math.min(5, Math.max(1, g.s * Math.hypot(a[0] - b[0], a[1] - b[1]) / g.d));
+      // il punto del diagramma sotto le dita resta sotto le dita
+      x = m[0] - (g.m[0] - g.x) * n / g.s; y = m[1] - (g.m[1] - g.y) * n / g.s; s = n;
+      apply(false);
+    } else if(e.touches.length === 1 && g.p && s > 1.01){
+      e.preventDefault();
+      const p = pt(e.touches[0]);
+      x = g.x + p[0] - g.p[0]; y = g.y + p[1] - g.p[1];
+      apply(false);
+    }
+  }, {passive:false});
+  box.addEventListener("touchend", e => { if(e.touches.length) begin(e); else g = null; });
+  box.addEventListener("dblclick", e => toggle(pt(e)));
+}
+
 function vFonti(){
   return { bar:"Fonti", html: head("Fonti") + `<div class="refsbody"><ol>
     <li>Regione del Veneto, Decreto n. 17001 del 07/08/2026. <i>Percorso Preventivo Diagnostico Terapeutico Assistenziale (PPDTA) del paziente di età ≥65 anni con frattura di femore prossimale</i>.</li>
@@ -706,7 +775,7 @@ $("#theme").addEventListener("click", () => setTheme(isDark() ? "light" : "dark"
 if(darkMQ && darkMQ.addEventListener) darkMQ.addEventListener("change", paintThemeBtn);
 
 /* ---------- navigazione ---------- */
-const ROUTES = { "":vHome, cci:vCCI, esami:vEsami, vitd:vVitD, fonti:vFonti };
+const ROUTES = { "":vHome, cci:vCCI, esami:vEsami, vitd:vVitD, fonti:vFonti, flusso:vFlusso };
 const PARENT = r => {
   const m = /^cfs-(\d+)$/.exec(r);
   if(m) return +m[1] > 1 ? "cfs-" + (m[1] - 1) : "";
@@ -730,6 +799,7 @@ function render(){
   const changed = route !== current; current = route;
   closeSheet(true);
   $("#main").innerHTML = `<div class="screen">${v.html}</div>`;
+  if($("#fc")) initZoom($("#fc"));
   // in home la barra mostra il marchio OC accanto al nome
   $(".bar").classList.toggle("home", !route);
   document.body.classList.toggle("is-home", !route);
