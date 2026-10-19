@@ -490,7 +490,7 @@ function vCategoria(id, fromQuiz){
   else path = `${c.id === 9 ? `<p class="small">La classificazione è basata sulla prognosi di malattia e non sul livello di dipendenza funzionale.</p>` : ""}<p class="lbl">Percorso</p><div>${pathC()}</div>`;
   return { bar: fromQuiz ? "Risultato" : "Scheda", act: fromQuiz ? ["Ricomincia", () => go("cfs-1")] : null,
     html: head(c.en, `CFS ${c.id} · ${c.it}`, c.group) +
-      `<div class="pic"><img src="img/cfs-${c.id}.jpg" width="560" height="${c.h}" alt="${c.en}"></div><p class="note">${c.desc}</p>` + path };
+      `<div class="pic"><img src="img/cfs-${c.id}.jpg?v=2" width="560" height="${c.h}" alt="${c.en}"></div><p class="note">${c.desc}</p>` + path };
 }
 
 /* ---------- percorsi ---------- */
