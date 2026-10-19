@@ -95,6 +95,11 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 .hero .chev{color:var(--h-sub);opacity:.55}
 .fc{position:relative;overflow:hidden;margin:4px -16px 0;background:#fff;touch-action:pan-y}
 .fc.zoomed{touch-action:none}
+/* ingrandito, il diagramma occupa tutto lo schermo sotto la barra */
+.fc.full{position:fixed;left:0;right:0;bottom:0;margin:0;z-index:18}
+.fc-out{position:absolute;z-index:1;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));display:none;border:0;border-radius:20px;padding:10px 16px;background:rgba(23,34,49,.86);color:#fff;font-weight:600;font-size:.85rem}
+.fc.full .fc-out{display:block}
+body.fc-lock{overflow:hidden}
 .fc img{display:block;width:100%;height:auto;transform-origin:0 0;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fc img{filter:brightness(.92)}}
 :root[data-theme="dark"] .fc img{filter:brightness(.92)}
@@ -675,25 +680,43 @@ function vVitD(){
 /* ---------- diagramma di flusso del protocollo (§6), ingrandibile con due dita ---------- */
 function vFlusso(){
   return { bar:"Diagramma di flusso", html: head("Diagramma di flusso", "Il percorso FLS del protocollo, dalla frattura al follow-up.") + `
-    <div class="fc" id="fc"><img src="img/flusso.jpg" width="2099" height="2250" draggable="false" alt="Diagramma di flusso: paziente con frattura di femore da fragilità, segnalazione al Bone Coordinator, valutazione CFS; Gruppo A (CFS 1–4) calcolo del CCI, con CCI ≥ 6 percorso del Gruppo B, altrimenti pannello diagnostico completo e Bone Specialist; Gruppo B (CFS 5–7) Pannello 1 e terapia con acido zoledronico; Gruppo C (CFS 8–9) Pannello 1 e supplementazione; per tutti presa in carico riabilitativa entro 48 ore e follow-up."></div>
+    <div class="fc" id="fc"><button type="button" class="fc-out">Misura intera</button><img src="img/flusso.jpg" width="2099" height="2250" draggable="false" alt="Diagramma di flusso: paziente con frattura di femore da fragilità, segnalazione al Bone Coordinator, valutazione CFS; Gruppo A (CFS 1–4) calcolo del CCI, con CCI ≥ 6 percorso del Gruppo B, altrimenti pannello diagnostico completo e Bone Specialist; Gruppo B (CFS 5–7) Pannello 1 e terapia con acido zoledronico; Gruppo C (CFS 8–9) Pannello 1 e supplementazione; per tutti presa in carico riabilitativa entro 48 ore e follow-up."></div>
     <p class="small fc-hint">Allarga con due dita · doppio tocco per ingrandire o tornare alla misura intera</p>` };
 }
 function initZoom(box){
-  const img = box.querySelector("img");
+  const img = box.querySelector("img"), ratio = 2250 / 2099;
   let s = 1, x = 0, y = 0, g = null, lastTap = 0;
   const pt = t => { const r = box.getBoundingClientRect(); return [t.clientX - r.left, t.clientY - r.top]; };
   const apply = anim => {
-    const W = box.clientWidth, H = box.clientHeight;
     s = Math.min(5, Math.max(1, s));
-    x = Math.min(0, Math.max(W - W * s, x)); y = Math.min(0, Math.max(H - H * s, y));
+    const W = box.clientWidth, H = box.clientHeight, iw = W * s, ih = W * ratio * s;
+    x = Math.min(0, Math.max(W - iw, x));
+    // più basso dello schermo: può stare ovunque in verticale; più alto: non lascia spazi vuoti
+    y = ih <= H ? Math.min(H - ih, Math.max(0, y)) : Math.min(0, Math.max(H - ih, y));
     img.style.transition = anim ? "transform .2s" : "none";
     img.style.transform = `translate(${x}px,${y}px) scale(${s})`;
     box.classList.toggle("zoomed", s > 1.01);
   };
-  // doppio tocco: ingrandisce attorno al punto toccato, oppure torna alla misura intera
+  // appena si ingrandisce il riquadro si allarga a tutto lo schermo, senza spostare il diagramma
+  const enter = () => {
+    if(box.classList.contains("full")) return;
+    const r0 = box.getBoundingClientRect();
+    box.style.top = $(".bar").getBoundingClientRect().bottom + "px";
+    box.classList.add("full"); document.body.classList.add("fc-lock");
+    const r1 = box.getBoundingClientRect();
+    x += r0.left - r1.left; y += r0.top - r1.top;
+    apply(false);
+  };
+  const leave = () => {
+    s = 1; x = 0; y = 0;
+    box.classList.remove("full"); box.style.top = ""; document.body.classList.remove("fc-lock");
+    apply(false);
+  };
   const toggle = p => {
-    if(s > 1.01){ s = 1; x = 0; y = 0; }
-    else { const n = 2.5; x = p[0] - (p[0] - x) * n / s; y = p[1] - (p[1] - y) * n / s; s = n; }
+    if(s > 1.01){ leave(); return; }
+    enter();
+    const r = box.getBoundingClientRect(); p = [p[0] + (p.r ? p.r.left - r.left : 0), p[1] + (p.r ? p.r.top - r.top : 0)];
+    const n = 2.5; x = p[0] - (p[0] - x) * n / s; y = p[1] - (p[1] - y) * n / s; s = n;
     apply(true);
   };
   const begin = e => {
@@ -704,12 +727,16 @@ function initZoom(box){
       g = { p: pt(e.touches[0]), x, y };
     }
   };
+  // punto toccato con il riquadro com'era prima di allargarsi
+  const at = t => { const p = pt(t); p.r = box.getBoundingClientRect(); return p; };
   box.addEventListener("touchstart", e => {
+    if(e.target.closest(".fc-out")) return;
     if(e.touches.length === 1){
       const now = Date.now();
-      if(now - lastTap < 300){ e.preventDefault(); lastTap = 0; g = null; toggle(pt(e.touches[0])); return; }
+      if(now - lastTap < 300){ e.preventDefault(); lastTap = 0; g = null; toggle(at(e.touches[0])); return; }
       lastTap = now;
     }
+    if(e.touches.length === 2){ e.preventDefault(); enter(); }
     begin(e);
   }, {passive:false});
   box.addEventListener("touchmove", e => {
@@ -729,8 +756,13 @@ function initZoom(box){
       apply(false);
     }
   }, {passive:false});
-  box.addEventListener("touchend", e => { if(e.touches.length) begin(e); else g = null; });
-  box.addEventListener("dblclick", e => toggle(pt(e)));
+  box.addEventListener("touchend", e => {
+    if(e.touches.length){ begin(e); return; }
+    g = null;
+    if(s <= 1.01 && box.classList.contains("full")) leave();
+  });
+  box.querySelector(".fc-out").addEventListener("click", leave);
+  box.addEventListener("dblclick", e => { if(!e.target.closest(".fc-out")) toggle(at(e)); });
 }
 
 function vFonti(){
@@ -799,6 +831,7 @@ function render(){
   const changed = route !== current; current = route;
   closeSheet(true);
   $("#main").innerHTML = `<div class="screen">${v.html}</div>`;
+  document.body.classList.remove("fc-lock");
   if($("#fc")) initZoom($("#fc"));
   // in home la barra mostra il marchio OC accanto al nome
   $(".bar").classList.toggle("home", !route);
