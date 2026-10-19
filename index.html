@@ -209,10 +209,10 @@ details.acc[open] > summary .chev{transform:rotate(90deg)}
 .ans button.yes{background:var(--accent);color:#fff}
 
 .refsbody{font-size:.84rem;line-height:1.55;color:var(--muted)}
-.refsbody ol{padding:6px;margin:6px 0;list-style:none;background:var(--card);border-radius:20px}
-.refsbody li{position:relative;padding:9px 12px 9px 40px;border-radius:14px}
-.refsbody li::before{content:counter(list-item) ".";position:absolute;left:12px;width:22px;text-align:right;font-variant-numeric:tabular-nums}
-.refsbody li:nth-child(odd){background:var(--bg)}
+.refsbody ol{padding:0 var(--cardpad);margin:6px 0;list-style:none;background:var(--card);border-radius:20px}
+.refsbody li{position:relative;padding:10px 0 10px 28px;border-bottom:1px solid var(--line)}
+.refsbody li:last-child{border-bottom:0}
+.refsbody li::before{content:counter(list-item) ".";position:absolute;left:0;width:20px;text-align:right;font-variant-numeric:tabular-nums}
 .refsbody i{color:var(--ink);font-style:normal;font-weight:500}
 
 /* barra del punteggio CCI in basso */
