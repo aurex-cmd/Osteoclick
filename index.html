@@ -509,7 +509,7 @@ function vCategoria(id, fromQuiz){
 /* ---------- percorsi ---------- */
 function panelsHTML(list){
   return list.map(n => `<p class="pn">Pannello ${n}${n === 3 ? "<small>su sospetto clinico</small>" : ""}</p><p class="note">${PANELS[n-1]}</p>` +
-    (n === 3 ? `<a class="xlink" href="https://aurex-cmd.github.io/Osteo-Help/" target="_blank" rel="noopener">Orienta il sospetto clinico con Osteo Help →</a>` : "")).join("");
+    (n === 3 ? `<a class="xlink" href="https://osteo-help.au-guarnaccia.workers.dev" target="_blank" rel="noopener">Orienta il sospetto clinico con Osteo Help →</a>` : "")).join("");
 }
 function vitDBody(beforeTherapy){
   return `<p class="note">Indicata se <b>25-OH-vitamina D &lt; 50 nmol/L</b> oppure in assenza di dati disponibili, tenendo conto di eventuali supplementazioni già assunte a domicilio.${beforeTherapy ? " La correzione deve <b>precedere</b> l'avvio della terapia anti-fratturativa." : ""}</p>` + numList([
