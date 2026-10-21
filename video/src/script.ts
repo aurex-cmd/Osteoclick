@@ -13,7 +13,7 @@ export const SCENES: SceneDef[] = [
     { say: "Osteoclick ti guida nel percorso FLS in tre passi." },
   ]},
   { id: "c2", extra: 2.2, lines: [
-    { say: "Primo: il questionario CFS." },
+    { say: "Il questionario CFS." },
     { say: "Si parte dalla descrizione della CFS 9: se non corrisponde al paziente, si passa alla categoria successiva." },
     { say: "Il primo sì indica la categoria del paziente." },
   ]},
@@ -25,17 +25,14 @@ export const SCENES: SceneDef[] = [
     { say: "Oppure, se conosci già la categoria," },
     { say: "apri direttamente le schede CFS." },
   ]},
-  { id: "c5", extra: 1.2, lines: [
-    { say: "Secondo: la scheda," },
-    { say: "con la descrizione della categoria e il suo gruppo." },
-  ]},
-  { id: "c6", extra: 2.4, lines: [
-    { say: "Terzo: il percorso del gruppo," },
-    { say: "con esami, correzione della vitamina D e terapia." },
+  { id: "c5", extra: 2.4, lines: [
+    { say: "Ogni scheda contiene la descrizione della categoria, il suo gruppo" },
+    { say: "e il percorso diagnostico-terapeutico specifico," },
+    { say: "con il pannello esami indicato e il trattamento previsto." },
   ]},
   { id: "c7", extra: 1.4, lines: [
     { say: "Nel gruppo A, il Charlson orienta il percorso:" },
-    { say: "da sei in su come il gruppo B; sotto, pannello completo e Bone Specialist." },
+    { say: "da sei in su come il gruppo B; sotto, pannello esami completo e visita presso il Bone Specialist." },
   ]},
   { id: "c8", extra: 0.8, lines: [
     { say: "Dalla home trovi anche il diagramma di flusso, gli esami, la vitamina D e le fonti del protocollo." },

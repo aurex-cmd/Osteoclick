@@ -196,7 +196,7 @@ const CfsFigure: React.FC<{ n: number; size: number; delay: number; on?: number;
 
 /* ---------- scene ---------- */
 const C1: React.FC<{ at: number[] }> = ({ at }) => {
-  const steps = [["Questionario CFS", "o direttamente le schede"], ["Scheda", "categoria e gruppo"], ["Percorso", "esami, vitamina D, terapia"]];
+  const steps = [["Questionario CFS", "o direttamente le schede"], ["Scheda", "categoria e gruppo"], ["Percorso", "esami e trattamento"]];
   return <Body>
     <Title size={96}>Frattura di femore:<br />il percorso in <Mark color={C.accent} bg={C.accentBox} delay={22}>3 passi</Mark></Title>
     <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
@@ -315,35 +315,29 @@ const Scheda: React.FC<{ scroll: number; open: number; openEs?: number }> = ({ s
   </Screen>
 );
 
-const SchedaTop: React.FC<{ at: number[] }> = ({ at }) => <>
-  <AppTitle>Secondo: la <Mark color={C.accent} bg={C.accentBox} delay={16}>scheda</Mark></AppTitle>
-  <Phone><Scheda scroll={0} open={0} /></Phone>
-  <Callout t={14} side="l" y={TOP + 18} color={C.B}>Gruppo B</Callout>
-  <Callout t={26} side="r" y={TOP + 60}>CFS 6 · Moderately Frail</Callout>
-  <Callout t={at[1] + 6} side="l" y={TOP + 370}>descrizione</Callout>
-</>;
-
-const Percorso: React.FC<{ at: number[] }> = ({ at }) => {
+// la scheda dall'alto (categoria, gruppo, descrizione), poi scorre al percorso: esami e trattamento
+const SchedaPercorso: React.FC<{ at: number[] }> = ({ at }) => {
   const f = useCurrentFrame();
-  const S = 330, tEs = 26, tTr = Math.max(at[1] + 40, tEs + 56);
-  const scroll = interpolate(f, [0, 16], [S - 120, S], { ...clamp, easing: ease });
+  const S = 330, T = at[1], tEs = at[2] + 4, tTr = tEs + 46;
+  const scroll = interpolate(f, [T, T + 18], [0, S], { ...clamp, easing: ease });
   const openEs = interpolate(f, [tEs + 4, tEs + 16, tTr, tTr + 12], [0, 1, 1, 0], { ...clamp, easing: ease });
   const open = interpolate(f, [tTr + 4, tTr + 16], [0, 1], { ...clamp, easing: ease });
   const y = (yy: number) => yy - S;
   return <>
-    <AppTitle>Terzo: il <Mark color={C.accent} bg={C.accentBox} delay={16}>percorso</Mark></AppTitle>
+    <AppTitle size={64}>Scheda CFS e <Mark color={C.accent} bg={C.accentBox} delay={16}>percorso</Mark><br />diagnostico-terapeutico</AppTitle>
     <Phone>
       <Scheda scroll={scroll} open={open} openEs={openEs} />
       <Tap x={LW / 2} y={y(ACC_Y + ACC_H / 2)} t={tEs} />
       <Tap x={LW / 2} y={y(ACC_Y + 2 * ACC_H + ACC_H / 2 + ES_H)} t={tTr} />
     </Phone>
-    <Callout t={tEs + 14} until={tTr} side="l" y={y(ACC_Y + ACC_H + 50)}>esami</Callout>
-    <Callout t={tEs + 26} until={tTr} side="r" y={y(ACC_Y + ACC_H * 1.5 + ES_H)}>vitamina D</Callout>
+    <Callout t={14} until={T - 4} side="r" y={TOP + 60}>CFS 6 · Moderately Frail</Callout>
+    <Callout t={at[0] + 26} until={T - 4} side="l" y={TOP + 370}>descrizione</Callout>
+    <Callout t={Math.max(at[0] + 40, T - 36)} until={T - 4} side="l" y={TOP + 18} color={C.B}>Gruppo B</Callout>
+    <Callout t={tEs + 14} until={tTr} side="l" y={y(ACC_Y + ACC_H + 50)}>pannello esami</Callout>
     <Callout t={tTr + 20} side="r" y={y(ACC_Y + 3 * ACC_H + 50)}>acido zoledronico</Callout>
     <Callout t={tTr + 32} side="l" y={y(ACC_Y + 3 * ACC_H + 150)}>con la checklist</Callout>
   </>;
 };
-
 /* --- Charlson --- */
 const AGES = ["50–59", "60–69", "70–79", "≥ 80"];
 const C1P = ["Infarto miocardico pregresso", "Scompenso cardiaco congestizio", "Arteriopatia periferica", "Malattia cerebrovascolare", "Demenza"];
@@ -375,7 +369,7 @@ const C5: React.FC<{ at: number[] }> = ({ at }) => {
   const show = interpolate(f, [tAge + 2, tAge + 14], [0, 1], { ...clamp, easing: ease });
   const hi = score >= 6;
   return <>
-    <AppTitle>Gruppo A: il <Mark color={C.A} bg={C.Abox} delay={16}>Charlson</Mark></AppTitle>
+    <AppTitle size={64}>Gruppo A: il <Mark color={C.A} bg={C.Abox} delay={16}>Charlson</Mark><br />Comorbidity Index</AppTitle>
     <Phone>
       <Cci age={f >= tAge} dem={f >= tDem} ren={f >= tRen} />
       {f >= tAge && <Dock show={show} title={`CCI = ${score}`} sub={hi ? "≥ 6 · percorso del Gruppo B" : "< 6 · pannello completo e Bone Specialist"} />}
@@ -384,7 +378,7 @@ const C5: React.FC<{ at: number[] }> = ({ at }) => {
       <Tap x={26} y={P2_Y + ROW + ROW / 2} t={tRen} />
     </Phone>
     <Callout t={tAge + 6} until={tRen} side="l" y={SEG_Y + 23}>età ≥ 80: +4</Callout>
-    <Callout t={tAge + 16} until={tRen - 2} side="r" y={LH - 52} color={C.A}>sotto 6: pannello completo e Bone Specialist</Callout>
+    <Callout t={tAge + 16} until={tRen - 2} side="r" y={LH - 52} color={C.A}>sotto 6: pannello esami completo e Bone Specialist</Callout>
     <Callout t={tDem + 4} until={tRen + 40} side="l" y={P1_Y + 4 * ROW + ROW / 2}>+1</Callout>
     <Callout t={tRen + 4} side="l" y={P2_Y + ROW + ROW / 2}>+2</Callout>
     <Callout t={tRen + 14} side="r" y={LH - 52} color={C.B}>da 6 in su: come il gruppo B</Callout>
@@ -521,7 +515,7 @@ export const Video: React.FC = () => (
     {SCENES.map((s, i) => {
       const t = timing(s);
       const at = t.lines.map(l => l.from);
-      const body = { c1: <C1 at={at} />, c2: <C2 at={at} />, c3: <C3 at={at} />, c4: <SchedeCFS at={at} />, c5: <SchedaTop at={at} />, c6: <Percorso at={at} />, c7: <C5 at={at} />, c8: <C6 at={at} frames={t.frames} />, c9: <C7 /> }[s.id];
+      const body = { c1: <C1 at={at} />, c2: <C2 at={at} />, c3: <C3 at={at} />, c4: <SchedeCFS at={at} />, c5: <SchedaPercorso at={at} />, c7: <C5 at={at} />, c8: <C6 at={at} frames={t.frames} />, c9: <C7 /> }[s.id];
       return <Sequence key={s.id} from={STARTS[i]} durationInFrames={t.frames}>
         {t.hasAudio && <Sequence from={Math.round(LEAD * FPS)}><Audio src={staticFile(`voce/${s.id}.mp3`)} /></Sequence>}
         <Scene frames={t.frames}>{body}</Scene>

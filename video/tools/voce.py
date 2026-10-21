@@ -23,7 +23,8 @@ SAY = {
 TUNE = {
     "c4": {"stability": 0.3, "style": 0.75},  # più slancio, come le altre scene
 }
-SEED = {"c1": 1, "c2": 13, "c4": 11, "c9": 1}
+# c2.mp3 è la generazione con seed 13 del testo «Primo: il questionario CFS. …», con «Primo:» tagliato (0,82 s)
+SEED = {"c1": 1, "c2": 13, "c4": 11, "c5": 1, "c7": 1, "c9": 1}
 # EXTRA: testo che ElevenLabs considera prima/dopo, senza pronunciarlo (c9 da solo suonava troppo basso)
 EXTRA = {
     "c9": {"previous_text": "Dalla home trovi anche il diagramma di flusso, gli esami, la vitamina D e le fonti del protocollo.",
