@@ -14,7 +14,8 @@ export const SCENES: SceneDef[] = [
   ]},
   { id: "c2", extra: 2.2, lines: [
     { say: "Primo: il questionario CFS." },
-    { say: "Le domande partono dai gradi più gravi: ti fermi al primo sì." },
+    { say: "Si parte dalla descrizione della CFS 9: se non corrisponde al paziente, si passa alla categoria successiva." },
+    { say: "Il primo sì indica la categoria del paziente." },
   ]},
   { id: "c3", extra: 1.2, lines: [
     { say: "Ogni categoria appartiene a un gruppo:" },

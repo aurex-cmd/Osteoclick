@@ -237,8 +237,9 @@ const Question: React.FC<{ i: number; yes?: number }> = ({ i, yes = 0 }) => (
 
 const C2: React.FC<{ at: number[] }> = ({ at }) => {
   const f = useCurrentFrame();
-  const t0 = 34, STEP = Math.max(26, Math.round((at[1] + 40 - t0) / 3));
-  const noT = [t0, t0 + STEP, t0 + STEP * 2], yesT = t0 + STEP * 3 + 6;
+  // i tre No scandiscono la seconda battuta; il Sì arriva con «il primo sì», dopo che l'ultima domanda si è letta
+  const t0 = at[1] + 10, yesT = at[2] + 18, STEP = Math.max(30, Math.round((yesT - 38 - t0) / 2));
+  const noT = [t0, t0 + STEP, t0 + STEP * 2];
   const yes = interpolate(f, [yesT, yesT + 8], [0, 1], clamp);
   const noX = LW * 0.75, yesX = LW * 0.25, by = BTN_Y + BTN_H / 2;
   return <>

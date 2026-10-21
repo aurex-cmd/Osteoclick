@@ -18,14 +18,12 @@ SPEED = 1.05
 SAY = {
     # «Osteoclick» letto all'inglese suonava «Osteocleck»
     "c1": ["Paziente con frattura di femore da fragilità:", "Osteo-clic ti guida nel percorso FLS in tre passi."],
-    # «primo sì» staccato suonava come una pausa: attaccato si legge di seguito
     "c9": ["Osteoclìc."],
-    "c2": ["Primo: il questionario CFS.", "Le domande partono dai gradi più gravi: ti fermi al primosì."],
 }
 TUNE = {
     "c4": {"stability": 0.3, "style": 0.75},  # più slancio, come le altre scene
 }
-SEED = {"c1": 1, "c2": 12, "c4": 11, "c9": 1}
+SEED = {"c1": 1, "c2": 13, "c4": 11, "c9": 1}
 # EXTRA: testo che ElevenLabs considera prima/dopo, senza pronunciarlo (c9 da solo suonava troppo basso)
 EXTRA = {
     "c9": {"previous_text": "Dalla home trovi anche il diagramma di flusso, gli esami, la vitamina D e le fonti del protocollo.",
