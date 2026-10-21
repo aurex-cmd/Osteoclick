@@ -16,22 +16,30 @@ export const SCENES: SceneDef[] = [
     { say: "Primo: il questionario CFS." },
     { say: "Le domande partono dai gradi più gravi: ti fermi al primo sì." },
   ]},
-  { id: "c3", extra: 1.2, lines: [
-    { say: "Il primo sì assegna la categoria" },
-    { say: "e il gruppo: A, B o C." },
+  { id: "c3", extra: 1.6, lines: [
+    { say: "Oppure, se conosci già la categoria," },
+    { say: "apri direttamente le schede CFS." },
   ]},
-  { id: "c4", extra: 2.4, lines: [
-    { say: "Secondo: la scheda del gruppo," },
-    { say: "con esami, correzione della vitamina D e trattamento." },
+  { id: "c4", extra: 1.2, lines: [
+    { say: "Ogni categoria appartiene a un gruppo:" },
+    { say: "A, B o C." },
   ]},
-  { id: "c5", extra: 1.6, lines: [
-    { say: "Terzo, solo nel gruppo A: il Charlson." },
-    { say: "Da sei in su, percorso del gruppo B; sotto, pannello completo e Bone Specialist." },
+  { id: "c5", extra: 1.2, lines: [
+    { say: "Secondo: la scheda," },
+    { say: "con la descrizione della categoria e il suo gruppo." },
   ]},
-  { id: "c6", extra: 0.8, lines: [
+  { id: "c6", extra: 2.4, lines: [
+    { say: "Terzo: il percorso del gruppo," },
+    { say: "con esami, correzione della vitamina D e terapia." },
+  ]},
+  { id: "c7", extra: 1.4, lines: [
+    { say: "Nel gruppo A, il Charlson orienta il percorso:" },
+    { say: "da sei in su come il gruppo B; sotto, pannello completo e Bone Specialist." },
+  ]},
+  { id: "c8", extra: 0.8, lines: [
     { say: "Dalla home trovi anche il diagramma di flusso, gli esami, la vitamina D e le fonti del protocollo." },
   ]},
-  { id: "c7", extra: 2.6, lines: [
+  { id: "c9", extra: 2.6, lines: [
     { say: "Osteoclick." },
   ]},
 ];
