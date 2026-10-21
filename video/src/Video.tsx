@@ -520,7 +520,7 @@ export const Video: React.FC = () => (
     {SCENES.map((s, i) => {
       const t = timing(s);
       const at = t.lines.map(l => l.from);
-      const body = { c1: <C1 at={at} />, c2: <C2 at={at} />, c3: <SchedeCFS at={at} />, c4: <C3 at={at} />, c5: <SchedaTop at={at} />, c6: <Percorso at={at} />, c7: <C5 at={at} />, c8: <C6 at={at} frames={t.frames} />, c9: <C7 /> }[s.id];
+      const body = { c1: <C1 at={at} />, c2: <C2 at={at} />, c3: <C3 at={at} />, c4: <SchedeCFS at={at} />, c5: <SchedaTop at={at} />, c6: <Percorso at={at} />, c7: <C5 at={at} />, c8: <C6 at={at} frames={t.frames} />, c9: <C7 /> }[s.id];
       return <Sequence key={s.id} from={STARTS[i]} durationInFrames={t.frames}>
         {t.hasAudio && <Sequence from={Math.round(LEAD * FPS)}><Audio src={staticFile(`voce/${s.id}.mp3`)} /></Sequence>}
         <Scene frames={t.frames}>{body}</Scene>

@@ -16,13 +16,13 @@ export const SCENES: SceneDef[] = [
     { say: "Primo: il questionario CFS." },
     { say: "Le domande partono dai gradi più gravi: ti fermi al primo sì." },
   ]},
-  { id: "c3", extra: 1.6, lines: [
-    { say: "Oppure, se conosci già la categoria," },
-    { say: "apri direttamente le schede CFS." },
-  ]},
-  { id: "c4", extra: 1.2, lines: [
+  { id: "c3", extra: 1.2, lines: [
     { say: "Ogni categoria appartiene a un gruppo:" },
     { say: "A, B o C." },
+  ]},
+  { id: "c4", extra: 1.6, lines: [
+    { say: "Oppure, se conosci già la categoria," },
+    { say: "apri direttamente le schede CFS." },
   ]},
   { id: "c5", extra: 1.2, lines: [
     { say: "Secondo: la scheda," },
