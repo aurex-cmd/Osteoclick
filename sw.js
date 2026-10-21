@@ -15,6 +15,8 @@ self.addEventListener("activate", e => {
 self.addEventListener("fetch", e => {
   const req = e.request;
   if(req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
+  // il video arriva a pezzi (Range, risposte 206) che la cache non può salvare: sempre dalla rete
+  if(req.destination === "video" || req.headers.has("range")) return;
   const isImg = req.destination === "image";
   e.respondWith(isImg
     ? caches.match(req).then(hit => hit || fetch(req).then(res => {

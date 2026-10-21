@@ -1,6 +1,6 @@
 """Voce del video con ElevenLabs: un MP3 per scena in public/voce/ e i tempi in src/audio.json.
 Stesse impostazioni del video di Osteo Help: voce «Marco Romeo», Eleven Multilingual v2, Speed 1.05,
-volume normalizzato a -16 LUFS (se c'è ffmpeg). I tagli delle didascalie cadono a metà della pausa
+volume normalizzato a -16 LUFS (con ffmpeg, anche quello di Remotion). I tagli delle didascalie cadono a metà della pausa
 tra una battuta e la successiva, misurata dai tempi dei caratteri restituiti da ElevenLabs.
 Uso: ELEVENLABS_API_KEY=... python3 tools/voce.py [c1 c2 ...]
      python3 tools/voce.py --prova 3 c2  → tre varianti (seed 1–3) in public/voce/prove/, senza toccare audio.json"""
@@ -40,12 +40,10 @@ def scenes():
     return out
 
 def ffmpeg():
-    if shutil.which("ffmpeg"): return "ffmpeg"
-    try:
-        import imageio_ffmpeg
-        return imageio_ffmpeg.get_ffmpeg_exe()
-    except ImportError:
-        return None
+    # ffmpeg di sistema, altrimenti quello incluso in Remotion (npm ci in video/)
+    if shutil.which("ffmpeg"): return ["ffmpeg"]
+    remotion = ROOT / "node_modules/.bin/remotion"
+    return [str(remotion), "ffmpeg"] if remotion.exists() else None
 
 def mp3_duration(path):
     # Somma dei frame MPEG-1 Layer III (ElevenLabs: CBR 44,1 kHz)
@@ -75,7 +73,7 @@ def generate(voice_id, settings, lines, mp3, seed=None):
     ff = ffmpeg()
     if ff:
         tmp = mp3.with_suffix(".tmp.mp3")
-        subprocess.run([ff, "-y", "-loglevel", "error", "-i", str(mp3), "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
+        subprocess.run([*ff, "-y", "-loglevel", "error", "-i", str(mp3), "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
                         "-ar", "44100", "-b:a", "128k", str(tmp)], check=True)
         tmp.replace(mp3)
     return round(mp3_duration(mp3), 2), cuts
