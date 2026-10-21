@@ -8,20 +8,29 @@ import base64, json, os, re, shutil, subprocess, sys, urllib.parse, urllib.reque
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-VOICE_NAME = "Marco Romeo"
+VOICE_ID = "tkjyl8Joo8r3RALgNJDV"  # Marco Romeo
+SETTINGS = {"stability": 0.45, "similarity_boost": 1.0, "style": 0.5, "use_speaker_boost": True}
 MODEL = "eleven_multilingual_v2"
 SPEED = 1.05
 
 # Ritocchi per singola scena. SAY: testo pronunciato al posto della didascalia (una voce per battuta);
 # TUNE: impostazioni della voce diverse da quelle salvate; SEED: la variante scelta all'ascolto.
 SAY = {
+    # «Osteoclick» letto all'inglese suonava «Osteocleck»
+    "c1": ["Paziente con frattura di femore da fragilità:", "Osteo-clic ti guida nel percorso FLS in tre passi."],
     # «primo sì» staccato suonava come una pausa: attaccato si legge di seguito
+    "c9": ["Osteoclìc."],
     "c2": ["Primo: il questionario CFS.", "Le domande partono dai gradi più gravi: ti fermi al primosì."],
 }
 TUNE = {
     "c4": {"stability": 0.3, "style": 0.75},  # più slancio, come le altre scene
 }
-SEED = {"c2": 12, "c4": 11}
+SEED = {"c1": 1, "c2": 12, "c4": 11, "c9": 1}
+# EXTRA: testo che ElevenLabs considera prima/dopo, senza pronunciarlo (c9 da solo suonava troppo basso)
+EXTRA = {
+    "c9": {"previous_text": "Dalla home trovi anche il diagramma di flusso, gli esami, la vitamina D e le fonti del protocollo.",
+           "next_text": "Provala subito."},
+}
 KEY = os.environ.get("ELEVENLABS_API_KEY") or sys.exit("Manca ELEVENLABS_API_KEY")
 
 def api(path, body=None):
@@ -59,8 +68,8 @@ def mp3_duration(path):
         i += 144 * br // sr + pad; t += 1152 / sr
     return t
 
-def generate(voice_id, settings, lines, mp3, seed=None):
-    body = {"text": " ".join(lines), "model_id": MODEL, "voice_settings": settings}
+def generate(voice_id, settings, lines, mp3, seed=None, extra=None):
+    body = {"text": " ".join(lines), "model_id": MODEL, "voice_settings": settings, **(extra or {})}
     if seed is not None: body["seed"] = seed
     r = api(f"/v1/text-to-speech/{voice_id}/with-timestamps?output_format=mp3_44100_128", body)
     mp3.write_bytes(base64.b64decode(r["audio_base64"]))
@@ -79,14 +88,9 @@ def generate(voice_id, settings, lines, mp3, seed=None):
     return round(mp3_duration(mp3), 2), cuts
 
 def find_voice():
-    voices = api("/v1/voices")["voices"]
-    voice = next((v for v in voices if VOICE_NAME.lower() in v["name"].lower()), None)
-    if not voice:
-        sys.exit(f"La voce «{VOICE_NAME}» non è tra quelle del tuo account ElevenLabs: aggiungila dalla Voice Library.")
-    print("Voce:", voice["name"], voice["voice_id"])
-    settings = api(f"/v1/voices/{voice['voice_id']}/settings")
-    settings["speed"] = SPEED
-    return voice["voice_id"], settings
+    # ID e impostazioni salvate di «Marco Romeo – Mature, Velvety and Warm», lette dall'account il 21/10/2026:
+    # così basta una chiave con il solo permesso di sintesi vocale
+    return VOICE_ID, {**SETTINGS, "speed": SPEED}
 
 if __name__ == "__main__":
     args = sys.argv[1:]
@@ -105,10 +109,10 @@ if __name__ == "__main__":
         if prova:
             (outdir / "prove").mkdir(exist_ok=True)
             for seed in range(1, prova + 1):
-                dur, cuts = generate(voice_id, settings, lines, outdir / f"prove/{sid}-s{seed}.mp3", seed)
+                dur, cuts = generate(voice_id, settings, lines, outdir / f"prove/{sid}-s{seed}.mp3", seed, EXTRA.get(sid))
                 print(f"{sid} seed {seed}: {dur}s, tagli {cuts}")
             continue
-        dur, cuts = generate(voice_id, settings, lines, outdir / f"{sid}.mp3", SEED.get(sid))
+        dur, cuts = generate(voice_id, settings, lines, outdir / f"{sid}.mp3", SEED.get(sid), EXTRA.get(sid))
         timings[sid] = {"dur": dur, "start": 0.0, "cuts": cuts}
         print(f"{sid}: {dur}s, tagli {cuts}")
 
