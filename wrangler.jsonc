@@ -1,0 +1,11 @@
+// Configurazione Cloudflare Workers: l'app è un sito statico (index.html, icone, immagini, media), senza codice lato server.
+// Serve anche alle anteprime dei rami, che senza configurazione non riconoscono da sole i file statici.
+{
+  "name": "osteoclick",
+  "compatibility_date": "2026-10-19",
+  "assets": {
+    "directory": "./"
+  },
+  // richiesto da `wrangler preview`, il comando delle anteprime dei rami su questo progetto
+  "previews": {}
+}

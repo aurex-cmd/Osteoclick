@@ -10,6 +10,7 @@ L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`.
 - **Schede CFS**: la card della home apre un pannello a scomparsa con le 9 categorie raggruppate per percorso (Gruppo A, B, C); tornando indietro da una scheda il pannello si riapre. Si chiude toccando fuori, con la X o trascinandolo in giù.
 - **Scheda della categoria**: illustrazione, descrizione e percorso diagnostico-terapeutico in tendine (esami, imaging, vitamina D, trattamento).
 - **Gruppo A**: il pulsante **Calcola** apre il calcolatore del Charlson Comorbidity Index corretto per l'età. CCI ≥ 6 → percorso del Gruppo B; CCI < 6 → pannello diagnostico completo e Bone Specialist. Una barra in basso mostra il punteggio mentre si spuntano le condizioni; il calcolatore si può ridurre e si azzera a ogni cambio di schermata.
+- **Tondo «?»** nella barra della home, accanto al pulsante del tema: apre un video verticale di circa un minuto, saltabile, con voce narrante (ElevenLabs, voce «Marco Romeo») e musica di sottofondo.
 - Dalla home si consultano anche il diagramma di flusso del protocollo (ingrandibile con due dita), il calcolatore CCI, gli esami di laboratorio e la correzione della vitamina D; oltre alle fonti del protocollo.
 
 ## File
@@ -17,6 +18,7 @@ L'app è pubblicata su GitHub Pages: `https://<username>.github.io/osteoclick/`.
 | File | Contenuto |
 |---|---|
 | `index.html` | L'intera app (HTML, CSS e JavaScript in un unico file) |
+| `media/osteoclick.mp4`, `.jpg` | Video aperto dal tondo «?» (H.264/AAC, circa 8 MB) e locandina; si genera con il progetto Remotion in `video/` |
 | `img/` | Illustrazioni delle 9 categorie CFS (`cfs-N.jpg` nella scheda, `cfs-N-thumb.jpg` nell'elenco) |
 | `manifest.webmanifest`, `favicon.svg`, `favicon-32.png`, `apple-touch-icon-180.png`, `icon-192.png`, `icon-512.png` | Installazione come app (PWA) e icone |
 | `original/` | La versione originale dell'app (vedi sotto) |
