@@ -1,8 +1,8 @@
 // Osteoclick: tiene in cache le immagini per mostrarle subito, anche offline.
 // Le pagine si chiedono prima alla rete (così gli aggiornamenti arrivano subito),
 // le immagini prima alla cache (il ?v= nel nome forza il ricaricamento quando cambiano).
-const CACHE = "osteoclick-v2";
-const IMGS = [1,2,3,4,5,6,7,8,9].flatMap(n => [`img/cfs-${n}-thumb.jpg?v=4`, `img/cfs-${n}.jpg?v=4`]);
+const CACHE = "osteoclick-v3";
+const IMGS = [1,2,3,4,5,6,7,8,9].flatMap(n => [`img/cfs-${n}-thumb.jpg?v=5`, `img/cfs-${n}.jpg?v=4`]);
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./", ...IMGS])).then(() => self.skipWaiting()));
