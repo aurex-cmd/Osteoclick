@@ -298,7 +298,7 @@ const CFS = [
     desc:"Persone i cui problemi medici sono ben controllati. Sono autonome nelle attività della vita quotidiana ma non svolgono attività fisica oltre alla camminata di routine."},
   {id:4, h:740, en:"Vulnerable", it:"Vulnerabili", group:"A",
     desc:"Persone autonome nelle attività della vita quotidiana che presentano però un iniziale rallentamento funzionale. I sintomi delle patologie croniche di cui sono affetti, pur non compromettendo l'indipendenza, tendono a limitare il livello di attività. Riferiscono frequentemente affaticabilità, con ridotta resistenza allo sforzo e difficoltà nello svolgimento di attività più impegnative."},
-  {id:5, h:691, en:"Mildly Frail", it:"Lievemente fragili", group:"B",
+  {id:5, h:690, en:"Mildly Frail", it:"Lievemente fragili", group:"B",
     desc:"Persone che necessitano di aiuto nelle attività strumentali della vita quotidiana: tipicamente sono compromesse attività quali fare la spesa e il camminare fuori casa da soli, la preparazione dei pasti e i lavori domestici. Sono tuttavia indipendenti nelle attività di base della vita quotidiana (igiene personale, vestizione, alimentazione, trasferimenti, uso dei servizi igienici e continenza)."},
   {id:6, h:704, en:"Moderately Frail", it:"Moderatamente fragili", group:"B",
     desc:"Persone che necessitano di assistenza per tutte le attività all'esterno (es. fare la spesa) e per il mantenimento della casa. A domicilio sono parzialmente dipendenti nelle attività della vita quotidiana, possono avere difficoltà nel salire le scale senza aiuto, nel lavarsi e nel vestirsi, pur conservando ancora un certo grado di autonomia."},
@@ -437,7 +437,7 @@ function vDomanda(n){
 /* ---------- schede: pannello a scomparsa dalla home ---------- */
 function schedeHTML(){
   return ["A","B","C"].map(g => `<p class="lbl">${GROUPS[g].label}</p><div class="rows">` +
-    CFS.filter(c => c.group === g).map(c => `<a class="rowlink" href="#scheda-${c.id}"><img class="th" src="img/cfs-${c.id}-thumb.jpg" alt="" decoding="async"><span>${c.en}<small>CFS ${c.id} · ${c.it}</small></span>${CHEV}</a>`).join("") +
+    CFS.filter(c => c.group === g).map(c => `<a class="rowlink" href="#scheda-${c.id}"><img class="th" src="img/cfs-${c.id}-thumb.jpg?v=4" alt="" decoding="async"><span>${c.en}<small>CFS ${c.id} · ${c.it}</small></span>${CHEV}</a>`).join("") +
     `</div>`).join("");
 }
 let reopenSheet = false;   // tornando indietro da una scheda aperta dal pannello, il pannello si riapre
@@ -515,7 +515,7 @@ function vCategoria(id, fromQuiz){
   else path = `${c.id === 9 ? `<p class="small">La classificazione è basata sulla prognosi di malattia e non sul livello di dipendenza funzionale.</p>` : ""}<p class="lbl">Percorso</p><div>${pathC()}</div>`;
   return { bar: fromQuiz ? "Risultato" : "Scheda", act: fromQuiz ? ["Ricomincia", () => go("cfs-1")] : null,
     html: head(c.en, `CFS ${c.id} · ${c.it}`, c.group) +
-      `<div class="pic"><img src="img/cfs-${c.id}.jpg?v=3" width="560" height="${c.h}" alt="${c.en}"></div><p class="note">${c.desc}</p>` + path };
+      `<div class="pic"><img src="img/cfs-${c.id}.jpg?v=4" width="560" height="${c.h}" alt="${c.en}"></div><p class="note">${c.desc}</p>` + path };
 }
 
 /* ---------- percorsi ---------- */
@@ -894,7 +894,7 @@ render();
 // precarica miniature e schede CFS appena la pagina è pronta, così si aprono senza attesa
 const PRELOAD = [];
 function preload(){
-  CFS.forEach(c => [`img/cfs-${c.id}-thumb.jpg`, `img/cfs-${c.id}.jpg?v=3`].forEach(src => {
+  CFS.forEach(c => [`img/cfs-${c.id}-thumb.jpg?v=4`, `img/cfs-${c.id}.jpg?v=4`].forEach(src => {
     const im = new Image(); im.src = src; if(im.decode) im.decode().catch(() => {}); PRELOAD.push(im);
   }));
 }
