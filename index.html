@@ -20,7 +20,7 @@
 <style>
 /* Layout: una schermata per volta (home → questionario → risultato), colonna stretta centrata; fondo bianco; in home due riquadri pastello e l'elenco Consulta, come Osteo Help */
 :root{
-  --bg:#FFFFFF; --card:#FFFFFF; --fill:#F4F5F7; --cardpad:0px; --ink:#172231; --muted:#6B7584; --faint:#B5BECA; --line:#E6E9EE;
+  --bg:#FFFFFF; --card:#FFFFFF; --fill:#F4F5F7; --cardpad:0px; --accgap:0px; --accline:var(--line); --accr:0px; --picm:-5px 0 -2px; --ink:#172231; --muted:#6B7584; --faint:#B5BECA; --line:#E6E9EE;
   --box:#E8EBEF; --accent:#2B587D; --blue:#6A5C92; --blue-box:#F1EEFB; --teal:#0E7571; --teal-box:#E3F4F3; --focus:#2F5F96; --tile:#FFFFFF;
   --coral:#B04E37; --coral-box:#F7EBE7; --amber:#9A6B1F;
   --h1-bg:#BCD2E8; --h1-fg:#172231; --h2-bg:#F5CAB0; --h2-fg:#172231; --h-ic:#FFFFFF; --h-sub:#3A4452;
@@ -28,12 +28,12 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --cardpad:16px; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
+  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --cardpad:16px; --accgap:8px; --accline:transparent; --accr:18px; --picm:4px 0; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
   --box:#262E39; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
   --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62;
   --h1-bg:#1D3045; --h1-fg:#172231; --h2-bg:#422920; --h2-fg:#172231; --h-ic:#FFFFFF; --h-sub:#BCC5D2; color-scheme:dark }}
 :root[data-theme="dark"]{
-  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --cardpad:16px; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
+  --bg:#12161D; --card:#1B212A; --fill:#1B212A; --cardpad:16px; --accgap:8px; --accline:transparent; --accr:18px; --picm:4px 0; --ink:#E6EBF2; --muted:#8E99A8; --faint:#4A5462; --line:#2A323E;
   --box:#262E39; --blue:#C1B5EA; --blue-box:#24202F; --teal:#83CEC8; --teal-box:#112726; --tile:#2B3039; --focus:#8DB4E2;
   --coral:#E99A85; --coral-box:#3A2420; --amber:#D9AE62;
   --h1-bg:#1D3045; --h1-fg:#172231; --h2-bg:#422920; --h2-fg:#172231; --h-ic:#FFFFFF; --h-sub:#BCC5D2; color-scheme:dark }
@@ -140,7 +140,8 @@ body.is-home main .foot{font-size:11.8px}
 .rowlink .th{width:44px;height:56px;flex:0 0 auto;object-fit:contain;background:#fff;border-radius:8px}
 
 /* illustrazioni CFS: hanno fondo bianco, quindi stanno su un riquadro bianco anche nel tema scuro */
-.pic{align-self:center;width:100%;max-width:230px;background:#fff;border-radius:22px;padding:10px;margin:4px 0}
+/* in chiaro il riquadro bianco non si vede e l'immagine ha già un bordo bianco suo: margini negativi; in scuro il riquadro si vede e tiene i margini pieni */
+.pic{align-self:center;width:100%;max-width:230px;background:#fff;border-radius:22px;padding:10px;margin:var(--picm)}
 .pic img{display:block;width:100%;height:auto}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(.pic,.rowlink .th){filter:brightness(.92)}}
 :root[data-theme="dark"] :is(.pic,.rowlink .th){filter:brightness(.92)}
@@ -161,6 +162,13 @@ body.is-home main .foot{font-size:11.8px}
 /* accordion */
 details.acc{background:var(--card);border-radius:18px;padding:0 var(--cardpad)}
 details.acc + details.acc{margin-top:8px}
+/* scheda: righe del percorso più compatte, unite da una linea; in fondo meno vuoto se non c'è la barra in basso */
+main:has(.pic) details.acc{border-bottom:1px solid var(--accline);border-radius:var(--accr)}
+main:has(.pic) details.acc:first-child{border-top:1px solid var(--accline)}
+main:has(.pic) details.acc + details.acc{margin-top:var(--accgap)}
+main:has(.pic) details.acc > summary{padding:13px 0}
+main:has(.pic){padding-bottom:40px}
+body:has(#dock:not([hidden])) main:has(.pic){padding-bottom:120px}
 details.acc > summary{list-style:none;display:flex;align-items:center;gap:10px;padding:15px 0;cursor:pointer;font-weight:700}
 details.acc > summary::-webkit-details-marker{display:none}
 details.acc > summary > span{flex:1;min-width:0}
