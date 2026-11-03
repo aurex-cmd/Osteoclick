@@ -844,7 +844,7 @@ function animaPic(){
     if(!calmo) picTimer = setTimeout(corri, 6000);
   });
   v.parentElement.addEventListener("click", corri);
-  if(!calmo) picTimer = setTimeout(corri, 2000);
+  if(!calmo) picTimer = setTimeout(corri, 4000);
 }
 function goBack(){ if(stack.length > 1) history.back(); else go(PARENT(current)); }
 $("#act").addEventListener("click", () => { if(actFn) actFn(); });
