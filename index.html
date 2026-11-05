@@ -833,7 +833,7 @@ function render(){
 const ANIM = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const VVER = {2: 3, 3: 2, 6: 2, 7: 2, 8: 2, 9: 2};   // versione del video, per non usare quello vecchio rimasto in cache
 const VEXT = {2: [40, 80, 68, 0]};   // CFS 2: le mani escono dall'immagine (sinistra, sopra, destra, sotto)
-const VGIRI = {2: 2};   // quante volte di fila gira il video prima di tornare fermo
+const VGIRI = {};   // quante volte di fila gira il video prima di tornare fermo
 let picTimer = null;
 function animaPic(){
   clearTimeout(picTimer);
