@@ -125,9 +125,11 @@ body.is-home main .foot{font-size:11.8px}
 .pic img{display:block;width:100%;height:auto}
 /* schede CFS animate: dopo qualche secondo l'immagine prende vita; il video parte e finisce sulla stessa posa dell'immagine */
 .pic{position:relative}
-/* --e: pixel (su 560) di cui il video sporge a sinistra dell'immagine, per i movimenti che escono dal riquadro */
-.pic video{position:absolute;top:10px;left:calc(10px - (100% - 20px) * var(--e, 0) / 560);width:calc((100% - 20px) * (560 + var(--e, 0)) / 560);height:calc(100% - 20px);object-fit:cover;opacity:0;transition:opacity .2s;pointer-events:none}
+/* --l --t --r --b: pixel (sulla larghezza 560 dell'immagine, --h è la sua altezza) di cui il video sporge oltre l'immagine,
+   per i movimenti che escono dal riquadro; il testo sopra resta davanti al video */
+.pic video{position:absolute;left:calc(10px - (100% - 20px) * var(--l, 0) / 560);top:calc(10px - (100% - 20px) * var(--t, 0) / var(--h, 1));width:calc((100% - 20px) * (560 + var(--l, 0) + var(--r, 0)) / 560);height:calc((100% - 20px) * (var(--h, 1) + var(--t, 0) + var(--b, 0)) / var(--h, 1));object-fit:cover;opacity:0;transition:opacity .2s;pointer-events:none}
 .pic video.on{opacity:1}
+main:has(.pic) .sub{position:relative;z-index:1}
 
 /* elenchi */
 .list{list-style:none;margin:0;padding:0}
@@ -502,7 +504,7 @@ function vCategoria(id, fromQuiz){
   else path = `${c.id === 9 ? `<p class="small">La classificazione è basata sulla prognosi di malattia e non sul livello di dipendenza funzionale.</p>` : ""}<p class="lbl">Percorso</p><div>${pathC()}</div>`;
   return { bar: fromQuiz ? "Risultato" : "Scheda", act: fromQuiz ? ["Ricomincia", () => go("cfs-1")] : null,
     html: head(c.en, `CFS ${c.id} · ${c.it}`, c.group) +
-      `<div class="pic"><img src="img/cfs-${c.id}.jpg?v=4" width="560" height="${c.h}" alt="${c.en}">${ANIM.includes(+c.id) ? `<video muted playsinline preload="auto" aria-hidden="true"${VEXT[c.id] ? ` style="--e:${VEXT[c.id]}"` : ""}><source src="img/cfs-${c.id}.mp4?v=${VVER[c.id] || 1}" type="video/mp4"><source src="img/cfs-${c.id}.webm?v=${VVER[c.id] || 1}" type="video/webm"></video>` : ""}</div><p class="note">${c.desc}</p>` + path };
+      `<div class="pic"><img src="img/cfs-${c.id}.jpg?v=4" width="560" height="${c.h}" alt="${c.en}">${ANIM.includes(+c.id) ? `<video muted playsinline preload="auto" aria-hidden="true"${VEXT[c.id] ? ` style="--l:${VEXT[c.id][0]};--t:${VEXT[c.id][1]};--r:${VEXT[c.id][2]};--b:${VEXT[c.id][3]};--h:${c.h}"` : ""}><source src="img/cfs-${c.id}.mp4?v=${VVER[c.id] || 1}" type="video/mp4"><source src="img/cfs-${c.id}.webm?v=${VVER[c.id] || 1}" type="video/webm"></video>` : ""}</div><p class="note">${c.desc}</p>` + path };
 }
 
 /* ---------- percorsi ---------- */
@@ -829,8 +831,8 @@ function render(){
 /* ---------- schede CFS animate ---------- */
 // un breve movimento che parte e finisce sulla posa dell'immagine, poi di nuovo l'immagine ferma; si ripete ogni tanto o al tocco
 const ANIM = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-const VVER = {2: 2, 3: 2, 6: 2, 8: 2, 9: 2};   // versione del video, per non usare quello vecchio rimasto in cache
-const VEXT = {2: 40};        // CFS 2: la mano esce a sinistra dell'immagine
+const VVER = {2: 3, 3: 2, 6: 2, 8: 2, 9: 2};   // versione del video, per non usare quello vecchio rimasto in cache
+const VEXT = {2: [40, 80, 68, 0]};   // CFS 2: le mani escono dall'immagine (sinistra, sopra, destra, sotto)
 let picTimer = null;
 function animaPic(){
   clearTimeout(picTimer);
