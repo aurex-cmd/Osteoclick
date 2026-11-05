@@ -504,7 +504,7 @@ function vCategoria(id, fromQuiz){
   else path = `${c.id === 9 ? `<p class="small">La classificazione è basata sulla prognosi di malattia e non sul livello di dipendenza funzionale.</p>` : ""}<p class="lbl">Percorso</p><div>${pathC()}</div>`;
   return { bar: fromQuiz ? "Risultato" : "Scheda", act: fromQuiz ? ["Ricomincia", () => go("cfs-1")] : null,
     html: head(c.en, `CFS ${c.id} · ${c.it}`, c.group) +
-      `<div class="pic"><img src="img/cfs-${c.id}.jpg?v=4" width="560" height="${c.h}" alt="${c.en}">${ANIM.includes(+c.id) ? `<video muted playsinline preload="auto" aria-hidden="true"${VEXT[c.id] ? ` style="--l:${VEXT[c.id][0]};--t:${VEXT[c.id][1]};--r:${VEXT[c.id][2]};--b:${VEXT[c.id][3]};--h:${c.h}"` : ""}><source src="img/cfs-${c.id}.mp4?v=${VVER[c.id] || 1}" type="video/mp4"><source src="img/cfs-${c.id}.webm?v=${VVER[c.id] || 1}" type="video/webm"></video>` : ""}</div><p class="note">${c.desc}</p>` + path };
+      `<div class="pic"><img src="img/cfs-${c.id}.jpg?v=4" width="560" height="${c.h}" alt="${c.en}">${ANIM.includes(+c.id) ? `<video muted playsinline preload="auto" aria-hidden="true"${VGIRI[c.id] ? ` data-giri="${VGIRI[c.id]}"` : ""}${VEXT[c.id] ? ` style="--l:${VEXT[c.id][0]};--t:${VEXT[c.id][1]};--r:${VEXT[c.id][2]};--b:${VEXT[c.id][3]};--h:${c.h}"` : ""}><source src="img/cfs-${c.id}.mp4?v=${VVER[c.id] || 1}" type="video/mp4"><source src="img/cfs-${c.id}.webm?v=${VVER[c.id] || 1}" type="video/webm"></video>` : ""}</div><p class="note">${c.desc}</p>` + path };
 }
 
 /* ---------- percorsi ---------- */
@@ -833,19 +833,24 @@ function render(){
 const ANIM = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const VVER = {2: 3, 3: 2, 6: 2, 8: 2, 9: 2};   // versione del video, per non usare quello vecchio rimasto in cache
 const VEXT = {2: [40, 80, 68, 0]};   // CFS 2: le mani escono dall'immagine (sinistra, sopra, destra, sotto)
+const VGIRI = {2: 2};   // quante volte di fila gira il video prima di tornare fermo
 let picTimer = null;
 function animaPic(){
   clearTimeout(picTimer);
   const v = $(".pic video"); if(!v) return;
   const calmo = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const giri = +v.dataset.giri || 1; let giro = 0;
   const corri = () => {
     clearTimeout(picTimer);
     if(!document.contains(v) || !v.paused) return;
+    giro = 0;
     try{ v.currentTime = 0; }catch(e){}
     const p = v.play(); if(p && p.catch) p.catch(() => {});
   };
   v.addEventListener("playing", () => v.classList.add("on"));
   v.addEventListener("ended", () => {
+    // il video finisce sulla posa da cui riparte: il giro successivo attacca senza stacco
+    if(++giro < giri){ try{ v.currentTime = 0; }catch(e){} const p = v.play(); if(p && p.catch) p.catch(() => {}); return; }
     v.classList.remove("on");
     if(!calmo) picTimer = setTimeout(corri, 6000);
   });
