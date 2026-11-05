@@ -161,7 +161,14 @@ details.acc > summary{list-style:none;display:flex;align-items:center;gap:10px;p
 details.acc > summary::-webkit-details-marker{display:none}
 details.acc > summary > span{flex:1;min-width:0}
 details.acc > summary > .ic{width:24px;height:24px;color:var(--muted)}
-details.acc[open] > summary .chev{transform:rotate(90deg)}
+/* tendine: si aprono e si chiudono in 250ms (stessa durata nei due versi, come un accordion di transitions.dev);
+   l'altezza va da 0fr a 1fr, il contenuto sfuma con un filo di sfocatura, la freccia ruota */
+details.acc > summary .chev{transition:transform .25s cubic-bezier(.22,1,.36,1)}
+details.acc[open]:not(.closing) > summary .chev{transform:rotate(90deg)}
+details.acc .accwrap{display:grid;grid-template-rows:1fr;transition:grid-template-rows .25s cubic-bezier(.22,1,.36,1)}
+details.acc .accin{min-height:0;overflow:hidden;transition:opacity .25s cubic-bezier(.22,1,.36,1),filter .25s cubic-bezier(.22,1,.36,1)}
+details.acc.closing .accwrap{grid-template-rows:0fr}
+details.acc.closing .accin{opacity:0;filter:blur(2px)}
 .accbody{padding:0 0 16px;display:flex;flex-direction:column;gap:6px}
 
 /* spunte */
@@ -383,7 +390,7 @@ const TILE_IC = {
 const ic = name => `<svg class="ic" viewBox="0 0 48 48" aria-hidden="true">${ICONS[name]||""}</svg>`;
 const kat = g => `<span class="kat k-${GROUPS[g].color}">${GROUPS[g].label}</span>`;
 const head = (title, sub, group) => `${group?`<div class="katrow">${kat(group)}</div>`:""}<h1>${title}</h1><div class="rule"></div>${sub?`<p class="sub">${sub}</p>`:""}`;
-const acc = (title, body, icon) => `<details class="acc"><summary>${icon ? ic(icon) : ""}<span>${title}</span>${CHEV}</summary><div class="accbody">${body}</div></details>`;
+const acc = (title, body, icon) => `<details class="acc"><summary>${icon ? ic(icon) : ""}<span>${title}</span>${CHEV}</summary><div class="accwrap"><div class="accin"><div class="accbody">${body}</div></div></div></details>`;
 const numList = items => `<ul class="list">${items.map((t,i) => `<li><i>${i+1}</i><span>${t}</span></li>`).join("")}</ul>`;
 
 /* ---------- home ---------- */
@@ -607,10 +614,10 @@ function cciCalcHTML(canClose){
   return `
     <div class="ages" role="group" aria-label="Età">${CCI_AGES.map((a,i) => `<button type="button" data-age="${i}" aria-pressed="${cci.age === i}">${a.label}<small>+${a.pts}</small></button>`).join("")}</div>
     <div id="cciOut">${cciOutHTML()}</div>
-    <details class="acc" open><summary><span>Condizioni cliniche documentate</span>${CHEV}</summary><div class="accbody">
+    <details class="acc" open><summary><span>Condizioni cliniche documentate</span>${CHEV}</summary><div class="accwrap"><div class="accin"><div class="accbody">
       <p class="small">Solo le condizioni elencate e documentate (non sospette). Per le malattie con forme di diversa gravità conta solo la più grave.</p>
       ${conds}
-    </div></details>
+    </div></div></div></details>
     ${canClose ? `<button type="button" class="btn ghost" data-cci-close>Riduci il calcolatore</button>` : ""}`;
 }
 function vCCI(){
@@ -861,6 +868,21 @@ function animaPic(){
   v.parentElement.addEventListener("click", corri);
   if(!calmo) picTimer = setTimeout(corri, 4000);
 }
+/* ---------- tendine animate ---------- */
+// <details> resta per accessibilità e tastiera; il clic sul titolo apre o chiude con l'animazione invece che di scatto
+document.addEventListener("click", e => {
+  const sm = e.target.closest("details.acc > summary"); if(!sm) return;
+  const d = sm.parentElement; e.preventDefault();
+  clearTimeout(d._accT);
+  const ms = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 250;
+  if(!d.open || d.classList.contains("closing")){
+    if(!d.open){ d.classList.add("closing"); d.open = true; d.offsetHeight; }
+    d.classList.remove("closing");
+  } else {
+    d.classList.add("closing");
+    d._accT = setTimeout(() => { d.open = false; d.classList.remove("closing"); }, ms);
+  }
+});
 function goBack(){ if(stack.length > 1) history.back(); else go(PARENT(current)); }
 $("#act").addEventListener("click", () => { if(actFn) actFn(); });
 $("#back").addEventListener("click", goBack);
