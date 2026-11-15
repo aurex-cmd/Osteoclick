@@ -51,7 +51,11 @@ a{color:inherit;text-decoration:none}
 .bar.home #back{display:none}
 /* in home: marchio OC e nome a sinistra, come nella bozza */
 .bar.home .bar-t{grid-column:1;display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
-.bar #help{grid-column:2;grid-row:1;width:42px;height:42px;border-radius:50%;border:0;background:var(--fill);color:var(--ink);display:grid;place-items:center;padding:0;font-size:16px;font-weight:700;line-height:1}
+.bar #help{grid-column:2;grid-row:1}
+/* tondo «i»: cerchio piccolo (30px) dentro un pulsante che resta di 42px, così l'area da toccare non cambia */
+.bar #help{position:relative;width:42px;height:42px;border:0;background:none;display:grid;place-items:center;padding:0;color:var(--ink);line-height:1}
+.bar #help::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--fill)}
+.bar #help svg{position:relative;width:17px;height:17px}
 .oc{width:32px;height:32px;border-radius:9px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:13px;font-weight:800;letter-spacing:-.02em;flex:0 0 auto}
 
 main{max-width:560px;margin:0 auto;padding:4px 16px 120px}
@@ -89,6 +93,23 @@ h1{font-size:1.75rem;line-height:1.15;font-weight:800;letter-spacing:-.025em;mar
 body.fc-lock{overflow:hidden}
 .fc img{display:block;width:100%;height:auto;transform-origin:0 0;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .fc-hint{text-align:center}
+/* TELEFONO IN ORIZZONTALE (poca altezza, come EO Pocket): la home in due colonne,
+   a sinistra titolo e riquadri fermi, a destra Consulta e il resto, che scorrono */
+.home-l,.home-r{display:flex;flex-direction:column;gap:14px;min-width:0}
+@media (orientation:landscape) and (max-height:559px) and (min-width:560px){
+  body.is-home main{max-width:960px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  body.is-home .bar{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  body.is-home .bar-in{max-width:928px}
+  body.is-home main > .screen{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;align-items:start}
+  body.is-home .home-l{position:sticky;top:calc(60px + env(safe-area-inset-top));gap:10px}
+  body.is-home .home-l h1{margin-top:2px;font-size:26px!important}
+  body.is-home .home-l .hero{min-height:64px;padding-top:9px;padding-bottom:9px;border-radius:18px}
+  body.is-home .home-l .hero-ic{width:44px;height:44px;border-radius:12px}
+  body.is-home .home-l .hero-ic svg{width:24px;height:24px}
+  body.is-home .home-l :is(.stack.home,.heroes){gap:8px;margin-top:2px}
+  body.is-home .home-r > .lbl:first-child{margin-top:4px}
+  body.is-home .home-r .foot{margin-top:12px}
+}
 .home-list .rowlink{padding:9px 0;font-size:1rem}
 .home-list .rowlink small{font-size:.84rem;margin-top:0}
 /* icone di Consulta in un riquadrino grigio, come quelle bianche dei riquadri */
@@ -262,7 +283,7 @@ details.acc.closing .accin{opacity:0;filter:blur(2px)}
     <button type="button" id="back" aria-label="Indietro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m15 5-7 7 7 7"/></svg></button>
     <div class="bar-t" id="barT">Osteoclick</div>
     <button type="button" id="act"></button>
-    <button type="button" id="help" aria-label="Video: come funziona Osteoclick" title="Video: come funziona Osteoclick" hidden>?</button>
+    <button type="button" id="help" aria-label="Video: come funziona Osteoclick" title="Video: come funziona Osteoclick" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6.6" r="1.7" fill="currentColor"/><path d="M12 10.6v7.4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
   </div>
 </header>
 
@@ -396,7 +417,7 @@ const numList = items => `<ul class="list">${items.map((t,i) => `<li><i>${i+1}</
 /* ---------- home ---------- */
 function vHome(){
   const row = (href, icon, t, sub) => `<a class="rowlink" href="#${href}">${TILE_IC[icon]}<span>${t}<small>${sub}</small></span>${CHEV}</a>`;
-  return { bar:"Osteoclick", html: `
+  return { bar:"Osteoclick", html: `<div class="home-l">
     <h1 class="home-h">Fracture<br>Liaison Service</h1>
     <div class="home-rule"></div>
     <p class="sub home-sub">Frattura di femore da fragilità, secondo il Protocollo FLS dell'ULSS 6 Euganea.</p>
@@ -404,6 +425,7 @@ function vHome(){
       <a class="hero hero-1" href="#cfs-1"><span class="hero-ic">${TILE_IC.clip}</span><span><b>Questionario CFS</b><small>Valuta la fragilità del paziente</small></span>${CHEV}</a>
       <button type="button" class="hero hero-2" data-sheet-open><span class="hero-ic">${TILE_IC.cards}</span><span><b>Schede CFS</b><small>Consulta direttamente una categoria</small></span>${CHEV}</button>
     </div>
+    </div><div class="home-r">
     <p class="lbl">Consulta</p>
     <div class="rows home-list">
       ${row("flusso", "flow", "Diagramma di flusso", "Il percorso del protocollo")}
@@ -412,7 +434,8 @@ function vHome(){
       ${row("vitd", "pill", "Vitamina D", "Correzione del deficit")}
       ${row("fonti", "book", "Fonti", "Protocollo e bibliografia")}
     </div>
-    <p class="foot">Ausilio al ragionamento clinico</p>` };
+    <p class="foot">Ausilio al ragionamento clinico</p>
+    </div>` };
 }
 
 /* ---------- questionario ---------- */
@@ -887,7 +910,7 @@ function goBack(){ if(stack.length > 1) history.back(); else go(PARENT(current))
 $("#act").addEventListener("click", () => { if(actFn) actFn(); });
 $("#back").addEventListener("click", goBack);
 /* ---------- video MP4 ---------- */
-// il tocco sul «?» avvia il video con l'audio; si chiude con Salta, Esc o alla fine
+// il tocco sul «i» avvia il video con l'audio; si chiude con Salta, Esc o alla fine
 let vidFrom = null;
 function vidOpen(){
   const v = $("#vidEl");
